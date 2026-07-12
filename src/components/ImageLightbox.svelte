@@ -1,15 +1,35 @@
 <script lang="ts">
 	let src = $state('');
+	let type = $state<'image' | 'video'>('image');
 	let visible = $state(false);
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 		function handler(e: MouseEvent) {
 			const target = e.target as HTMLElement;
-			if (target.tagName === 'IMG' && target.closest('.prose')) {
+			const prose = target.closest('.prose');
+			if (!prose) return;
+
+			// Image click
+			if (target.tagName === 'IMG') {
 				src = (target as HTMLImageElement).src;
+				type = 'image';
 				visible = true;
 				document.body.style.overflow = 'hidden';
+				return;
+			}
+
+			// Video click — open in lightbox
+			const video = target.closest('video');
+			if (video && video.dataset.lightbox !== 'false') {
+				src = video.currentSrc || video.querySelector('source')?.src || video.src || '';
+				if (src) {
+					type = 'video';
+					visible = true;
+					document.body.style.overflow = 'hidden';
+					video.pause();
+				}
+				return;
 			}
 		}
 		document.addEventListener('click', handler);
@@ -40,11 +60,23 @@
 		aria-modal="true"
 		onclick={onBackdrop}
 	>
-		<img
-			src={src}
-			alt=""
-			class="max-h-[90vh] max-w-[90vw] rounded object-contain shadow-2xl"
-		/>
+		{#if type === 'image'}
+			<img
+				src={src}
+				alt=""
+				class="max-h-[90vh] max-w-[90vw] rounded object-contain shadow-2xl"
+			/>
+		{:else}
+			<video
+				src={src}
+				controls
+				autoplay
+				playsinline
+				class="max-h-[90vh] max-w-[90vw] rounded shadow-2xl"
+			>
+				<p class="text-white/50">你的浏览器不支持视频播放</p>
+			</video>
+		{/if}
 
 		<button
 			onclick={close}

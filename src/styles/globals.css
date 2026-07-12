@@ -80,3 +80,8 @@
 .animate-fade-up-1 { animation-delay: 60ms; }
 .animate-fade-up-2 { animation-delay: 120ms; }
 .animate-fade-up-3 { animation-delay: 200ms; }
+
+video, audio {
+  max-width: 100%;
+  display: block;
+}
