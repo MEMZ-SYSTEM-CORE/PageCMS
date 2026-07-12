@@ -3,6 +3,7 @@ import Header from '../components/Header.svelte';
 import BackToTop from '../components/BackToTop.svelte';
 import ScrollProgress from '../components/ScrollProgress.svelte';
 import ImageLightbox from '../components/ImageLightbox.svelte';
+import '../styles/globals.css';
 
 interface Props {
   title?: string;
@@ -20,7 +21,6 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title} — 博客</title>
-    <link rel="stylesheet" href="/src/styles/globals.css" />
     <script is:inline>
       (function () {
         var t = localStorage.getItem('theme');
