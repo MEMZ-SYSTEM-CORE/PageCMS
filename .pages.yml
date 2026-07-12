@@ -17,9 +17,7 @@ content:
         type: text
       - name: tags
         type: list
-        fields:
-          - name: tag
-            type: string
+        list: true
       - name: draft
         type: boolean
       - name: body
