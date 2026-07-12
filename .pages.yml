@@ -15,6 +15,9 @@ content:
         required: true
       - name: description
         type: text
+      - name: image
+        type: image
+        label: Cover Image
       - name: tags
         type: string
         list: true

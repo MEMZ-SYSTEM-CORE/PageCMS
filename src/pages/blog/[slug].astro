@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-const { title, pubDate, description, tags } = post.data;
+const { title, pubDate, description, image, tags } = post.data;
 
 function resolveTag(t) {
   return typeof t === 'string' ? t : t?.tag ?? '';
@@ -46,6 +46,16 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
 
       {description && (
         <p class="text-sm text-muted-foreground">{description}</p>
+      )}
+
+      {image && (
+        <div class="mt-6 -mx-4 sm:-mx-0">
+          <img
+            src={image}
+            alt={title}
+            class="w-full rounded-xl object-cover max-h-96"
+          />
+        </div>
       )}
 
       {tags && tags.length > 0 && (

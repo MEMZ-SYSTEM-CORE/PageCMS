@@ -2,6 +2,7 @@
 title: Astro + PagesCMS 技术栈
 pubDate: 2026-07-12
 description: 本站使用的技术栈简介
+image: https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80
 tags:
   - astro
   - pagescms

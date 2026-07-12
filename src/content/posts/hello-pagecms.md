@@ -2,6 +2,7 @@
 title: MEMZ-SYSTEM-CORE 博客
 pubDate: 2026-07-12
 description: 第一篇博客文章
+image: https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80
 tags:
   - hello
   - blog
