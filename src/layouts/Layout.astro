@@ -2,6 +2,7 @@
 import Header from '../components/Header.svelte';
 import BackToTop from '../components/BackToTop.svelte';
 import ScrollProgress from '../components/ScrollProgress.svelte';
+import ImageLightbox from '../components/ImageLightbox.svelte';
 
 interface Props {
   title?: string;
@@ -55,5 +56,6 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
       </div>
     </footer>
     <BackToTop />
+    <ImageLightbox />
   </body>
 </html>
