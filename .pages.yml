@@ -18,9 +18,11 @@ content:
         required: true
       - name: description
         type: text
+        hint: 文章摘要，会显示在卡片和搜索引擎中
       - name: image
         type: image
         label: Cover Image
+        hint: 支持 /media/ 目录的图片链接，也可以粘贴外部 URL
       - name: tags
         type: string
         list: true
@@ -28,6 +30,12 @@ content:
         type: boolean
       - name: body
         type: rich-text
+        hint: |
+
+          📎 引用媒体 → 粘贴 /media/文件名.ext 即可自动渲染
+          ▸ 视频(.mp4) / 音频(.mp3) → 播放器
+          ▸ 图片(.png) → 显示图片
+          ▸ 文件(.exe/.zip/.pdf) → 下载卡片
 
   - name: pages
     label: Pages
@@ -42,6 +50,11 @@ content:
         type: text
       - name: body
         type: rich-text
+        hint: |
+
+          📎 引用媒体 → 粘贴 /media/文件名.ext 即可自动渲染
+          ▸ 视频 / 音频 → 播放器
+          ▸ 文件 (.exe/.zip/.pdf) → 下载卡片
 
   - name: settings
     label: Site Settings
@@ -61,8 +74,9 @@ content:
         label: Footer Description
       - name: ogImage
         type: image
-        label: Default OG Image (分享到社交媒体时的封面图)
+        label: Default OG Image
+        hint: 分享到社交媒体时显示的封面图，推荐 1200×630
       - name: seoDescription
         type: text
-        label: SEO 站点描述 (搜索引擎显示的描述文字)
+        label: SEO Description
         hint: 留空则使用 tagline
