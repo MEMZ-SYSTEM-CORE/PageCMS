@@ -25,7 +25,3 @@ pnpm-debug.log*
 
 # wrangler local state
 .wrangler/
-
-# Only ignore subfolders, keep gitkeep pattern
-media/*
-!media/.gitkeep

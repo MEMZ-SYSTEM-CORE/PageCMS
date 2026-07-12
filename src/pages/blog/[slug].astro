@@ -81,10 +81,11 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
         links.forEach(function(a) {
           var href = a.href || '';
           var text = a.textContent.trim();
-          // Only transform if link text matches the URL (plain link, not linked phrase)
-          if (href !== text && !text.startsWith('http')) return;
-          var isVideo = href.match(/\.(mp4|webm|ogg|mov)(\?|$)/i);
-          var isAudio = href.match(/\.(mp3|wav|ogg|flac|aac|m4a)(\?|$)/i);
+          // Only transform if link text looks like a URL or file path
+          var isPlainUrl = text.startsWith('http') || text.startsWith('/');
+          if (!isPlainUrl) return;
+          var isVideo = href.match(/\.(mp4|webm|ogg|mov|avi|mkv)(\?|$)/i);
+          var isAudio = href.match(/\.(mp3|wav|ogg|flac|aac|m4a|wma)(\?|$)/i);
           if (!isVideo && !isAudio) return;
 
           var wrapper = document.createElement('div');

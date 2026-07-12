@@ -23,11 +23,8 @@ https://www.w3schools.com/html/mov_bbb.mp4
 
 https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3
 
-## 说明
+## PagesCMS 媒体库文件
 
-在 PagesCMS 中编辑文章时，直接粘贴媒体文件的 URL 即可自动识别为视频或音频播放器。支持的格式：
+通过 PagesCMS 上传到 `media/` 目录的文件也会被识别：
 
-- **视频**：MP4, WebM, OGG, MOV
-- **音频**：MP3, WAV, OGG, FLAC, AAC, M4A
-
-点击视频可以全屏播放。
+/media/紧急停堆.mov
