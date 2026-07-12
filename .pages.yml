@@ -16,7 +16,7 @@ content:
       - name: description
         type: text
       - name: tags
-        type: list
+        type: string
         list: true
       - name: draft
         type: boolean
