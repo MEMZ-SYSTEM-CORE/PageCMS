@@ -315,35 +315,21 @@
       const apiUrl = 'https://api.github.com/repos/MEMZ-SYSTEM-CORE/PageCMS/contents/' + encodeURIComponent(filePath);
 
       const GITHUB_UA = 'MEMZ-PageCMS-Upload';
-
-      // Check if file exists
+      // Try PUT first. If 422 (file exists, no SHA), fetch SHA and retry.
       let sha = null;
-      const getRes = await fetch(apiUrl, {
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': GITHUB_UA,
-        },
-      });
-      if (getRes.ok) {
-        const existing = await getRes.json();
-        sha = existing.sha;
-      }
-
-      // Upload with retry on 503
-      const body = {
-        message: sha ? '更新: ' + safeName : '上传: ' + safeName,
-        content: base64,
-        branch: 'master',
-      };
-      if (sha) body.sha = sha;
-
-      let success = false;
+      let uploadRes = null;
       let lastErr = null;
 
       for (let attempt = 1; attempt <= 3; attempt++) {
-        progressText.textContent = '上传到 GitHub (' + attempt + '/3) ' + (50 + attempt * 10) + '%';
-        progressFill.style.width = (50 + attempt * 10) + '%';
+        progressText.textContent = '上传到 GitHub (' + attempt + '/3)';
+        progressFill.style.width = (55 + attempt * 10) + '%';
+
+        const body = {
+          message: sha ? '更新: ' + safeName : '上传: ' + safeName,
+          content: base64,
+          branch: 'master',
+        };
+        if (sha) body.sha = sha;
 
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
@@ -356,23 +342,29 @@
           body: JSON.stringify(body),
         });
 
-        if (putRes.ok) {
-          success = true;
-          break;
-        }
-
+        if (putRes.ok) { uploadRes = putRes; break; }
         lastErr = putRes;
 
-        if (putRes.status === 503 && attempt < 3) {
-          progressText.textContent = ' GitHub 繁忙，重试中 (' + attempt + '/3)...';
-          await new Promise(r => setTimeout(r, 1500 * attempt));
-          continue;
+        if (putRes.status === 422 && !sha) {
+          // File exists but no SHA - fetch it and retry
+          progressText.textContent = '获取文件信息...';
+          const getRes = await fetch(apiUrl, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': GITHUB_UA },
+          });
+          if (getRes.ok) {
+            const existing = await getRes.json();
+            sha = existing.sha;
+            continue;
+          }
         }
 
-        break;
+        if (putRes.status === 503 && attempt < 3) {
+          progressText.textContent = 'GitHub 繁忙，重试中 (' + attempt + '/3)...';
+          await new Promise(r => setTimeout(r, 1500 * attempt));
+        } else break;
       }
 
-      if (!success) {
+      if (!uploadRes) {
         let errMsg = '上传失败';
         try {
           const errData = await lastErr.json();

@@ -516,58 +516,67 @@
       progressText.textContent = '上传到 GitHub...';
 
       // Step 2: Upload directly to GitHub API (CORS enabled)
-      const safeName = selectedFile.name.replace(/[^a-zA-Z0-9一-鿿\.\s_-]/g, '_');
+      const safeName = selectedFile.name.replace(/[^a-zA-Z0-9\u4e00-\u9fff\.\s_-]/g, '_');
       const filePath = 'public/media/' + safeName;
       const apiUrl = 'https://api.github.com/repos/MEMZ-SYSTEM-CORE/PageCMS/contents/' + encodeURIComponent(filePath);
       const auth = 'Bearer ' + token;
+      const GITHUB_UA = 'MEMZ-PageCMS-Upload';
 
-      // Check if exists
+      // Try PUT first. If 422 (file exists, no SHA), fetch SHA and retry.
       let sha = null;
-      const getRes = await fetch(apiUrl, {
-        headers: { 'Authorization': auth, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MEMZ-PageCMS' },
-      });
-      if (getRes.ok) {
-        const existing = await getRes.json();
-        sha = existing.sha;
-      }
-
-      // Upload with 503 retry
-      const body = {
-        message: sha ? '更新: ' + safeName : '上传: ' + safeName,
-        content: base64,
-        branch: 'master',
-      };
-      if (sha) body.sha = sha;
-
-      let success = false;
+      let uploadRes = null;
       let lastErr = null;
-      for (let i = 1; i <= 3; i++) {
-        progressText.textContent = '上传到 GitHub (' + i + '/3)';
-        progressFill.style.width = (55 + i * 10) + '%';
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        progressText.textContent = '上传到 GitHub (' + attempt + '/3)';
+        progressFill.style.width = (55 + attempt * 10) + '%';
+
+        const body = {
+          message: sha ? '更新: ' + safeName : '上传: ' + safeName,
+          content: base64,
+          branch: 'master',
+        };
+        if (sha) body.sha = sha;
 
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
           headers: {
             'Authorization': auth,
             'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'MEMZ-PageCMS',
+            'User-Agent': GITHUB_UA,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(body),
         });
 
-        if (putRes.ok) { success = true; break; }
+        if (putRes.ok) { uploadRes = putRes; break; }
         lastErr = putRes;
-        if (putRes.status === 503 && i < 3) {
-          progressText.textContent = 'GitHub 繁忙，重试中 (' + i + '/3)...';
-          await new Promise(r => setTimeout(r, 1500 * i));
+
+        if (putRes.status === 422 && !sha) {
+          // File exists but no SHA - fetch it and retry
+          progressText.textContent = '获取文件信息...';
+          const getRes = await fetch(apiUrl, {
+            headers: { 'Authorization': auth, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': GITHUB_UA },
+          });
+          if (getRes.ok) {
+            const existing = await getRes.json();
+            sha = existing.sha;
+            continue;
+          }
+        }
+
+        if (putRes.status === 503 && attempt < 3) {
+          progressText.textContent = 'GitHub 繁忙，重试中 (' + attempt + '/3)...';
+          await new Promise(r => setTimeout(r, 1500 * attempt));
         } else break;
       }
 
-      if (!success) {
+      if (!uploadRes) {
         let msg = '上传失败';
         try { const d = await lastErr.json(); msg = d.message || msg; } catch {}
         throw new Error('GitHub API ' + (lastErr ? lastErr.status : '错误') + ': ' + msg);
+      }
+      }
       }
 
       progressFill.style.width = '100%';
