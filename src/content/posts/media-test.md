@@ -14,6 +14,8 @@ draft: false
 
 视频链接会自动嵌入播放器：
 
+/media/kaspersky4win202121.25.7.504zh-Hans_46411.exe
+
 [https://www.w3schools.com/html/mov_bbb.mp4](https://www.w3schools.com/html/mov_bbb.mp4)
 
 ## 音频示例
