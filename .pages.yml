@@ -1,7 +1,7 @@
 media:
   input: public/media
   output: /media
-  accept: '*/*'
+  accept: audio/*,video/*
 
 content:
   - name: posts
@@ -32,10 +32,10 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用文件 → 粘贴链接即可自动渲染
-          ▸ 视频(.mp4) / 音频(.mp3) → 播放器
-          ▸ 文件(.exe/.zip/.pdf) → 下载卡片（右侧"打开链接"）
-          💡 大文件/小文件都可上传到 /media/ → 打开 /upload.html 拖拽上传
+          正文支持 Markdown 语法（**加粗**、*斜体*、[链接](url)、## 标题等）
+          📎 媒体播放 → 粘贴视频或音频链接即可自动渲染播放器
+          ▸ 视频 .mp4/.webm/.mov → 嵌入播放器
+          ▸ 音频 .mp3/.wav/.flac → 音乐播放器
   - name: pages
     label: Pages
     type: collection
@@ -51,10 +51,8 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用文件 → 粘贴链接自动渲染
-          ▸ 视频 / 音频 → 播放器
-          ▸ 文件 → 下载卡片（右侧"打开链接"）
-          💡 打开 /upload.html 上传文件到 /media/
+          正文支持 Markdown 语法
+          📎 粘贴视频/音频链接自动渲染播放器
   - name: settings
     label: Site Settings
     type: file

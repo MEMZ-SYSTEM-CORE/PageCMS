@@ -120,78 +120,16 @@ if (resolvedTags.length > 0) {
         var prose = document.getElementById('prose-content');
         if (!prose) return;
 
-        // Match ALL file extensions (common download + media types)
-        var extRe = /\.([a-zA-Z0-9]{2,7})(?:$|[?#])/i;
+        var re = /\.(mp4|webm|ogg|mov|avi|mkv|mp3|wav|flac|aac|m4a|wma)(?:$|[?#])/i;
         var videoRe = /\.(mp4|webm|ogg|mov|avi|mkv)/i;
-        var audioRe = /\.(mp3|wav|flac|aac|m4a|wma)/i;
-
-        // File type icons (lucide-style inline SVGs)
-        var FILE_ICONS = {
-          'exe': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22V12l3-3 3 3v10"/></svg>',
-          'pdf': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6"/><path d="M12 12v6"/></svg>',
-          'zip': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
-          'doc': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-          'xls': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="8" y2="17"/><line x1="12" y1="13" x2="12" y2="17"/></svg>',
-          'img': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-          'code': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-          'default': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-        };
-
-        function getFileIcon(ext) {
-          var groups = { exe: 'exe', msi: 'exe', app: 'exe', dmg: 'exe', apk: 'exe', deb: 'exe', rpm: 'exe', bin: 'exe', bat: 'exe', cmd: 'exe', sh: 'code', ps1: 'code', py: 'code', js: 'code', ts: 'code', css: 'code', html: 'code', json: 'code', xml: 'code', yml: 'code', yaml: 'code', md: 'code', pdf: 'pdf', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', bz2: 'zip', xz: 'zip', iso: 'zip', doc: 'doc', docx: 'doc', odt: 'doc', txt: 'doc', rtf: 'doc', csv: 'xls', xls: 'xls', xlsx: 'xls', ods: 'xls', jpg: 'img', jpeg: 'img', png: 'img', gif: 'img', webp: 'img', svg: 'img', bmp: 'img', ico: 'img', tiff: 'img' };
-          return FILE_ICONS[groups[ext] || 'default'] || FILE_ICONS['default'];
-        }
-
-        function getFileTypeLabel(ext) {
-          var labels = {
-            exe: '可执行文件', msi: '安装包', dmg: '磁盘映像', apk: 'Android 应用',
-            pdf: 'PDF 文档', zip: '压缩包', rar: '压缩包', '7z': '压缩包',
-            doc: 'Word 文档', docx: 'Word 文档', xls: 'Excel 表格', xlsx: 'Excel 表格',
-            ppt: 'PPT 演示', pptx: 'PPT 演示',
-            txt: '文本文件', csv: '表格数据', json: 'JSON 数据', xml: 'XML 数据',
-            py: 'Python 脚本', js: 'JavaScript', ts: 'TypeScript', sh: 'Shell 脚本',
-            iso: '光盘映像', bin: '二进制文件',
-          };
-          return labels[ext] || ext.toUpperCase() + ' 文件';
-        }
-
-        function getFileSizeText(src) {
-          // Try to get size from fetch, but for static site it's best-effort
-          return '下载';
-        }
-
-        function makeFileCard(src, ext) {
-          var name = src.split('/').pop() || ('file.' + ext);
-          var icon = getFileIcon(ext);
-          var typeLabel = getFileTypeLabel(ext);
-          var isLocal = src.startsWith('/');
-          var actionLabel = isLocal ? '下载' : '打开链接';
-          var actionIcon = isLocal
-            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="!size-3.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
-            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="!size-3.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
-          var w = document.createElement('div');
-          w.className = 'my-6';
-          w.setAttribute('data-media', '');
-          w.innerHTML = '<a href="' + src + '" target="_blank" rel="noopener noreferrer"' + (isLocal ? ' download' : '') + ' class="ring-foreground/10 bg-card text-card-foreground hover:shadow-md flex items-center gap-4 rounded-2xl ring-1 p-5 transition-all no-underline group">'
-            + '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted group-hover:bg-accent transition-colors">' + icon + '</div>'
-            + '<div class="flex-1 min-w-0">'
-            + '<div class="text-sm font-medium truncate group-hover:text-primary transition-colors">' + name + '</div>'
-            + '<div class="text-xs text-muted-foreground mt-0.5">' + typeLabel + '</div>'
-            + '</div>'
-            + '<div class="shrink-0"><span class="inline-flex items-center gap-1 rounded-full bg-foreground/10 px-3 py-1 text-xs font-medium text-foreground transition-colors group-hover:bg-foreground group-hover:text-background group-hover:shadow-sm">' + actionIcon + actionLabel + '</span></div>'
-            + '</a>';
-          return w;
-        }
 
         function makePlayer(src) {
           var ext = src.split('.').pop().split(/[?#]/)[0].toLowerCase();
-          var isVid = videoRe.test(src);
-          var isAud = audioRe.test(src);
+          var w = document.createElement('div');
+          w.className = 'my-6';
+          w.setAttribute('data-media', '');
 
-          if (isVid) {
-            var w = document.createElement('div');
-            w.className = 'my-6';
-            w.setAttribute('data-media', '');
+          if (videoRe.test(src)) {
             var v = document.createElement('video');
             v.src = src; v.controls = true; v.playsInline = true; v.preload = 'metadata';
             v.className = 'w-full max-h-[70vh] rounded-2xl bg-black ring-1 ring-foreground/10';
@@ -199,28 +137,16 @@ if (resolvedTags.length > 0) {
             return w;
           }
 
-          if (isAud) {
-            var w = document.createElement('div');
-            w.className = 'my-6';
-            w.setAttribute('data-media', '');
-            var name = src.split('/').pop() || 'audio';
-            var c = document.createElement('div');
-            c.className = 'ring-foreground/10 bg-card text-card-foreground flex items-center gap-4 rounded-2xl ring-1 p-5';
-            c.innerHTML = '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-muted-foreground truncate mb-2">' + name + '</div><audio src="' + src + '" controls preload="none" class="w-full h-10"></audio></div>';
-            w.appendChild(c);
-            return w;
-          }
-
-          // Everything else → download card
-          return makeFileCard(src, ext);
+          // Audio
+          var name = src.split('/').pop() || 'audio';
+          var c = document.createElement('div');
+          c.className = 'ring-foreground/10 bg-card text-card-foreground flex items-center gap-4 rounded-2xl ring-1 p-5';
+          c.innerHTML = '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-muted-foreground truncate mb-2">' + name + '</div><audio src="' + src + '" controls preload="none" class="w-full h-10"></audio></div>';
+          w.appendChild(c);
+          return w;
         }
 
-        // Build a union regex of all supported extensions
-        var allExts = 'mp4|webm|ogg|mov|avi|mkv|mp3|wav|flac|aac|m4a|wma|exe|msi|app|dmg|apk|deb|rpm|bin|bat|cmd|sh|ps1|py|js|ts|css|html|json|xml|yml|yaml|md|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf|csv|zip|rar|7z|tar|gz|bz2|xz|iso|jpg|jpeg|png|gif|webp|svg|ico|bmp|tiff|odt|ods|odp';
-        var allRe = new RegExp('(https?:\\/\\/\\S+?|\\/\\S+?)\\.(?:' + allExts + ')(?:[?#]\\S*)?', 'i');
-        var bareRe = new RegExp('(?:https?:\\/\\/\\S+|\\.\\S+?)\\.(?:' + allExts + ')(?:[?#]\\S*)?', 'i');
-
-        // Walk text nodes
+        // Walk text nodes for bare media URLs
         var iter = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, null, false);
         var todo = [];
         while (iter.nextNode()) {
@@ -230,7 +156,7 @@ if (resolvedTags.length > 0) {
           var p = n.parentNode;
           if (p.tagName === 'A') continue;
           if (p.closest && p.closest('[data-media]')) continue;
-          var urlMatch = txt.match(bareRe);
+          var urlMatch = txt.match(/(https?:\/\/\S+?|\/\S+?)\.(?:mp4|webm|ogg|mov|avi|mkv|mp3|wav|flac|aac|m4a|wma)(?:[?#]\S*)?/i);
           if (!urlMatch) continue;
           var url = urlMatch[0];
           var idx = txt.indexOf(url);
@@ -244,9 +170,9 @@ if (resolvedTags.length > 0) {
         }
         todo.forEach(function(t) { t.node.parentNode.replaceChild(t.frag, t.node); });
 
-        // Handle <a> links
+        // Handle <a> links to media files
         prose.querySelectorAll('a').forEach(function(a) {
-          if (a.href && allRe.test(a.href) && !a.hasAttribute('data-skip-media')) {
+          if (a.href && re.test(a.href) && !a.hasAttribute('data-skip-media')) {
             a.parentNode.replaceChild(makePlayer(a.href), a);
           }
         });
