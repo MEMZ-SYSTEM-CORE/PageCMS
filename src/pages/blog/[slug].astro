@@ -5,7 +5,7 @@ import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/\.md$/, '') },
+    params: { slug: post.id.replace(/\.md$/i, '') },
     props: { post },
   }));
 }
@@ -16,21 +16,105 @@ const { title, pubDate, description, tags } = post.data;
 ---
 
 <Layout title={title} description={description}>
-  <article class="content">
-    <header style="margin-bottom: 2rem;">
-      <p style="color: #999; font-size: 0.875rem;">
+  <article class="mx-auto max-w-3xl">
+    <header class="mb-8 space-y-3">
+      <p class="text-muted-foreground text-xs">
         {pubDate.toLocaleDateString('zh-CN', {
-          year: 'numeric', month: 'long', day: 'numeric'
+          year: 'numeric', month: 'long', day: 'numeric',
         })}
       </p>
-      <h1>{title}</h1>
-      {description && <p style="color: #666; font-size: 1.05rem;">{description}</p>}
+      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+        {title}
+      </h1>
+      {description && (
+        <p class="text-muted-foreground text-sm sm:text-base">{description}</p>
+      )}
       {tags && tags.length > 0 && (
-        <div style="margin-top: 0.75rem;">
-          {tags.map((tag) => <span class="tag">{tag}</span>)}
+        <div class="flex flex-wrap gap-1.5">
+          {tags.map((tag) => {
+            const tagStr = typeof tag === 'string' ? tag : tag.tag;
+            return (
+              <span
+                class="bg-secondary text-secondary-foreground inline-flex h-5 w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium"
+              >{tagStr}</span>
+            );
+          })}
         </div>
       )}
     </header>
-    <Content />
+
+    <div class="prose-custom">
+      <Content />
+    </div>
   </article>
 </Layout>
+
+<style define:vars={{}}>
+  .prose-custom :global(h1),
+  .prose-custom :global(h2),
+  .prose-custom :global(h3),
+  .prose-custom :global(h4) {
+    font-family: 'Newsreader', Georgia, serif;
+    color: var(--color-foreground);
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .prose-custom :global(h2) { font-size: 1.5rem; margin-top: 2rem; }
+  .prose-custom :global(h3) { font-size: 1.25rem; font-weight: 500; }
+  .prose-custom :global(p) { margin-bottom: 1em; color: var(--color-foreground); line-height: 1.75; }
+  .prose-custom :global(a) { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+  .prose-custom :global(ul), .prose-custom :global(ol) { padding-left: 1.5rem; margin-bottom: 1rem; }
+  .prose-custom :global(li) { margin-bottom: 0.25rem; line-height: 1.75; }
+  .prose-custom :global(code) {
+    background: var(--color-muted);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.875em;
+  }
+  .prose-custom :global(pre) {
+    background: oklch(0.21 0.034 264.665);
+    color: oklch(0.87 0 0);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  .prose-custom :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+  .prose-custom :global(blockquote) {
+    border-left: 3px solid var(--color-border);
+    padding-left: 1rem;
+    color: var(--color-muted-foreground);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+  .prose-custom :global(img) {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+  .prose-custom :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+  .prose-custom :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  .prose-custom :global(th), .prose-custom :global(td) {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.875rem;
+  }
+  .prose-custom :global(th) {
+    background: var(--color-muted);
+    font-weight: 600;
+  }
+</style>

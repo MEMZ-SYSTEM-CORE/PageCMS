@@ -13,14 +13,57 @@ if (about) {
 
 <Layout title="关于" description="关于本站">
   {about && Content ? (
-    <article class="content">
-      <h1>{about.data.title}</h1>
-      <Content />
+    <article class="mx-auto max-w-3xl space-y-6">
+      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+        {about.data.title}
+      </h1>
+      <div class="prose-custom">
+        <Content />
+      </div>
     </article>
   ) : (
-    <article style="background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-      <h1>关于</h1>
-      <p style="color: #666;">页面内容正在编辑中…前往 <a href="https://app.pagescms.org" target="_blank">app.pagescms.org</a> 添加内容吧！</p>
+    <article class="mx-auto max-w-3xl space-y-4">
+      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight">关于</h1>
+      <p class="text-muted-foreground text-sm">
+        页面内容正在编辑中…前往
+        <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">
+          app.pagescms.org
+        </a>
+        添加内容吧！
+      </p>
     </article>
   )}
 </Layout>
+
+<style>
+  .prose-custom :global(h2) {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-foreground);
+  }
+  .prose-custom :global(p) {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+    color: var(--color-foreground);
+  }
+  .prose-custom :global(ul) {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .prose-custom :global(li) {
+    margin-bottom: 0.25rem;
+    line-height: 1.75;
+  }
+  .prose-custom :global(code) {
+    background: var(--color-muted);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.875em;
+  }
+  .prose-custom :global(strong) {
+    font-weight: 600;
+  }
+</style>

@@ -1,4 +1,6 @@
 ---
+import Header from '../components/Header.svelte';
+
 interface Props {
   title?: string;
   description?: string;
@@ -10,182 +12,24 @@ const { title = 'PageCMS', description = '一个由 PagesCMS 管理的 Astro 静
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title} — PageCMS</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
-        line-height: 1.7;
-        color: #333;
-        background: #fafafa;
-      }
-
-      nav {
-        background: #fff;
-        border-bottom: 1px solid #eaeaea;
-        padding: 1rem 2rem;
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-      }
-
-      nav .logo {
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #2563eb;
-        text-decoration: none;
-      }
-
-      nav a {
-        color: #555;
-        text-decoration: none;
-        font-size: 0.95rem;
-      }
-
-      nav a:hover {
-        color: #2563eb;
-      }
-
-      main {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
-
-      footer {
-        text-align: center;
-        padding: 2rem;
-        color: #999;
-        font-size: 0.875rem;
-        border-top: 1px solid #eaeaea;
-        margin-top: 3rem;
-      }
-
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-        margin-top: 2rem;
-        margin-bottom: 0.75rem;
-      }
-
-      p {
-        margin-bottom: 1rem;
-      }
-
-      a {
-        color: #2563eb;
-      }
-
-      :global(.post-list) {
-        list-style: none;
-      }
-
-      :global(.post-list li) {
-        padding: 1.5rem 0;
-        border-bottom: 1px solid #eaeaea;
-      }
-
-      :global(.post-list li:last-child) {
-        border-bottom: none;
-      }
-
-      :global(.post-list .date) {
-        font-size: 0.85rem;
-        color: #999;
-        margin-bottom: 0.25rem;
-      }
-
-      :global(.post-list .title) {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-
-      :global(.post-list .title a) {
-        color: #333;
-        text-decoration: none;
-      }
-
-      :global(.post-list .title a:hover) {
-        color: #2563eb;
-      }
-
-      :global(.post-list .desc) {
-        color: #666;
-        font-size: 0.95rem;
-      }
-
-      :global(.tag) {
-        display: inline-block;
-        background: #eef2ff;
-        color: #4f46e5;
-        padding: 0.15rem 0.6rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        margin-right: 0.35rem;
-      }
-
-      .content {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      }
-
-      .content :global(pre) {
-        background: #1e1e2e;
-        color: #cdd6f4;
-        padding: 1rem;
-        border-radius: 6px;
-        overflow-x: auto;
-        margin: 1rem 0;
-      }
-
-      .content :global(code) {
-        font-size: 0.9em;
-      }
-
-      .content :global(img) {
-        max-width: 100%;
-        border-radius: 6px;
-        margin: 1rem 0;
-      }
-
-      .content :global(blockquote) {
-        border-left: 3px solid #2563eb;
-        padding-left: 1rem;
-        color: #666;
-        font-style: italic;
-        margin: 1rem 0;
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles/globals.css" />
   </head>
-  <body>
-    <nav>
-      <a href="/" class="logo">📄 PageCMS</a>
-      <a href="/">首页</a>
-      <a href="/about">关于</a>
-      <a href="https://pagescms.org" target="_blank">PagesCMS</a>
-    </nav>
-    <main>
+  <body class="bg-background text-foreground min-h-screen antialiased">
+    <Header />
+    <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <slot />
     </main>
-    <footer>
-      <p>由 <a href="https://astro.build" target="_blank">Astro</a> 构建 · 内容通过 <a href="https://pagescms.org" target="_blank">Pages CMS</a> 管理</p>
+    <footer class="border-border/40 text-muted-foreground mx-auto flex w-full max-w-5xl items-center justify-center border-t px-4 py-6 text-xs sm:px-6">
+      由 <a href="https://astro.build" target="_blank" class="hover:text-foreground underline underline-offset-2 transition-colors">Astro</a> 构建 · 内容通过 <a href="https://pagescms.org" target="_blank" class="hover:text-foreground underline underline-offset-2 transition-colors">Pages CMS</a> 管理
     </footer>
   </body>
 </html>

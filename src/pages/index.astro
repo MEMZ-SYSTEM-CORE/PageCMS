@@ -1,42 +1,52 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.svelte';
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('posts', ({ data }) => !data.draft);
-const latestPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const latestPosts = posts.sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
 const pages = await getCollection('pages');
 ---
 
 <Layout title="首页" description="一个由 PagesCMS 管理的 Astro 静态站点">
-  <section style="margin-bottom: 3rem;">
-    <h1>欢迎来到 PageCMS 🎉</h1>
-    <p style="color: #666; font-size: 1.1rem; margin-bottom: 0.5rem;">
+  <section class="mb-10 space-y-2">
+    <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+      欢迎来到 PageCMS 🎉
+    </h1>
+    <p class="text-muted-foreground max-w-2xl text-sm sm:text-base">
       这是一个基于 <strong>Astro</strong> 构建、通过 <strong>PagesCMS</strong> 管理内容的静态站点模板。
     </p>
-    <p style="color: #999; font-size: 0.9rem;">
-      共有 {posts.length} 篇文章 · {pages.length} 个页面
+    <p class="text-muted-foreground text-xs">
+      {posts.length} 篇文章 · {pages.length} 个页面
     </p>
   </section>
 
-  <section>
-    <h2 style="font-size: 1.4rem; margin-bottom: 1rem;">最新文章</h2>
+  <section class="space-y-4">
+    <h2 class="font-heading text-foreground text-xl font-semibold">最新文章</h2>
     {posts.length > 0 ? (
-      <ul class="post-list">
+      <div class="space-y-3">
         {latestPosts.map((post) => (
-          <li>
-            <div class="date">{post.data.pubDate.toLocaleDateString('zh-CN')}</div>
-            <div class="title"><a href={`/blog/${post.slug}`}>{post.data.title}</a></div>
-            {post.data.description && <div class="desc">{post.data.description}</div>}
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div style="margin-top: 0.5rem;">
-                {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
-              </div>
-            )}
-          </li>
+          <PostCard
+            post={{
+              slug: post.id.replace(/\.md$/i, ''),
+              title: post.data.title,
+              pubDate: post.data.pubDate.toISOString(),
+              description: post.data.description,
+              tags: post.data.tags?.map((t) => (typeof t === 'string' ? { tag: t } : t)) ?? [],
+            }}
+          />
         ))}
-      </ul>
+      </div>
     ) : (
-      <p style="color: #999;">还没有文章，前往 <a href="https://app.pagescms.org" target="_blank">app.pagescms.org</a> 开始编辑吧！</p>
+      <p class="text-muted-foreground text-sm">
+        还没有文章，前往
+        <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">
+          app.pagescms.org
+        </a>
+        开始编辑吧！
+      </p>
     )}
   </section>
 </Layout>
