@@ -52,6 +52,8 @@
   header nav { display: flex; align-items: center; gap: 6px; }
   header nav a { font-weight: 500; font-size: 13px; padding: 4px 10px; border-radius: 6px; transition: background .15s; }
   header nav a:hover { background: var(--border); opacity: 1; }
+  .logout-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--muted); transition: all .15s; }
+  .logout-btn:hover { background: var(--border); color: var(--error); }
   .theme-btn { background: none; border: 1px solid var(--border); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; color: var(--fg); font-size: 15px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
   .theme-btn:hover { background: var(--border); }
 
@@ -205,8 +207,9 @@
   <a href="/">MEMZ-SYSTEM-CORE</a>
   <nav>
     <a href="/">文章</a>
-    <a href="/upload.html">上传</a>    <a href="/admin/media" style="font-weight:600">媒体库</a>
+    <a href="/upload.html">上传</a> <a href="/admin/media" style="font-weight:600">媒体库</a>
     <a href="/about">关于</a>
+    <button class="logout-btn" id="logoutBtn">退出</button>
     <button class="theme-btn" id="themeBtn" aria-label="切换主题">🌙</button>
   </nav>
 </header>
@@ -596,6 +599,10 @@
   });
 
   /* ---- Init ---- */
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    location.href = '/';
+  });
   refreshMedia();
 })();
 </script>
