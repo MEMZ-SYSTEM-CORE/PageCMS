@@ -1,0 +1,320 @@
+# .Pages.yml
+# Page CMS 配置文件 - 用于定义内容模型和站点设置
+
+# ======================
+# 基础站点信息
+# ======================
+site:
+  title: "我的网站"
+  description: "这是一个使用 Page CMS 构建的网站"
+  base_url: "https://example.com"
+  language: "zh-CN"
+  timezone: "Asia/Shanghai"
+
+# ======================
+# 主题设置
+# ======================
+theme:
+  name: "default"
+  assets_dir: "assets"
+  views_dir: "views"
+  layouts_dir: "layouts"
+
+# ======================
+# 内容类型定义
+# ======================
+collections:
+  # 文章类型
+  posts:
+    type: "post"
+    label: "文章"
+    folder: "content/posts"
+    create: true
+    fields:
+      - name: "title"
+        label: "标题"
+        type: "string"
+        required: true
+        help: "文章的完整标题"
+      
+      - name: "slug"
+        label: "URL 别名"
+        type: "slug"
+        source: "title"
+        required: true
+      
+      - name: "date"
+        label: "发布日期"
+        type: "datetime"
+        default: "now"
+        required: true
+      
+      - name: "author"
+        label: "作者"
+        type: "string"
+        default: "Admin"
+      
+      - name: "category"
+        label: "分类"
+        type: "select"
+        options:
+          - "技术"
+          - "生活"
+          - "随笔"
+        multiple: false
+      
+      - name: "tags"
+        label: "标签"
+        type: "tags"
+        placeholder: "输入标签，用逗号分隔"
+      
+      - name: "featured_image"
+        label: "特色图片"
+        type: "image"
+        accept: "image/*"
+        help: "推荐尺寸：1200x630"
+      
+      - name: "excerpt"
+        label: "摘要"
+        type: "textarea"
+        rows: 3
+        help: "文章简短描述，用于列表页"
+      
+      - name: "content"
+        label: "正文内容"
+        type: "markdown"
+        required: true
+      
+      - name: "draft"
+        label: "草稿状态"
+        type: "boolean"
+        default: true
+      
+      - name: "seo_title"
+        label: "SEO 标题"
+        type: "string"
+        help: "留空则自动使用标题"
+      
+      - name: "seo_description"
+        label: "SEO 描述"
+        type: "textarea"
+        rows: 2
+        help: "留空则自动使用摘要"
+
+  # 页面类型
+  pages:
+    type: "page"
+    label: "页面"
+    folder: "content/pages"
+    create: true
+    fields:
+      - name: "title"
+        label: "页面标题"
+        type: "string"
+        required: true
+      
+      - name: "slug"
+        label: "URL 别名"
+        type: "slug"
+        source: "title"
+        required: true
+      
+      - name: "layout"
+        label: "布局模板"
+        type: "select"
+        options:
+          - "default"
+          - "full-width"
+          - "landing"
+        default: "default"
+      
+      - name: "content"
+        label: "页面内容"
+        type: "markdown"
+        required: true
+      
+      - name: "show_in_menu"
+        label: "显示在菜单"
+        type: "boolean"
+        default: false
+      
+      - name: "menu_order"
+        label: "菜单排序"
+        type: "number"
+        default: 0
+        help: "数字越小越靠前"
+      
+      - name: "seo_title"
+        label: "SEO 标题"
+        type: "string"
+
+  # 作品集类型
+  portfolio:
+    type: "post"
+    label: "作品集"
+    folder: "content/portfolio"
+    create: true
+    fields:
+      - name: "title"
+        label: "作品名称"
+        type: "string"
+        required: true
+      
+      - name: "slug"
+        label: "URL 别名"
+        type: "slug"
+        source: "title"
+        required: true
+      
+      - name: "client"
+        label: "客户名称"
+        type: "string"
+      
+      - name: "year"
+        label: "完成年份"
+        type: "number"
+        min: 2000
+        max: 2030
+      
+      - name: "gallery"
+        label: "作品图片"
+        type: "image"
+        multiple: true
+        accept: "image/*"
+      
+      - name: "description"
+        label: "项目描述"
+        type: "markdown"
+        required: true
+      
+      - name: "technologies"
+        label: "使用技术"
+        type: "tags"
+        placeholder: "输入技术名称"
+      
+      - name: "project_url"
+        label: "项目链接"
+        type: "url"
+        placeholder: "https://..."
+
+# ======================
+# 媒体管理
+# ======================
+media:
+  upload_dir: "uploads"
+  max_file_size: 5242880  # 5MB
+  allowed_extensions:
+    - "jpg"
+    - "jpeg"
+    - "png"
+    - "gif"
+    - "svg"
+    - "webp"
+    - "mp4"
+    - "pdf"
+  image_sizes:
+    thumb:
+      width: 150
+      height: 150
+      crop: true
+    medium:
+      width: 600
+      height: 400
+      crop: false
+    large:
+      width: 1200
+      height: 800
+      crop: false
+
+# ======================
+# SEO 全局设置
+# ======================
+seo:
+  title_suffix: " | 我的网站"
+  title_prefix: ""
+  default_og_image: "assets/images/og-default.jpg"
+  twitter_card: "summary_large_image"
+  twitter_handle: "@mywebsite"
+  meta_keywords:
+    - "网站"
+    - "CMS"
+    - "内容管理"
+
+# ======================
+# 多语言支持 (可选)
+# ======================
+i18n:
+  enabled: true
+  default_language: "zh"
+  languages:
+    zh:
+      label: "简体中文"
+      locale: "zh_CN"
+      direction: "ltr"
+    en:
+      label: "English"
+      locale: "en_US"
+      direction: "ltr"
+
+# ======================
+# 自定义字段
+# ======================
+custom:
+  social_links:
+    type: "object"
+    fields:
+      twitter:
+        label: "Twitter"
+        type: "url"
+        placeholder: "https://twitter.com/username"
+      github:
+        label: "GitHub"
+        type: "url"
+        placeholder: "https://github.com/username"
+      linkedin:
+        label: "LinkedIn"
+        type: "url"
+        placeholder: "https://linkedin.com/in/username"
+  
+  footer_text:
+    label: "页脚文字"
+    type: "textarea"
+    rows: 2
+    default: "© 2026 我的网站. All rights reserved."
+
+  analytics:
+    label: "统计代码"
+    type: "code"
+    language: "javascript"
+    help: "粘贴 Google Analytics 或其他统计代码"
+
+# ======================
+# 缓存设置
+# ======================
+cache:
+  enabled: true
+  ttl: 3600  # 秒
+  clear_on_publish: true
+
+# ======================
+# 权限控制
+# ======================
+permissions:
+  roles:
+    admin:
+      label: "管理员"
+      permissions: "*"
+    editor:
+      label: "编辑"
+      permissions:
+        - "read:posts"
+        - "write:posts"
+        - "read:pages"
+        - "write:pages"
+        - "read:media"
+        - "write:media"
+    viewer:
+      label: "查看者"
+      permissions:
+        - "read:posts"
+        - "read:pages"
