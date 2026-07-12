@@ -1,19 +1,16 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
-	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { ExternalLink, Music, Link2, MessageCircle, ScrollText } from '@lucide/svelte';
+	import { ExternalLink, Link2, MessageCircle, ScrollText } from '@lucide/svelte';
 
 	const toolLinks = [
 		{ label: '博客文章', href: '/', icon: 'post', desc: '查看所有文章' },
-		{ label: '音乐播放', href: '/music', icon: 'music', desc: '在线听歌', badge: '新' },
 		{ label: '关于本站', href: '/about', icon: 'about', desc: '站点信息与统计' },
 	];
 
 	let { postCount = 0, tagCount = 0 }: { postCount?: number; tagCount?: number } = $props();
 </script>
 
-<!-- Social -->
 <Card class="ring-foreground/10 rounded-2xl ring-1 border-0 mb-4" size="sm">
 	<CardHeader class="pb-3">
 		<CardTitle class="text-xs font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
@@ -36,12 +33,10 @@
 				</Button>
 			</a>
 			<a href="/"><Button variant="secondary" size="sm" class="rounded-full gap-1.5 text-xs">博客</Button></a>
-			<a href="/music"><Button variant="secondary" size="sm" class="rounded-full gap-1.5 text-xs"><Music class="!size-3.5" />音乐</Button></a>
 		</div>
 	</CardContent>
 </Card>
 
-<!-- Quick Links + Stats -->
 <div class="grid gap-4 sm:grid-cols-2">
 	<Card class="ring-foreground/10 rounded-2xl ring-1 border-0" size="sm">
 		<CardHeader class="pb-3">
@@ -56,9 +51,7 @@
 					href={link.href}
 					class="ring-foreground/10 bg-card text-card-foreground flex items-center gap-3 rounded-xl ring-1 px-3.5 py-2.5 text-sm transition-all hover:shadow-sm no-underline group"
 				>
-					{#if link.icon === 'music'}
-						<Music class="!size-4 text-muted-foreground shrink-0" />
-					{:else if link.icon === 'about'}
+					{#if link.icon === 'about'}
 						<ScrollText class="!size-4 text-muted-foreground shrink-0" />
 					{:else}
 						<Link2 class="!size-4 text-muted-foreground shrink-0" />
@@ -69,9 +62,6 @@
 							<span class="text-xs text-muted-foreground ml-2">{link.desc}</span>
 						{/if}
 					</div>
-					{#if link.badge}
-						<Badge variant="default" class="text-[10px] px-1.5 py-0 h-4">{link.badge}</Badge>
-					{/if}
 					<ExternalLink class="!size-3 text-muted-foreground/40 shrink-0" />
 				</a>
 			{/each}

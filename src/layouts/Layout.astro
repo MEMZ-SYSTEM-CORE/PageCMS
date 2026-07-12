@@ -3,7 +3,6 @@ import Header from '../components/Header.svelte';
 import BackToTop from '../components/BackToTop.svelte';
 import ScrollProgress from '../components/ScrollProgress.svelte';
 import ImageLightbox from '../components/ImageLightbox.svelte';
-import MusicBar from '../components/MusicBar.svelte';
 import '../styles/globals.css';
 
 interface Props {
@@ -24,7 +23,6 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title} — 博客</title>
-    <script is:inline src="/music-data.js"></script>
     <script is:inline>
       (function () {
         var t = localStorage.getItem('theme');
@@ -48,8 +46,6 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
         <div class="flex items-center gap-4">
           <a href="/" class="hover:text-foreground transition-colors">首页</a>
           <span class="text-muted-foreground/40">·</span>
-          <a href="/music" class="hover:text-foreground transition-colors">音乐</a>
-          <span class="text-muted-foreground/40">·</span>
           <a href="/about" class="hover:text-foreground transition-colors">关于</a>
           <span class="text-muted-foreground/40">·</span>
           <a href="https://space.bilibili.com/3494379408853453" target="_blank" class="hover:text-foreground inline-flex items-center gap-1 transition-colors">
@@ -62,6 +58,5 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
     </footer>
     <BackToTop />
     <ImageLightbox />
-    <MusicBar />
   </body>
 </html>

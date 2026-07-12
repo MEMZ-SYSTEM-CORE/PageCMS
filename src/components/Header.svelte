@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import { ExternalLink } from '@lucide/svelte';
 
 	let scrolled = $state(false);
 	let cls = $state('');
@@ -28,7 +27,6 @@
 
 		<div class="flex items-center gap-1.5">
 			<a href="/"><Button variant="ghost" size="sm">文章</Button></a>
-			<a href="/music"><Button variant="ghost" size="sm">音乐</Button></a>
 			<a href="/about"><Button variant="ghost" size="sm">关于</Button></a>
 			<a
 				href="https://space.bilibili.com/3494379408853453"
