@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.svelte';
 import PostCard from '../components/PostCard.svelte';
 import { getCollection } from 'astro:content';
 
@@ -11,42 +12,46 @@ const pages = await getCollection('pages');
 ---
 
 <Layout title="首页" description="一个由 PagesCMS 管理的 Astro 静态站点">
-  <section class="mb-10 space-y-2">
-    <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-      欢迎来到 PageCMS 🎉
-    </h1>
-    <p class="text-muted-foreground max-w-2xl text-sm sm:text-base">
-      这是一个基于 <strong>Astro</strong> 构建、通过 <strong>PagesCMS</strong> 管理内容的静态站点模板。
-    </p>
-    <p class="text-muted-foreground text-xs">
-      {posts.length} 篇文章 · {pages.length} 个页面
-    </p>
-  </section>
+  <Hero postCount={posts.length} pageCount={pages.length} />
 
-  <section class="space-y-4">
-    <h2 class="font-heading text-foreground text-xl font-semibold">最新文章</h2>
-    {posts.length > 0 ? (
-      <div class="space-y-3">
-        {latestPosts.map((post) => (
-          <PostCard
-            post={{
-              slug: post.id.replace(/\.md$/i, ''),
-              title: post.data.title,
-              pubDate: post.data.pubDate.toISOString(),
-              description: post.data.description,
-              tags: post.data.tags?.map((t) => (typeof t === 'string' ? { tag: t } : t)) ?? [],
-            }}
-          />
-        ))}
+  {posts.length > 0 && (
+    <section id="posts" class="scroll-mt-20 space-y-6 pb-16">
+      <div class="flex items-center gap-3">
+        <h2 class="font-heading text-foreground text-2xl font-semibold tracking-tight">最新文章</h2>
+        <div class="bg-muted-foreground/20 h-px flex-1" />
       </div>
-    ) : (
-      <p class="text-muted-foreground text-sm">
-        还没有文章，前往
-        <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">
-          app.pagescms.org
-        </a>
-        开始编辑吧！
-      </p>
-    )}
-  </section>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        {latestPosts.map((post) => {
+          const rawTags = post.data.tags;
+          const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
+          return (
+            <PostCard
+              post={{
+                slug: post.id.replace(/\.md$/i, ''),
+                title: post.data.title,
+                pubDate: post.data.pubDate.toISOString(),
+                description: post.data.description,
+                tags: tags,
+              }}
+            />
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  {posts.length === 0 && (
+    <section class="border-border/40 space-y-6 rounded-xl border border-dashed p-12 text-center">
+      <div class="text-muted-foreground space-y-2">
+        <p class="text-sm">
+          还没有文章呢~
+        </p>
+        <p class="text-xs">
+          前往 <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">app.pagescms.org</a>
+          {' '}开始编辑你的第一篇内容吧！
+        </p>
+      </div>
+    </section>
+  )}
 </Layout>

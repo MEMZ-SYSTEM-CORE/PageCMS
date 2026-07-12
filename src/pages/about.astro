@@ -12,58 +12,77 @@ if (about) {
 ---
 
 <Layout title="关于" description="关于本站">
-  {about && Content ? (
-    <article class="mx-auto max-w-3xl space-y-6">
+  <article class="mx-auto max-w-3xl">
+    <div class="mb-8 space-y-2">
       <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-        {about.data.title}
+        {about?.data?.title ?? '关于'}
       </h1>
-      <div class="prose-custom">
+      {about?.data?.description && (
+        <p class="text-muted-foreground text-sm">{about.data.description}</p>
+      )}
+    </div>
+
+    {about && Content ? (
+      <div class="prose-about">
         <Content />
       </div>
-    </article>
-  ) : (
-    <article class="mx-auto max-w-3xl space-y-4">
-      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight">关于</h1>
-      <p class="text-muted-foreground text-sm">
-        页面内容正在编辑中…前往
-        <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">
-          app.pagescms.org
-        </a>
-        添加内容吧！
-      </p>
-    </article>
-  )}
+    ) : (
+      <div class="border-border/40 space-y-4 rounded-xl border border-dashed p-12 text-center">
+        <div class="text-muted-foreground space-y-2">
+          <p class="text-sm">页面内容正在编辑中…</p>
+          <p class="text-xs">
+            前往 <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">app.pagescms.org</a>
+            {' '}添加内容吧！
+          </p>
+        </div>
+      </div>
+    )}
+  </article>
 </Layout>
 
 <style>
-  .prose-custom :global(h2) {
+  .prose-about :global(h2) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 600;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     margin-bottom: 0.75rem;
     color: var(--color-foreground);
   }
-  .prose-custom :global(p) {
-    margin-bottom: 1rem;
-    line-height: 1.75;
+  .prose-about :global(h3) {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
     color: var(--color-foreground);
   }
-  .prose-custom :global(ul) {
+  .prose-about :global(p) {
+    margin-bottom: 1.25rem;
+    line-height: 1.8;
+    font-size: 0.95rem;
+  }
+  .prose-about :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-about :global(ul) {
     padding-left: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
   }
-  .prose-custom :global(li) {
-    margin-bottom: 0.25rem;
+  .prose-about :global(li) {
+    margin-bottom: 0.35rem;
     line-height: 1.75;
+    font-size: 0.95rem;
   }
-  .prose-custom :global(code) {
+  .prose-about :global(code) {
     background: var(--color-muted);
     padding: 0.15rem 0.4rem;
     border-radius: 4px;
-    font-size: 0.875em;
+    font-size: 0.85em;
   }
-  .prose-custom :global(strong) {
+  .prose-about :global(strong) {
     font-weight: 600;
   }
 </style>
