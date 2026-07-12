@@ -1,19 +1,19 @@
 <script lang="ts">
+	import { ArrowRight, BookOpen } from '@lucide/svelte';
+
 	let { postCount = 0 }: { postCount?: number } = $props();
-	const totalWords = postCount * 500;
 </script>
 
-<section class="mb-12 text-center">
-	<div class="animate-fade-up space-y-4">
-		<h1 class="mb-4 text-4xl font-bold">
-			MEMZ-SYSTEM-CORE<br />
-			<span class="text-muted-foreground">的博客</span>
+<section class="mb-8 text-center">
+	<div class="animate-fade-up space-y-3">
+		<h1 class="text-3xl font-bold sm:text-4xl">
+			MEMZ-SYSTEM-CORE
 		</h1>
-		<p class="text-sm text-muted-foreground">
+		<p class="text-sm text-muted-foreground max-w-md mx-auto">
 			分享技术、想法和经验
 		</p>
-		<div class="text-xs text-muted-foreground/60 mb-8">
-			共 {postCount} 篇文章 · 总计 {totalWords.toLocaleString()} 字
-		</div>
+		<p class="text-xs text-muted-foreground/60">
+			{postCount} 篇文章 · 基于 Astro · PagesCMS
+		</p>
 	</div>
 </section>

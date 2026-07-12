@@ -1,22 +1,26 @@
 <script lang="ts">
-import { Moon, Sun } from '@lucide/svelte';
+	import { Moon, Sun, Monitor } from '@lucide/svelte';
 
 	let dark = $state(false);
 	let ok = $state(false);
+	let modeText = $state('跟随系统');
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
-		const d = localStorage.getItem('theme') === 'dark'
-			|| (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+		const stored = localStorage.getItem('theme');
+		const d = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
 		document.documentElement.classList.toggle('dark', d);
 		dark = d;
+		modeText = stored === 'dark' ? '深色' : stored === 'light' ? '浅色' : '跟随系统';
 		ok = true;
+
 		const mq = window.matchMedia('(prefers-color-scheme: dark)');
 		const h = () => {
 			if (!localStorage.getItem('theme')) {
 				const v = mq.matches;
 				document.documentElement.classList.toggle('dark', v);
 				dark = v;
+				modeText = '跟随系统';
 			}
 		};
 		mq.addEventListener('change', h);
@@ -24,23 +28,38 @@ import { Moon, Sun } from '@lucide/svelte';
 	});
 
 	function toggle() {
-		const v = !document.documentElement.classList.contains('dark');
-		document.documentElement.classList.toggle('dark', v);
-		localStorage.setItem('theme', v ? 'dark' : 'light');
-		dark = v;
+		const stored = localStorage.getItem('theme');
+		if (!stored || stored === 'system') {
+			localStorage.setItem('theme', 'dark');
+			dark = true;
+			modeText = '深色';
+		} else if (stored === 'dark') {
+			localStorage.setItem('theme', 'light');
+			dark = false;
+			modeText = '浅色';
+		} else {
+			localStorage.removeItem('theme');
+			const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			dark = sys;
+			modeText = '跟随系统';
+		}
+		document.documentElement.classList.toggle('dark', dark);
 	}
 </script>
 
 {#if ok}
 	<button
 		onclick={toggle}
-		aria-label={dark ? '切换到亮色模式' : '切换到暗色模式'}
-		class="shrink-0 hover:opacity-80 transition-opacity text-sm text-muted-foreground"
+		class="ring-foreground/10 inline-flex items-center gap-2 rounded-full ring-1 px-3 py-1.5 text-xs font-medium transition-all hover:shadow-sm cursor-pointer"
+		aria-label="切换主题"
 	>
-		{#if dark}
-			<Moon class="!size-[18px]" />
+		{#if modeText === '深色'}
+			<Moon class="!size-3.5" />
+		{:else if modeText === '浅色'}
+			<Sun class="!size-3.5" />
 		{:else}
-			<Sun class="!size-[18px]" />
+			<Monitor class="!size-3.5" />
 		{/if}
+		<span class="hidden sm:inline">{modeText}</span>
 	</button>
 {/if}

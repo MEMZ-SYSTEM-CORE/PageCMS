@@ -3,13 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.svelte';
 import PostCard from '../components/PostCard.svelte';
 import TagCloud from '../components/TagCloud.svelte';
+import ToolsWidget from '../components/ToolsWidget.svelte';
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('posts', ({ data }) => !data.draft);
 const latestPosts = posts.sort(
   (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 );
-const pages = await getCollection('pages');
 
 const allTags = [
   ...new Set(
@@ -24,39 +24,54 @@ const allTags = [
 <Layout title="首页" description="MEMZ-SYSTEM-CORE 的博客">
   <Hero postCount={posts.length} />
 
+  <!-- Widgets -->
+  <div class="animate-fade-up">
+    <ToolsWidget postCount={posts.length} tagCount={allTags.length} />
+  </div>
+
+  <!-- Posts -->
   {posts.length > 0 && (
-    <section id="posts" class="space-y-6 pb-16">
-      {latestPosts.map((post, i) => {
-        const rawTags = post.data.tags;
-        const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
-        return (
-          <PostCard
-            index={i}
-            post={{
-              slug: post.id.replace(/\.md$/i, ''),
-              title: post.data.title,
-              pubDate: post.data.pubDate.toISOString(),
-              description: post.data.description,
-              image: post.data.image,
-              tags,
-            }}
-          />
-        );
-      })}
+    <section id="posts" class="space-y-5 pb-12">
+      <div class="animate-fade-up flex items-center gap-3">
+        <h2 class="text-xs font-medium uppercase text-muted-foreground tracking-wider">文章</h2>
+        <div class="h-px flex-1 bg-border/60" />
+        <span class="text-xs text-muted-foreground/60">{posts.length} 篇</span>
+      </div>
+
+      <div class="space-y-4">
+        {latestPosts.map((post, i) => {
+          const rawTags = post.data.tags;
+          const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
+          return (
+            <PostCard
+              index={i}
+              post={{
+                slug: post.id.replace(/\.md$/i, ''),
+                title: post.data.title,
+                pubDate: post.data.pubDate.toISOString(),
+                description: post.data.description,
+                image: post.data.image,
+                tags,
+              }}
+            />
+          );
+        })}
+      </div>
     </section>
   )}
 
   {posts.length === 0 && (
-    <section class="animate-fade-up rounded-xl border border-dashed border-border/40 p-16 text-center">
+    <section class="animate-fade-up rounded-2xl border border-dashed border-border/40 p-16 text-center">
       <p class="text-sm text-muted-foreground">还没有文章</p>
     </section>
   )}
 
   {allTags.length > 0 && (
-    <section class="animate-fade-up space-y-4 pb-16 mt-8 border-t pt-6">
-      <div class="flex items-center gap-4">
+    <section class="animate-fade-up space-y-4 pb-12 mt-6 border-t pt-6">
+      <div class="flex items-center gap-3">
         <h2 class="text-xs font-medium uppercase text-muted-foreground tracking-wider">标签</h2>
-        <div class="h-px flex-1 bg-border" />
+        <div class="h-px flex-1 bg-border/60" />
+        <span class="text-xs text-muted-foreground/60">{allTags.length} 个</span>
       </div>
       <TagCloud tags={allTags} />
     </section>
