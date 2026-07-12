@@ -198,10 +198,23 @@
   // Fetch GitHub token on load
   async function getToken() {
     if (githubToken) return githubToken;
+
+    // Check for stored auth token
+    let authToken = sessionStorage.getItem('admin_token');
+    if (!authToken) {
+      const pwd = prompt('请输入管理密码');
+      if (!pwd) return null;
+      sessionStorage.setItem('admin_token', pwd);
+      authToken = pwd;
+    }
+
     try {
-      const res = await fetch('/api/token');
+      const res = await fetch('/api/token', {
+        headers: { 'X-Auth-Token': authToken },
+      });
       if (res.status === 401) {
-        location.href = '/admin/login.html?redirect=/upload.html';
+        sessionStorage.removeItem('admin_token');
+        showToast('密码错误，请重试', 'error');
         return null;
       }
       const data = await res.json();
@@ -419,16 +432,6 @@
     const files = e.clipboardData.files;
     if (files.length) handleFile(files[0]);
   });
-
-  // Auth check
-  (async function() {
-    try {
-      const res = await fetch('/api/auth/check');
-      if (!res.ok) { location.href = '/admin/login.html?redirect=/upload.html'; }
-    } catch {
-      location.href = '/admin/login.html?redirect=/upload.html';
-    }
-  })();
 })();
 </script>
 </body>

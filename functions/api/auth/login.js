@@ -1,4 +1,4 @@
-// POST /api/auth/login — authenticate with password
+// POST /api/auth/login — simple password auth, returns session cookie
 
 const PASSWORD_HASH = '2f13c0d9d441fee682c4370ea6066930788505adf6588bc7f7ae4c41d3bd7621';
 const COOKIE_NAME = 'admin_session';
@@ -7,19 +7,17 @@ export async function onRequest(context) {
 	const { request } = context;
 
 	if (request.method !== 'POST') {
-		return new Response('Method not allowed', { status: 405 });
+		return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+			status: 405,
+			headers: { 'Content-Type': 'application/json' },
+		});
 	}
 
 	try {
-		const { password, redirect } = await request.json();
-		if (!password) {
-			return new Response(JSON.stringify({ error: '请输入密码' }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' },
-			});
-		}
+		const body = await request.json();
+		const password = body.password || '';
 
-		// Compute hash of submitted password
+		// Hash the submitted password with SHA-256
 		const encoder = new TextEncoder();
 		const data = encoder.encode(password);
 		const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -33,17 +31,13 @@ export async function onRequest(context) {
 			});
 		}
 
-		// Success — set session cookie
-		const dest = redirect || '/admin/media';
+		const secure = request.url.startsWith('https') ? '; Secure' : '';
 
-		return new Response(JSON.stringify({
-			success: true,
-			redirect: dest,
-		}), {
+		return new Response(JSON.stringify({ success: true }), {
 			status: 200,
 			headers: {
 				'Content-Type': 'application/json',
-				'Set-Cookie': `${COOKIE_NAME}=${PASSWORD_HASH}; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax${request.url.startsWith('https') ? '; Secure' : ''}`,
+				'Set-Cookie': `${COOKIE_NAME}=${PASSWORD_HASH}; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax${secure}`,
 			},
 		});
 	} catch (err) {
