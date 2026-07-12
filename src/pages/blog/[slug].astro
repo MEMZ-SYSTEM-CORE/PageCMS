@@ -20,7 +20,8 @@ function resolveTag(t) {
   return typeof t === 'string' ? t : t?.tag ?? '';
 }
 
-const readingTime = Math.max(1, Math.ceil((description?.length ?? 100) / 300));
+const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
+const readingTime = Math.max(1, Math.ceil(wordCount / 400));
 const dateStr = pubDate.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
@@ -31,21 +32,23 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     <!-- Back link -->
     <a
       href="/"
-      class="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-1 text-xs font-medium transition-colors"
+      class="text-muted-foreground hover:text-foreground mb-10 inline-flex items-center gap-1.5 text-xs font-medium transition-colors group"
     >
-      <span aria-hidden="true" class="text-base leading-none">←</span>
+      <span class="transition-transform group-hover:-translate-x-0.5">←</span>
       返回首页
     </a>
 
     <!-- Header -->
-    <header class="mb-10 space-y-4">
+    <header class="mb-12 space-y-5">
       <div class="text-muted-foreground flex items-center gap-3 text-xs">
         <time datetime={pubDate.toISOString()}>{dateStr}</time>
-        <Separator orientation="vertical" class="h-3" />
+        <span aria-hidden="true">·</span>
         <span>{readingTime} 分钟阅读</span>
+        <span aria-hidden="true">·</span>
+        <span>约 {wordCount} 字</span>
       </div>
 
-      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl leading-[1.15]">
         {title}
       </h1>
 
@@ -54,7 +57,7 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
       )}
 
       {tags && tags.length > 0 && (
-        <div class="flex flex-wrap gap-1.5">
+        <div class="flex flex-wrap gap-2">
           {tags.map((tag) => <Badge variant="secondary">{resolveTag(tag)}</Badge>)}
         </div>
       )}
@@ -65,16 +68,14 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
       <Content />
     </div>
 
-    <!-- Bottom separator -->
-    <Separator class="my-12" />
-
-    <!-- Back to home -->
-    <div class="text-center">
+    <!-- Footer -->
+    <Separator class="my-16" />
+    <div class="flex items-center justify-between">
       <a
         href="/"
-        class="hover:text-primary text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
+        class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors group"
       >
-        <span aria-hidden="true" class="text-base leading-none">←</span>
+        <span class="transition-transform group-hover:-translate-x-0.5">←</span>
         返回所有文章
       </a>
     </div>
@@ -84,12 +85,14 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
 <style define:vars={{}}>
   .prose-content :global(h2) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.45rem;
+    font-size: 1.5rem;
     font-weight: 600;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
     color: var(--color-foreground);
     letter-spacing: -0.01em;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
   }
   .prose-content :global(h3) {
     font-family: 'Newsreader', Georgia, serif;
@@ -101,8 +104,9 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
   }
   .prose-content :global(p) {
     margin-bottom: 1.25rem;
-    line-height: 1.8;
+    line-height: 1.85;
     font-size: 0.95rem;
+    color: var(--color-foreground);
   }
   .prose-content :global(a) {
     color: var(--color-primary);
@@ -119,8 +123,12 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
   }
   .prose-content :global(li) {
     margin-bottom: 0.35rem;
-    line-height: 1.75;
+    line-height: 1.85;
     font-size: 0.95rem;
+  }
+  .prose-content :global(strong) {
+    font-weight: 600;
+    color: var(--color-foreground);
   }
   .prose-content :global(code) {
     background: var(--color-muted);
@@ -130,14 +138,14 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     font-weight: 500;
   }
   .prose-content :global(pre) {
-    background: oklch(0.18 0.02 var(--hue, 240));
-    color: oklch(0.88 0.01 var(--hue, 240));
+    background: oklch(0.18 0.012 260);
+    color: oklch(0.88 0.006 260);
     padding: 1.25rem;
     border-radius: 8px;
     overflow-x: auto;
     margin: 1.5rem 0;
     font-size: 0.875rem;
-    line-height: 1.6;
+    line-height: 1.65;
   }
   .prose-content :global(pre code) {
     background: none;
@@ -151,19 +159,17 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     font-style: italic;
     margin: 1.5rem 0;
     font-size: 0.95rem;
-    line-height: 1.7;
+    line-height: 1.75;
   }
   .prose-content :global(img) {
     max-width: 100%;
     border-radius: 10px;
     margin: 2rem 0;
-    box-shadow: 0 1px 3px oklch(0 0 0 / 0.05);
   }
   .prose-content :global(hr) {
     border: none;
     border-top: 1px solid var(--color-border);
     margin: 2.5rem 0;
-    opacity: 0.6;
   }
   .prose-content :global(table) {
     width: 100%;
@@ -171,16 +177,13 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     margin: 1.5rem 0;
     font-size: 0.875rem;
   }
-  .prose-content :global(th), .prose-content :global(td) {
-    border: 1px solid var(--color-border);
-    padding: 0.6rem 0.85rem;
-    text-align: left;
-  }
   .prose-content :global(th) {
     background: var(--color-muted);
     font-weight: 600;
+    text-align: left;
   }
-  .prose-content :global(strong) {
-    font-weight: 600;
+  .prose-content :global(th), .prose-content :global(td) {
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.85rem;
   }
 </style>

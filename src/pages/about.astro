@@ -9,17 +9,20 @@ if (about) {
   const result = await render(about);
   Content = result.Content;
 }
+const title = about?.data?.title ?? '关于';
+const desc = about?.data?.description;
 ---
 
-<Layout title="关于" description="关于本站">
+<Layout title={title} description={desc || '关于本站'}>
   <article class="mx-auto max-w-3xl">
-    <div class="mb-8 space-y-2">
+    <div class="mb-10 space-y-3">
+      <div class="bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-medium">
+        关于
+      </div>
       <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-        {about?.data?.title ?? '关于'}
+        {title}
       </h1>
-      {about?.data?.description && (
-        <p class="text-muted-foreground text-sm">{about.data.description}</p>
-      )}
+      {desc && <p class="text-muted-foreground text-sm">{desc}</p>}
     </div>
 
     {about && Content ? (
@@ -27,13 +30,10 @@ if (about) {
         <Content />
       </div>
     ) : (
-      <div class="border-border/40 space-y-4 rounded-xl border border-dashed p-12 text-center">
+      <div class="border-border/40 space-y-4 rounded-xl border border-dashed p-16 text-center">
         <div class="text-muted-foreground space-y-2">
           <p class="text-sm">页面内容正在编辑中…</p>
-          <p class="text-xs">
-            前往 <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">app.pagescms.org</a>
-            {' '}添加内容吧！
-          </p>
+          <p class="text-xs">去 app.pagescms.org 添加内容吧</p>
         </div>
       </div>
     )}
@@ -43,11 +43,13 @@ if (about) {
 <style>
   .prose-about :global(h2) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 600;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
     color: var(--color-foreground);
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--color-border);
   }
   .prose-about :global(h3) {
     font-family: 'Newsreader', Georgia, serif;
@@ -59,8 +61,9 @@ if (about) {
   }
   .prose-about :global(p) {
     margin-bottom: 1.25rem;
-    line-height: 1.8;
+    line-height: 1.85;
     font-size: 0.95rem;
+    color: var(--color-foreground);
   }
   .prose-about :global(a) {
     color: var(--color-primary);
@@ -75,12 +78,6 @@ if (about) {
     margin-bottom: 0.35rem;
     line-height: 1.75;
     font-size: 0.95rem;
-  }
-  .prose-about :global(code) {
-    background: var(--color-muted);
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.85em;
   }
   .prose-about :global(strong) {
     font-weight: 600;

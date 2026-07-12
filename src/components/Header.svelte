@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, X, ExternalLink } from '@lucide/svelte';
+	import { Menu, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import {
@@ -19,22 +19,33 @@
 		{ href: '/about', label: '关于' },
 	];
 
-	function closeMobile() {
-		mobileOpen = false;
-	}
+	let scrolled = $state(false);
+
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		function onScroll() {
+			scrolled = window.scrollY > 20;
+		}
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => window.removeEventListener('scroll', onScroll);
+	});
 </script>
 
 <header
-	class="bg-background/95 border-b sticky top-0 z-50 w-full"
+	class="fixed top-0 right-0 left-0 z-50 transition-all duration-300"
+	class:shadow-sm={scrolled}
+	class:bg-transparent={!scrolled}
 >
-	<div class="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:px-6">
-		<!-- Logo -->
-		<a href="/" class="font-heading text-foreground mr-6 text-lg font-semibold tracking-tight">
+	<div
+		class="absolute inset-0 transition-all duration-300 {scrolled ? 'bg-background/80 backdrop-blur-xl opacity-100' : 'opacity-0'}"
+		aria-hidden="true"
+	/>
+	<div class="relative mx-auto flex h-16 max-w-5xl items-center gap-2 px-4 sm:px-6">
+		<a href="/" class="font-heading text-foreground mr-6 text-base font-semibold tracking-tight">
 			<span class="text-primary">✦</span> PageCMS
 		</a>
 
-		<!-- Desktop nav -->
-		<nav class="hidden items-center gap-0.5 sm:flex">
+		<nav class="hidden items-center gap-1 sm:flex">
 			{#each navLinks as link}
 				<a href={link.href}>
 					<Button variant="ghost" size="sm">{link.label}</Button>
@@ -42,30 +53,16 @@
 			{/each}
 		</nav>
 
-		<!-- Spacer -->
 		<div class="flex-1" />
 
-		<!-- Actions -->
 		<div class="flex items-center gap-1">
 			<ThemeToggle />
 
-			<a
-				href="https://pagescms.org"
-				target="_blank"
-				class="hidden sm:inline-flex"
-			>
-				<Button variant="outline" size="sm" class="gap-1.5">
-					PagesCMS
-					<ExternalLink class="!size-3" />
-				</Button>
-			</a>
-
-			<!-- Mobile menu trigger -->
 			<div class="sm:hidden">
 				<Sheet bind:open={mobileOpen}>
 					<SheetTrigger asChild>
 						<Button variant="ghost" size="icon-sm" aria-label="打开菜单">
-							<Menu class="!size-4" />
+							<Menu class="!size-[18px]" />
 						</Button>
 					</SheetTrigger>
 					<SheetContent side="right" class="w-64">
@@ -80,7 +77,7 @@
 								<a
 									href={link.href}
 									class="hover:bg-muted rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
-									onclick={closeMobile}
+									onclick={() => { mobileOpen = false; }}
 								>
 									{link.label}
 								</a>
@@ -88,15 +85,6 @@
 						</div>
 
 						<Separator class="my-6" />
-
-						<a
-							href="https://pagescms.org"
-							target="_blank"
-							class="hover:bg-muted flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
-						>
-							PagesCMS
-							<ExternalLink class="!size-3.5" />
-						</a>
 
 						<div class="absolute bottom-8 left-6 right-6">
 							<SheetClose asChild>
@@ -112,3 +100,5 @@
 		</div>
 	</div>
 </header>
+
+<div class="h-16" />
