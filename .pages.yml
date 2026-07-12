@@ -1,0 +1,40 @@
+media: media
+
+content:
+  - name: posts
+    label: Posts
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: pubDate
+        type: date
+        required: true
+      - name: description
+        type: text
+      - name: tags
+        type: list
+        fields:
+          - name: tag
+            type: string
+      - name: draft
+        type: boolean
+      - name: body
+        type: rich-text
+
+  - name: pages
+    label: Pages
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: text
+      - name: body
+        type: rich-text
