@@ -1,27 +1,28 @@
 ---
-title: Astro + PagesCMS 静态站点
+title: Astro + PagesCMS 技术栈
 pubDate: 2026-07-12
-description: 使用 Astro 框架和 PagesCMS 构建的现代化静态站点模板
+description: 本站使用的技术栈简介
 tags:
   - astro
-  - static-site
+  - pagescms
 draft: false
 ---
 
 ## 技术栈
 
-- **[Astro](https://astro.build)** — 现代化静态站点生成器
-- **[Pages CMS](https://pagescms.org)** — 基于 Git 的内容管理系统
-- **Markdown** — 内容以 Markdown 格式存储，版本控制友好
+- **[Astro](https://astro.build)** — 静态站点生成器
+- **[Pages CMS](https://pagescms.org)** — 基于 Git 的内容管理
+- **shadcn-svelte** — UI 组件库
+- **Tailwind CSS v4** — 样式引擎
 
 ## 项目结构
 
 ```
 ├── .pages.yml          # PagesCMS 配置
 ├── src/
-│   ├── content/        # 内容文件 (由 PagesCMS 管理)
-│   ├── layouts/        # 布局组件
-│   ├── pages/          # 页面路由
-│   └── content.config.ts
-└── media/              # 媒体文件 (由 PagesCMS 管理)
+│   ├── content/        # 内容文件
+│   ├── components/     # Svelte 组件
+│   ├── layouts/        # 布局
+│   └── pages/          # 页面路由
+└── media/              # 媒体文件
 ```

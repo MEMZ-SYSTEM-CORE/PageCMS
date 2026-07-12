@@ -1,23 +1,21 @@
 ---
-title: Hello PageCMS
+title: MEMZ-SYSTEM-CORE 博客
 pubDate: 2026-07-12
-description: 第一篇通过 PageCMS 管理的文章
+description: 第一篇博客文章
 tags:
   - hello
-  - pagecms
+  - blog
 draft: false
 ---
 
-欢迎来到 **PageCMS**！这是一个通过 [Pages CMS](https://pagescms.org) 管理内容的静态站点。
+欢迎来到 **MEMZ-SYSTEM-CORE 的博客**！
 
-## 什么是 PagesCMS？
+这是一个通过 [Pages CMS](https://pagescms.org) 管理内容的静态站点，基于 Astro 构建。
 
-PagesCMS 是一个开源的 CMS 系统，直接与你的 GitHub 仓库集成。你可以在 [app.pagescms.org](https://app.pagescms.org) 上使用托管版本，无需数据库或额外的后端服务。
+## 关于本站
+
+本站采用黑白配色，风格极简。所有文章以 Markdown 格式存储，通过 Git 版本控制。
 
 ## 开始编辑
 
-1. 前往 [app.pagescms.org](https://app.pagescms.org)
-2. 使用 GitHub 登录
-3. 安装 GitHub App 到你的账户
-4. 选择 `memz-system-core/pagecms` 仓库
-5. 开始编辑这篇文章！
+前往 [app.pagescms.org](https://app.pagescms.org) 使用 GitHub 登录，选择 MEMZ-SYSTEM-CORE/PageCMS 仓库即可编辑。

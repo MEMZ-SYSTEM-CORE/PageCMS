@@ -3,42 +3,38 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 
 	let dark = $state(false);
-	let mounted = $state(false);
+	let ok = $state(false);
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
-		const stored = localStorage.getItem('theme');
-		dark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
-		document.documentElement.classList.toggle('dark', dark);
-		mounted = true;
+		const d = localStorage.getItem('theme') === 'dark'
+			|| (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+		document.documentElement.classList.toggle('dark', d);
+		dark = d;
+		ok = true;
 
 		const mq = window.matchMedia('(prefers-color-scheme: dark)');
-		const handler = () => {
+		const h = () => {
 			if (!localStorage.getItem('theme')) {
-				const now = mq.matches;
-				document.documentElement.classList.toggle('dark', now);
-				dark = now;
+				const v = mq.matches;
+				document.documentElement.classList.toggle('dark', v);
+				dark = v;
 			}
 		};
-		mq.addEventListener('change', handler);
-		return () => mq.removeEventListener('change', handler);
+		mq.addEventListener('change', h);
+		return () => mq.removeEventListener('change', h);
 	});
 
 	function toggle() {
-		const isDark = !document.documentElement.classList.contains('dark');
-		document.documentElement.classList.toggle('dark', isDark);
-		localStorage.setItem('theme', isDark ? 'dark' : 'light');
-		dark = isDark;
+		const v = !document.documentElement.classList.contains('dark');
+		document.documentElement.classList.toggle('dark', v);
+		localStorage.setItem('theme', v ? 'dark' : 'light');
+		dark = v;
 	}
 </script>
 
-{#if mounted}
-	<Button
-		variant="ghost"
-		size="icon-sm"
-		onclick={toggle}
-		aria-label={dark ? '切换到亮色模式' : '切换到暗色模式'}
-	>
+{#if ok}
+	<Button variant="ghost" size="icon-sm" onclick={toggle}>
 		{#if dark}
 			<Moon class="!size-[15px]" />
 		{:else}

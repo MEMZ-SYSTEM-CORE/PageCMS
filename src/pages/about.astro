@@ -13,73 +13,42 @@ const title = about?.data?.title ?? '关于';
 const desc = about?.data?.description;
 ---
 
-<Layout title={title} description={desc || '关于本站'}>
-  <article class="mx-auto max-w-3xl animate-fade-in">
-    <div class="mb-10 space-y-4">
-      <div class="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/[0.06] px-3.5 py-1 text-xs font-medium text-primary">
-        关于
-      </div>
-      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-        {title}
-      </h1>
-      {desc && <p class="text-muted-foreground text-sm">{desc}</p>}
-    </div>
+<Layout title={title} description={desc || '关于'}>
+  <article class="mx-auto max-w-3xl">
+    <h1 class="text-3xl font-bold tracking-tight mb-6">{title}</h1>
+    {desc && <p class="text-muted-foreground text-sm mb-6">{desc}</p>}
 
     {about && Content ? (
-      <div class="prose-about">
+      <div class="prose">
         <Content />
       </div>
     ) : (
-      <div class="space-y-4 rounded-xl border border-dashed border-border/40 p-16 text-center">
-        <div class="space-y-2 text-muted-foreground">
-          <p class="text-sm">页面内容正在编辑中…</p>
-          <p class="text-xs">去 app.pagescms.org 添加内容吧</p>
-        </div>
+      <div class="border border-dashed border-border/40 rounded-xl p-16 text-center text-sm text-muted-foreground">
+        页面内容编辑中… 去 app.pagescms.org 添加
       </div>
     )}
   </article>
 </Layout>
 
 <style>
-  .prose-about :global(h2) {
-    font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-top: 2.5rem;
-    margin-bottom: 0.75rem;
-    color: var(--color-foreground);
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-  .prose-about :global(h3) {
-    font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.15rem;
+  .prose :global(h2) {
+    font-size: 1.3rem;
     font-weight: 600;
     margin-top: 2rem;
     margin-bottom: 0.5rem;
-    color: var(--color-foreground);
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--color-border);
   }
-  .prose-about :global(p) {
-    margin-bottom: 1.25rem;
-    line-height: 1.85;
-    font-size: 0.95rem;
-    color: var(--color-foreground);
-  }
-  .prose-about :global(ul) {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .prose-about :global(li) {
-    margin-bottom: 0.35rem;
-    line-height: 1.75;
-    font-size: 0.95rem;
-  }
-  .prose-about :global(strong) { font-weight: 600; }
-  .prose-about :global(a) { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
-  .prose-about :global(code) {
+  .prose :global(h3) { font-size: 1.1rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+  .prose :global(p) { margin-bottom: 1rem; line-height: 1.8; font-size: 0.95rem; }
+  .prose :global(ul) { padding-left: 1.5rem; margin-bottom: 1rem; }
+  .prose :global(li) { margin-bottom: 0.25rem; line-height: 1.75; font-size: 0.95rem; }
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(code) {
     background: var(--color-muted);
     padding: 0.15rem 0.4rem;
-    border-radius: 4px;
+    border-radius: 3px;
     font-size: 0.85em;
   }
+  .prose :global(a) { text-decoration: underline; text-underline-offset: 2px; }
 </style>

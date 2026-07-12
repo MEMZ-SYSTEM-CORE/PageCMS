@@ -1,16 +1,13 @@
 ---
-title: 关于我们
-description: PageCMS 静态站点说明
+title: 关于本站
+description: MEMZ-SYSTEM-CORE 博客介绍
 ---
 
-这是一个使用 **Astro** 构建、**PagesCMS** 管理内容的静态站点。
-
-所有内容都存储在 GitHub 仓库中，通过 PagesCMS 的 Web 界面进行编辑和管理。
+MEMZ-SYSTEM-CORE 的博客，一个黑白色调的轻量静态站点。
 
 ### 特性
 
-- 📝 可视化内容编辑
-- 🖼️ 媒体文件管理
-- 👥 团队协作
-- 🔄 自动 Git 提交
-- 🚀 静态站点构建
+- 黑白色调，极简风格
+- Markdown 内容管理
+- Git 版本控制
+- 暗色/亮色模式切换
