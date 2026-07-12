@@ -2,22 +2,60 @@
 	import { Moon, Sun } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 
-	let isDark = $state(false);
+	type Theme = 'system' | 'light' | 'dark';
+
+	let theme = $state<Theme>('system');
+	let mounted = $state(false);
 
 	$effect(() => {
-		isDark = document.documentElement.classList.contains('dark');
+		if (typeof window === 'undefined') return;
+		const stored = localStorage.getItem('theme') as Theme | null;
+		theme = stored ?? 'system';
+		mounted = true;
 	});
 
-	function toggle() {
-		isDark = !isDark;
-		if (isDark) {
-			document.documentElement.classList.add('dark');
-			localStorage.setItem('theme', 'dark');
-		} else {
-			document.documentElement.classList.remove('dark');
-			localStorage.setItem('theme', 'light');
-		}
+	$effect(() => {
+		if (!mounted) return;
+		applyTheme(theme);
+	});
+
+	function resolve(t: Theme): boolean {
+		if (typeof window === 'undefined') return false;
+		if (t === 'dark') return true;
+		if (t === 'light') return false;
+		return window.matchMedia('(prefers-color-scheme: dark)').matches;
 	}
+
+	function applyTheme(t: Theme) {
+		if (typeof document === 'undefined') return;
+		document.documentElement.classList.toggle('dark', resolve(t));
+	}
+
+	function toggle() {
+		const current = resolve(theme);
+		if (theme === 'system') {
+			theme = current ? 'light' : 'dark';
+		} else if (theme === 'dark') {
+			theme = 'light';
+		} else {
+			theme = 'system';
+		}
+		localStorage.setItem('theme', theme);
+	}
+
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		const mq = window.matchMedia('(prefers-color-scheme: dark)');
+		function onChange() {
+			if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'system') {
+				applyTheme('system');
+			}
+		}
+		mq.addEventListener('change', onChange);
+		return () => mq.removeEventListener('change', onChange);
+	});
+
+	const isDark = $derived(mounted ? resolve(theme) : false);
 </script>
 
 <Button
@@ -25,7 +63,12 @@
 	size="icon-sm"
 	onclick={toggle}
 	aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
+	title={!mounted ? '' : theme === 'system' ? '跟随系统' : theme === 'dark' ? '暗色模式' : '亮色模式'}
+	class="relative"
 >
-	<Sun class="!size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-	<Moon class="!size-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+	{#if isDark}
+		<Moon class="!size-4" />
+	{:else}
+		<Sun class="!size-4" />
+	{/if}
 </Button>

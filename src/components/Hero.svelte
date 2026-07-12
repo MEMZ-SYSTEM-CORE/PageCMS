@@ -2,25 +2,23 @@
 	import { ArrowRight, PenLine } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
 	let { postCount = 0, pageCount = 0 }: { postCount?: number; pageCount?: number } = $props();
 </script>
 
-<section class="relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16">
-	<!-- Subtle background decoration -->
+<section class="relative overflow-hidden pb-20 pt-16 sm:pb-28 sm:pt-20">
 	<div
-		class="bg-primary/5 pointer-events-none absolute -top-40 right-0 h-80 w-80 rounded-full blur-3xl"
+		class="bg-primary/3 pointer-events-none absolute -top-48 right-0 h-96 w-96 rounded-full blur-3xl"
 		aria-hidden="true"
 	/>
 	<div
-		class="bg-chart-2/5 pointer-events-none absolute -bottom-40 -left-40 h-80 w-80 rounded-full blur-3xl"
+		class="bg-chart-2/3 pointer-events-none absolute -bottom-48 -left-48 h-96 w-96 rounded-full blur-3xl"
 		aria-hidden="true"
 	/>
 
-	<div class="relative space-y-6">
-		<div class="space-y-3">
-			<div class="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium">
+	<div class="relative space-y-8">
+		<div class="animate-fade-up space-y-4">
+			<div class="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-medium">
 				<PenLine class="!size-3" />
 				PagesCMS 驱动
 			</div>
@@ -34,7 +32,7 @@
 			</p>
 		</div>
 
-		<div class="flex flex-wrap items-center gap-3">
+		<div class="animate-fade-up-2 flex flex-wrap items-center gap-3">
 			<a href={postCount > 0 ? '#posts' : 'https://app.pagescms.org'}>
 				<Button size="default" class="gap-1.5">
 					{postCount > 0 ? '浏览文章' : '开始编辑'}
@@ -46,7 +44,7 @@
 			</a>
 		</div>
 
-		<div class="text-muted-foreground flex items-center gap-4 text-xs">
+		<div class="animate-fade-up-3 text-muted-foreground flex items-center gap-4 text-xs">
 			{#if postCount > 0}
 				<span>{postCount} 篇文章</span>
 				<Separator orientation="vertical" class="h-3" />
@@ -54,6 +52,9 @@
 			{#if pageCount > 0}
 				<span>{pageCount} 个页面</span>
 				<Separator orientation="vertical" class="h-3" />
+			{/if}
+			{#if postCount === 0 && pageCount === 0}
+				<span>开始你的内容之旅</span>
 			{/if}
 		</div>
 	</div>

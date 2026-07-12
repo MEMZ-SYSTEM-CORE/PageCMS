@@ -15,18 +15,19 @@ const pages = await getCollection('pages');
   <Hero postCount={posts.length} pageCount={pages.length} />
 
   {posts.length > 0 && (
-    <section id="posts" class="scroll-mt-20 space-y-6 pb-16">
-      <div class="flex items-center gap-3">
+    <section id="posts" class="scroll-mt-20 space-y-8 pb-20">
+      <div class="flex items-center gap-4 animate-fade-up">
         <h2 class="font-heading text-foreground text-2xl font-semibold tracking-tight">最新文章</h2>
-        <div class="bg-muted-foreground/20 h-px flex-1" />
+        <div class="bg-border h-px flex-1" />
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        {latestPosts.map((post) => {
+      <div class="grid gap-6 sm:grid-cols-2">
+        {latestPosts.map((post, i) => {
           const rawTags = post.data.tags;
           const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
           return (
             <PostCard
+              index={i}
               post={{
                 slug: post.id.replace(/\.md$/i, ''),
                 title: post.data.title,
@@ -42,8 +43,8 @@ const pages = await getCollection('pages');
   )}
 
   {posts.length === 0 && (
-    <section class="border-border/40 space-y-6 rounded-xl border border-dashed p-12 text-center">
-      <div class="text-muted-foreground space-y-2">
+    <section class="border-border/40 animate-fade-up space-y-6 rounded-xl border border-dashed p-16 text-center">
+      <div class="text-muted-foreground space-y-3">
         <p class="text-sm">
           还没有文章呢~
         </p>

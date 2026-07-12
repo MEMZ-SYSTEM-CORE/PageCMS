@@ -25,11 +25,11 @@
 </script>
 
 <header
-	class="bg-background/80 border-border/40 supports-backdrop-blur:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur-lg"
+	class="bg-background/95 border-b sticky top-0 z-50 w-full"
 >
 	<div class="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:px-6">
 		<!-- Logo -->
-		<a href="/" class="font-heading text-foreground mr-4 text-lg font-semibold tracking-tight">
+		<a href="/" class="font-heading text-foreground mr-6 text-lg font-semibold tracking-tight">
 			<span class="text-primary">✦</span> PageCMS
 		</a>
 
@@ -54,7 +54,7 @@
 				target="_blank"
 				class="hidden sm:inline-flex"
 			>
-				<Button variant="outline" size="sm">
+				<Button variant="outline" size="sm" class="gap-1.5">
 					PagesCMS
 					<ExternalLink class="!size-3" />
 				</Button>
@@ -69,36 +69,36 @@
 						</Button>
 					</SheetTrigger>
 					<SheetContent side="right" class="w-64">
-						<SheetHeader class="mb-4">
+						<SheetHeader class="mb-6">
 							<SheetTitle class="font-heading text-left text-lg tracking-tight">
 								<span class="text-primary">✦</span> PageCMS
 							</SheetTitle>
 						</SheetHeader>
 
-						<div class="flex flex-col gap-0.5">
+						<div class="flex flex-col gap-1">
 							{#each navLinks as link}
 								<a
 									href={link.href}
-									class="hover:bg-muted rounded-md px-3 py-2 text-sm font-medium transition-colors"
-									{...{ onclick: closeMobile }}
+									class="hover:bg-muted rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+									onclick={closeMobile}
 								>
 									{link.label}
 								</a>
 							{/each}
 						</div>
 
-						<Separator class="my-4" />
+						<Separator class="my-6" />
 
 						<a
 							href="https://pagescms.org"
 							target="_blank"
-							class="hover:bg-muted flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors"
+							class="hover:bg-muted flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
 						>
 							PagesCMS
 							<ExternalLink class="!size-3.5" />
 						</a>
 
-						<div class="absolute bottom-6 left-6 right-6">
+						<div class="absolute bottom-8 left-6 right-6">
 							<SheetClose asChild>
 								<Button variant="ghost" size="sm" class="w-full justify-start gap-2">
 									<X class="!size-4" />
