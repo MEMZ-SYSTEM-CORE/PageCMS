@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://memz-system-core.pages.dev/sitemap-index.xml

@@ -18,22 +18,72 @@ function resolveTag(t) {
   return typeof t === 'string' ? t : t?.tag ?? '';
 }
 
+const resolvedTags = (tags ?? [])
+  .map((t) => (typeof t === 'string' ? t : t?.tag ?? ''))
+  .filter(Boolean);
+
 const readingTime = Math.max(1, Math.ceil((description?.length ?? 100) / 400));
 const dateStr = pubDate.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
 const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
----
+const isoDate = pubDate instanceof Date ? pubDate.toISOString() : new Date(pubDate).toISOString();
+const slug = post.id.replace(/\.md$/i, '');
+const canonicalURL = new URL(`/blog/${slug}/`, Astro.url.origin).href;
 
-<Layout title={title} description={description}>
+// Build structured data
+const blogPosting = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: description,
+  datePublished: isoDate,
+  author: {
+    '@type': 'Person',
+    name: 'MEMZ-SYSTEM-CORE',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MEMZ-SYSTEM-CORE',
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/favicon.svg', Astro.url.origin).href,
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalURL,
+  },
+  wordCount: wordCount,
+  ...(image ? { image: image.startsWith('http') ? image : new URL(image, Astro.url.origin).href } : {}),
+};
+
+if (resolvedTags.length > 0) {
+  blogPosting.keywords = resolvedTags.join(', ');
+}
+---
+<Layout
+  title={title}
+  description={description || '阅读文章'}
+  image={image}
+  canonicalURL={canonicalURL}
+  type="article"
+  publishedTime={isoDate}
+  tags={resolvedTags}
+>
+  <!-- JSON-LD Structured Data -->
+  <script is:inline set:html={JSON.stringify(blogPosting, null, 2)} type="application/ld+json" />
+
   <article class="animate-fade-up">
-    <a href="/" class="inline-flex items-center gap-1 hover:text-foreground transition-colors text-sm text-muted-foreground mb-8">
-      ← 返回文章列表
-    </a>
+    <nav aria-label="面包屑导航">
+      <a href="/" class="inline-flex items-center gap-1 hover:text-foreground transition-colors text-sm text-muted-foreground mb-8">
+        ← 返回文章列表
+      </a>
+    </nav>
 
     <header class="mb-8">
       <div class="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-        <span>{dateStr}</span>
+        <time datetime={isoDate}>{dateStr}</time>
         <span class="text-muted-foreground/40">·</span>
         <span>{readingTime} 分钟阅读</span>
         <span class="text-muted-foreground/40">·</span>
@@ -48,14 +98,14 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
 
       {image && (
         <div class="mt-6 -mx-4 sm:-mx-0">
-          <img src={image} alt={title} class="w-full rounded-xl object-cover max-h-96" />
+          <img src={image} alt={title} class="w-full rounded-xl object-cover max-h-96" loading="lazy" decoding="async" />
         </div>
       )}
 
-      {tags && tags.length > 0 && (
+      {resolvedTags.length > 0 && (
         <div class="mt-3 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <span class="inline-flex items-center rounded-4xl border border-transparent bg-secondary text-secondary-foreground px-2.5 py-0.5 text-xs font-medium">{resolveTag(tag)}</span>
+          {resolvedTags.map((tag) => (
+            <span class="inline-flex items-center rounded-4xl border border-transparent bg-secondary text-secondary-foreground px-2.5 py-0.5 text-xs font-medium">{tag}</span>
           ))}
         </div>
       )}
@@ -93,7 +143,6 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
           return w;
         }
 
-        // Walk all text nodes, find bare media URLs (not wrapped in <a>)
         var iter = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, null, false);
         var todo = [];
         while (iter.nextNode()) {
@@ -117,7 +166,6 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
         }
         todo.forEach(function(t) { t.node.parentNode.replaceChild(t.frag, t.node); });
 
-        // Also handle <a> tags linking to media files
         prose.querySelectorAll('a').forEach(function(a) {
           if (a.href && re.test(a.href) && !a.hasAttribute('data-skip-media')) {
             a.parentNode.replaceChild(makePlayer(a.href), a);
@@ -126,37 +174,10 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
       })();
     </script>
 
-    <div class="mt-16 border-t pt-6">
+    <nav class="mt-16 border-t pt-6" aria-label="文章导航">
       <a href="/" class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
         ← 返回所有文章
       </a>
-    </div>
+    </nav>
   </article>
 </Layout>
-
-<style>
-  .prose :global(h2) {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-top: 2.5rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-  .prose :global(h3) { font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; }
-  .prose :global(p) { margin-bottom: 1.25rem; line-height: 1.85; font-size: 0.95rem; }
-  .prose :global(ul), .prose :global(ol) { padding-left: 1.5rem; margin-bottom: 1.25rem; }
-  .prose :global(li) { margin-bottom: 0.35rem; line-height: 1.85; font-size: 0.95rem; }
-  .prose :global(strong) { font-weight: 600; }
-  .prose :global(code) { background: var(--color-muted); padding: 0.15rem 0.45rem; border-radius: 3px; font-size: 0.85em; font-weight: 500; }
-  .prose :global(pre) { background: oklch(0.15 0 0); color: oklch(0.85 0 0); padding: 1.25rem; border-radius: 12px; overflow-x: auto; margin: 1.5rem 0; font-size: 0.875rem; line-height: 1.6; }
-  .prose :global(pre code) { background: none; padding: 0; }
-  .prose :global(blockquote) { border-left: 2px solid var(--color-foreground); padding-left: 1rem; color: var(--color-muted-foreground); margin: 1.5rem 0; line-height: 1.75; }
-  .prose :global(video) { max-width: 100%; border-radius: 12px; margin: 1.5rem 0; cursor: pointer; display: block; }
-  .prose :global(audio) { max-width: 100%; margin: 1.5rem 0; display: block; }
-  .prose :global(img) { max-width: 100%; border-radius: 8px; margin: 2rem 0; cursor: pointer; }
-  .prose :global(hr) { border: none; border-top: 1px solid var(--color-border); margin: 2.5rem 0; }
-  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
-  .prose :global(th) { background: var(--color-muted); font-weight: 600; text-align: left; }
-  .prose :global(th), .prose :global(td) { border: 1px solid var(--color-border); padding: 0.6rem 0.85rem; }
-</style>

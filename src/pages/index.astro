@@ -26,10 +26,22 @@ const settingsFile = Object.values(settingsModules)[0] as any;
 const siteName = settingsFile?.frontmatter?.siteName || 'MEMZ-SYSTEM-CORE';
 const tagline = settingsFile?.frontmatter?.tagline || '分享技术、想法和经验';
 const footerText = settingsFile?.frontmatter?.footerText || '基于 Astro · PagesCMS';
+
+const description = siteName + ' — ' + tagline + '。共 ' + posts.length + ' 篇文章，' + allTags.length + ' 个标签。';
+const siteOrigin = Astro.url.origin;
 ---
 
-<Layout title={siteName} description={siteName + ' 的博客'}>
+<Layout title={siteName} description={description}>
   <Hero siteName={siteName} tagline={tagline} footerText={footerText} postCount={posts.length} />
+
+  <!-- JSON-LD Structured Data -->
+  <script set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": siteName,
+    "url": siteOrigin,
+    "description": tagline,
+  }, null, 2)} type="application/ld+json" />
 
   <!-- Widgets -->
   <div class="animate-fade-up">

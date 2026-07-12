@@ -58,3 +58,10 @@ content:
       - name: footerText
         type: text
         label: Footer Description
+      - name: ogImage
+        type: image
+        label: Default OG Image (分享到社交媒体时的封面图)
+      - name: seoDescription
+        type: text
+        label: SEO 站点描述 (搜索引擎显示的描述文字)
+        hint: 留空则使用 tagline
