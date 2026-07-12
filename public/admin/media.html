@@ -433,6 +433,10 @@
     if (githubToken) return githubToken;
     try {
       const res = await fetch('/api/token');
+      if (res.status === 401) {
+        location.href = '/admin/login.html?redirect=' + encodeURIComponent(location.pathname);
+        return null;
+      }
       const data = await res.json();
       githubToken = data.token;
       return githubToken;
@@ -599,11 +603,25 @@
   });
 
   /* ---- Init ---- */
+  // Check auth on load
+  (async function checkAuth() {
+    try {
+      const res = await fetch('/api/auth/check');
+      if (!res.ok) {
+        location.href = '/admin/login.html?redirect=/admin/media';
+        return;
+      }
+    } catch {
+      location.href = '/admin/login.html?redirect=/admin/media';
+      return;
+    }
+    refreshMedia();
+  })();
+
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     location.href = '/';
   });
-  refreshMedia();
 })();
 </script>
 </body>

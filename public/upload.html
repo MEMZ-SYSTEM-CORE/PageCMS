@@ -200,6 +200,10 @@
     if (githubToken) return githubToken;
     try {
       const res = await fetch('/api/token');
+      if (res.status === 401) {
+        location.href = '/admin/login.html?redirect=/upload.html';
+        return null;
+      }
       const data = await res.json();
       githubToken = data.token;
       return githubToken;
@@ -423,6 +427,16 @@
     const files = e.clipboardData.files;
     if (files.length) handleFile(files[0]);
   });
+
+  // Auth check
+  (async function() {
+    try {
+      const res = await fetch('/api/auth/check');
+      if (!res.ok) { location.href = '/admin/login.html?redirect=/upload.html'; }
+    } catch {
+      location.href = '/admin/login.html?redirect=/upload.html';
+    }
+  })();
 })();
 </script>
 </body>
