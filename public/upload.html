@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Media 上传 · MEMZ-SYSTEM-CORE</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: oklch(0.10 0 0); color: oklch(0.90 0 0); font-family: ui-sans-serif, system-ui, sans-serif; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  .container { max-width: 540px; width: 100%; }
+  h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .desc { color: oklch(0.55 0 0); font-size: 0.8125rem; margin-bottom: 1.5rem; }
+  .dropzone { border: 2px dashed oklch(0.30 0 0); border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: oklch(0.13 0 0); margin-bottom: 1rem; }
+  .dropzone:hover, .dropzone.drag-over { border-color: oklch(0.50 0 0); background: oklch(0.16 0 0); }
+  .dropzone .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .dropzone .sub { font-size: 0.75rem; color: oklch(0.40 0 0); margin-top: 0.35rem; }
+  .dropzone input { display: none; }
+  .token-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .token-row input { flex: 1; padding: 0.5rem 0.75rem; border-radius: 0.75rem; border: 1px solid oklch(0.30 0 0); background: oklch(0.08 0 0); color: oklch(0.90 0 0); font-size: 0.8125rem; font-family: ui-monospace,monospace; outline: none; }
+  .token-row input:focus { border-color: oklch(0.50 0 0); }
+  .token-row button { padding: 0.5rem 0.75rem; border-radius: 0.75rem; border: 1px solid oklch(0.35 0 0); background: oklch(0.18 0 0); color: oklch(0.85 0 0); cursor: pointer; white-space: nowrap; font-size: 0.8125rem; }
+  .token-row button:hover { background: oklch(0.25 0 0); }
+  .token-hint { font-size: 0.7rem; color: oklch(0.40 0 0); margin-bottom: 1rem; }
+  .token-hint a { color: oklch(0.55 0 0); }
+  .btn { width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.9375rem; font-weight: 600; transition: all 0.15s; }
+  .btn-primary { background: oklch(0.45 0 0); color: oklch(1 0 0); }
+  .btn-primary:hover { background: oklch(0.55 0 0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .info { background: oklch(0.15 0 0); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; font-size: 0.875rem; display: none; }
+  .info .name { font-weight: 600; word-break: break-all; margin-bottom: 0.25rem; }
+  .info .meta { color: oklch(0.50 0 0); font-size: 0.8125rem; }
+  .info .warn { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: oklch(0.20 0.06 60); border-radius: 0.5rem; font-size: 0.75rem; display: none; }
+  .info .warn.show { display: block; }
+  .bar { height: 3px; background: oklch(0.25 0 0); border-radius: 3px; overflow: hidden; margin: 0.5rem 0; display: none; }
+  .bar-inner { height: 100%; width: 0%; background: oklch(0.60 0 0); transition: width 0.3s; }
+  .result { background: oklch(0.15 0.04 140); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; display: none; }
+  .result .link { background: oklch(0.10 0 0); padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-family: ui-monospace,monospace; font-size: 0.8125rem; margin-top: 0.5rem; word-break: break-all; }
+  .error { background: oklch(0.20 0.08 30); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.8125rem; margin-bottom: 1rem; display: none; }
+  .footer { margin-top: 1.5rem; font-size: 0.7rem; color: oklch(0.35 0 0); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📎 上传到 /media/</h1>
+  <p class="desc">绕过 PagesCMS 限制，直接 GitHub API 上传</p>
+
+  <div class="dropzone" id="dz">
+    <input type="file" id="fi" />
+    <div class="icon">📁</div>
+    <div>拖拽文件到这里，或点击选择</div>
+    <div class="sub">GitHub 单文件最大 100MB</div>
+  </div>
+
+  <div class="token-row">
+    <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" />
+    <button id="saveBtn">💾</button>
+  </div>
+  <div class="token-hint">需要 <code>repo</code> 权限 &nbsp;<a href="https://github.com/settings/tokens/new?scopes=repo&description=pagecms-upload" target="_blank">创建 token →</a> &nbsp;(只需一次)</div>
+
+  <div class="info" id="fileInfo">
+    <div class="name" id="fileName"></div>
+    <div class="meta" id="fileMeta"></div>
+    <div class="warn" id="fileWarn">⚠️ 超过 25MB，PagesCMS 传不了，但直传可以</div>
+    <div class="bar" id="progress"><div class="bar-inner" id="progressBar"></div></div>
+  </div>
+
+  <button class="btn btn-primary" id="uploadBtn" disabled>⬆ 选择文件后上传</button>
+
+  <div class="result" id="result">
+    <div style="font-weight:600">✅ 上传成功！</div>
+    <div style="font-size:0.75rem;color:oklch(0.55 0 0);margin-top:0.25rem">粘贴到文章正文：</div>
+    <div class="link" id="resultLink"></div>
+    <button class="btn btn-primary" id="copyBtn" style="margin-top:0.5rem;padding:0.5rem;font-size:0.8125rem">📋 复制链接</button>
+  </div>
+
+  <div class="error" id="errorMsg"></div>
+
+  <div class="footer"><a href="https://github.com/MEMZ-SYSTEM-CORE/PageCMS" target="_blank">MEMZ-SYSTEM-CORE/PageCMS</a></div>
+</div>
+
+<script>
+const REPO = 'MEMZ-SYSTEM-CORE/PageCMS', BRANCH = 'master', MEDIA_DIR = 'public/media';
+const dz = document.getElementById('dz'), fi = document.getElementById('fi');
+const tInput = document.getElementById('tokenInput'), saveBtn = document.getElementById('saveBtn');
+const uploadBtn = document.getElementById('uploadBtn'), copyBtn = document.getElementById('copyBtn');
+const fileInfo = document.getElementById('fileInfo'), fileName = document.getElementById('fileName');
+const fileMeta = document.getElementById('fileMeta'), fileWarn = document.getElementById('fileWarn');
+const progress = document.getElementById('progress'), progressBar = document.getElementById('progressBar');
+const result = document.getElementById('result'), resultLink = document.getElementById('resultLink');
+const errorMsg = document.getElementById('errorMsg');
+
+let currentFile = null;
+
+const saved = localStorage.getItem('gh_token');
+if (saved) tInput.value = saved;
+saveBtn.addEventListener('click', () => { localStorage.setItem('gh_token', tInput.value.trim()); saveBtn.textContent = '✓'; setTimeout(() => saveBtn.textContent = '💾', 1500); });
+
+dz.addEventListener('click', () => fi.click());
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); if (e.dataTransfer.files.length) setFile(e.dataTransfer.files[0]); });
+fi.addEventListener('change', () => { if (fi.files.length) setFile(fi.files[0]); });
+
+function setFile(f) {
+  currentFile = f;
+  fileName.textContent = f.name;
+  const mb = (f.size / 1048576).toFixed(2);
+  fileMeta.textContent = `${mb}MB · ${(f.name.split('.').pop()||'?').toUpperCase()}`;
+  fileWarn.classList.toggle('show', f.size > 25e6);
+  fileInfo.style.display = 'block';
+  uploadBtn.disabled = false;
+  uploadBtn.textContent = `⬆ 上传 ${f.name}`;
+  hideError();
+  result.style.display = 'none';
+}
+
+uploadBtn.addEventListener('click', async () => {
+  if (!currentFile) return;
+  const token = tInput.value.trim();
+  if (!token) { showError('请填写 GitHub Token'); return; }
+
+  uploadBtn.disabled = true; uploadBtn.textContent = '⏳ 上传中...';
+  progress.style.display = 'block'; progressBar.style.width = '0%';
+  hideError(); result.style.display = 'none';
+
+  try {
+    const reader = new FileReader();
+    const base64 = await new Promise((r, j) => { reader.onload = () => r(reader.result.split(',')[1]); reader.onerror = j; reader.readAsDataURL(currentFile); });
+    progressBar.style.width = '30%';
+
+    const path = `${MEDIA_DIR}/${currentFile.name}`;
+    let sha = null;
+    try { const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}?ref=${BRANCH}`, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'pagecms' } }); if (r.ok) sha = (await r.json()).sha; } catch(e) {}
+
+    progressBar.style.width = '60%';
+    const body = { message: `📎 上传媒体: ${currentFile.name}`, content: base64, branch: BRANCH };
+    if (sha) body.sha = sha;
+
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'pagecms' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message || `HTTP ${r.status}`); }
+
+    progressBar.style.width = '100%';
+    const link = `/media/${currentFile.name}`;
+    resultLink.textContent = link;
+    result.style.display = 'block';
+    uploadBtn.textContent = '⬆ 上传另一个';
+    uploadBtn.disabled = false;
+    setTimeout(() => { progress.style.display = 'none'; }, 1000);
+  } catch (e) {
+    progress.style.display = 'none';
+    uploadBtn.disabled = false; uploadBtn.textContent = '⬆ 重试';
+    showError(`失败: ${e.message}`);
+  }
+});
+
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(resultLink.textContent).then(() => { copyBtn.textContent = '✅ 已复制！'; setTimeout(() => copyBtn.innerHTML = '📋 复制链接', 1500); });
+});
+
+function showError(m) { errorMsg.style.display = 'block'; errorMsg.textContent = m; }
+function hideError() { errorMsg.style.display = 'none'; }
+</script>
+</body>
+</html>

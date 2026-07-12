@@ -32,11 +32,11 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用云盘链接 → 粘贴外部文件链接即可自动渲染
+          📎 引用文件 → 粘贴链接即可自动渲染
           ▸ 视频(.mp4) / 音频(.mp3) → 播放器
-          ▸ 图片(.png) → 显示图片
           ▸ 文件(.exe/.zip/.pdf) → 下载卡片（右侧"打开链接"）
-          💡 大文件请上传到网盘（百度网盘/阿里云盘等），直接粘贴分享链接
+          💡 大文件/小文件都可上传到 /media/ → 打开 /upload.html 拖拽上传
+  - name: pages
     label: Pages
     type: collection
     path: src/content/pages
@@ -51,11 +51,10 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用云盘链接 → 粘贴外部文件链接自动渲染
+          📎 引用文件 → 粘贴链接自动渲染
           ▸ 视频 / 音频 → 播放器
           ▸ 文件 → 下载卡片（右侧"打开链接"）
-          💡 大文件请上传到网盘，粘贴分享链接
-
+          💡 打开 /upload.html 上传文件到 /media/
   - name: settings
     label: Site Settings
     type: file
