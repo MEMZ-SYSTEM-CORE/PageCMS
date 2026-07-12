@@ -23,6 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# wrangler local state
+.wrangler/
+
 # Only ignore subfolders, keep gitkeep pattern
 media/*
 !media/.gitkeep
