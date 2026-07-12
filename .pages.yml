@@ -1,0 +1,67 @@
+# PagesCMS 配置
+
+media:
+  input: media
+  output: /media
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: pubDate
+      order: desc
+    fields:
+      - name: title
+        type: string
+        label: 标题
+        required: true
+      - name: pubDate
+        type: date
+        label: 发布日期
+        required: true
+      - name: description
+        type: text
+        label: 文章描述
+        required: false
+        options:
+          minlength: 10
+          maxlength: 300
+      - name: image
+        type: image
+        label: 封面图
+        required: false
+      - name: tags
+        type: list
+        label: 标签
+        fields:
+          - name: tag
+            type: string
+      - name: draft
+        type: boolean
+        label: 草稿
+      - name: body
+        type: rich-text
+        label: 正文
+
+  - name: pages
+    label: 页面
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    view:
+      primary: title
+    fields:
+      - name: title
+        type: string
+        label: 页面标题
+        required: true
+      - name: description
+        type: text
+        label: 页面描述
+      - name: body
+        type: rich-text
+        label: 正文

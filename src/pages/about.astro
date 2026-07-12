@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+const pages = await getCollection('pages');
+const about = pages.find((p) => p.id === 'about.md' || p.id === 'about');
+let Content;
+if (about) {
+  const result = await render(about);
+  Content = result.Content;
+}
+---
+
+<Layout title="关于" description="关于本站">
+  {about && Content ? (
+    <article class="content">
+      <h1>{about.data.title}</h1>
+      <Content />
+    </article>
+  ) : (
+    <article style="background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <h1>关于</h1>
+      <p style="color: #666;">页面内容正在编辑中…前往 <a href="https://app.pagescms.org" target="_blank">app.pagescms.org</a> 添加内容吧！</p>
+    </article>
+  )}
+</Layout>
