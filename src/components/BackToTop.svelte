@@ -6,9 +6,7 @@
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
-		function onScroll() {
-			visible = window.scrollY > 400;
-		}
+		const onScroll = () => { visible = window.scrollY > 400; };
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);
 	});
@@ -19,9 +17,15 @@
 </script>
 
 <div
-	class="fixed bottom-6 right-6 z-50 transition-all duration-300 {visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}"
+	class="fixed bottom-6 right-6 z-50 transition-all duration-500 {visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}"
 >
-	<Button variant="outline" size="icon" onclick={scrollTop} aria-label="回到顶端" class="shadow-lg">
+	<Button
+		variant="outline"
+		size="icon"
+		onclick={scrollTop}
+		aria-label="回到顶端"
+		class="shadow-lg transition-shadow duration-300 hover:shadow-xl"
+	>
 		<ArrowUp class="!size-[18px]" />
 	</Button>
 </div>

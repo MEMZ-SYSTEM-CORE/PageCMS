@@ -14,9 +14,9 @@ const desc = about?.data?.description;
 ---
 
 <Layout title={title} description={desc || '关于本站'}>
-  <article class="mx-auto max-w-3xl">
-    <div class="mb-10 space-y-3">
-      <div class="bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-medium">
+  <article class="mx-auto max-w-3xl animate-fade-in">
+    <div class="mb-10 space-y-4">
+      <div class="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/[0.06] px-3.5 py-1 text-xs font-medium text-primary">
         关于
       </div>
       <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
@@ -30,8 +30,8 @@ const desc = about?.data?.description;
         <Content />
       </div>
     ) : (
-      <div class="border-border/40 space-y-4 rounded-xl border border-dashed p-16 text-center">
-        <div class="text-muted-foreground space-y-2">
+      <div class="space-y-4 rounded-xl border border-dashed border-border/40 p-16 text-center">
+        <div class="space-y-2 text-muted-foreground">
           <p class="text-sm">页面内容正在编辑中…</p>
           <p class="text-xs">去 app.pagescms.org 添加内容吧</p>
         </div>
@@ -43,7 +43,7 @@ const desc = about?.data?.description;
 <style>
   .prose-about :global(h2) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     font-weight: 600;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
@@ -65,11 +65,6 @@ const desc = about?.data?.description;
     font-size: 0.95rem;
     color: var(--color-foreground);
   }
-  .prose-about :global(a) {
-    color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
   .prose-about :global(ul) {
     padding-left: 1.5rem;
     margin-bottom: 1.25rem;
@@ -79,7 +74,12 @@ const desc = about?.data?.description;
     line-height: 1.75;
     font-size: 0.95rem;
   }
-  .prose-about :global(strong) {
-    font-weight: 600;
+  .prose-about :global(strong) { font-weight: 600; }
+  .prose-about :global(a) { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+  .prose-about :global(code) {
+    background: var(--color-muted);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
   }
 </style>

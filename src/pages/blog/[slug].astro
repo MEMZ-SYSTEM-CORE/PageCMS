@@ -28,19 +28,17 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
 ---
 
 <Layout title={title} description={description}>
-  <article class="mx-auto max-w-3xl">
-    <!-- Back link -->
+  <article class="mx-auto max-w-3xl animate-fade-in">
     <a
       href="/"
-      class="text-muted-foreground hover:text-foreground mb-10 inline-flex items-center gap-1.5 text-xs font-medium transition-colors group"
+      class="text-muted-foreground hover:text-foreground group mb-10 inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
     >
       <span class="transition-transform group-hover:-translate-x-0.5">←</span>
       返回首页
     </a>
 
-    <!-- Header -->
     <header class="mb-12 space-y-5">
-      <div class="text-muted-foreground flex items-center gap-3 text-xs">
+      <div class="flex items-center gap-3 text-xs text-muted-foreground">
         <time datetime={pubDate.toISOString()}>{dateStr}</time>
         <span aria-hidden="true">·</span>
         <span>{readingTime} 分钟阅读</span>
@@ -48,7 +46,7 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
         <span>约 {wordCount} 字</span>
       </div>
 
-      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl leading-[1.15]">
+      <h1 class="font-heading text-foreground text-3xl font-bold tracking-tight leading-[1.15] sm:text-4xl lg:text-5xl">
         {title}
       </h1>
 
@@ -63,17 +61,16 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
       )}
     </header>
 
-    <!-- Content -->
     <div class="prose-content">
       <Content />
     </div>
 
-    <!-- Footer -->
     <Separator class="my-16" />
+
     <div class="flex items-center justify-between">
       <a
         href="/"
-        class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors group"
+        class="text-muted-foreground hover:text-foreground group inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
       >
         <span class="transition-transform group-hover:-translate-x-0.5">←</span>
         返回所有文章
@@ -85,7 +82,7 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
 <style define:vars={{}}>
   .prose-content :global(h2) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     font-weight: 600;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
@@ -96,7 +93,7 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
   }
   .prose-content :global(h3) {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 600;
     margin-top: 2rem;
     margin-bottom: 0.5rem;
@@ -112,10 +109,6 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     color: var(--color-primary);
     text-decoration: underline;
     text-underline-offset: 2px;
-    text-decoration-thickness: 0.5px;
-  }
-  .prose-content :global(a:hover) {
-    text-decoration-thickness: 1.5px;
   }
   .prose-content :global(ul), .prose-content :global(ol) {
     padding-left: 1.5rem;
@@ -147,23 +140,18 @@ const dateStr = pubDate.toLocaleDateString('zh-CN', {
     font-size: 0.875rem;
     line-height: 1.65;
   }
-  .prose-content :global(pre code) {
-    background: none;
-    padding: 0;
-    font-weight: 400;
-  }
+  .prose-content :global(pre code) { background: none; padding: 0; font-weight: 400; }
   .prose-content :global(blockquote) {
     border-left: 2.5px solid var(--color-primary);
     padding-left: 1rem;
     color: var(--color-muted-foreground);
     font-style: italic;
     margin: 1.5rem 0;
-    font-size: 0.95rem;
     line-height: 1.75;
   }
   .prose-content :global(img) {
     max-width: 100%;
-    border-radius: 10px;
+    border-radius: 8px;
     margin: 2rem 0;
   }
   .prose-content :global(hr) {

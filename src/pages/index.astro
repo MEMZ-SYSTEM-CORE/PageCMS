@@ -15,10 +15,10 @@ const pages = await getCollection('pages');
   <Hero postCount={posts.length} pageCount={pages.length} />
 
   {posts.length > 0 && (
-    <section id="posts" class="scroll-mt-20 space-y-8 pb-20">
-      <div class="flex items-center gap-4 animate-fade-up">
-        <h2 class="font-heading text-foreground text-2xl font-semibold tracking-tight">最新文章</h2>
-        <div class="bg-border h-px flex-1" />
+    <section id="posts" class="scroll-mt-20 space-y-8 pb-24">
+      <div class="animate-fade-up flex items-center gap-4">
+        <h2 class="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">最新文章</h2>
+        <div class="h-px flex-1 bg-border" />
       </div>
 
       <div class="grid gap-6 sm:grid-cols-2">
@@ -33,7 +33,7 @@ const pages = await getCollection('pages');
                 title: post.data.title,
                 pubDate: post.data.pubDate.toISOString(),
                 description: post.data.description,
-                tags: tags,
+                tags,
               }}
             />
           );
@@ -43,15 +43,10 @@ const pages = await getCollection('pages');
   )}
 
   {posts.length === 0 && (
-    <section class="border-border/40 animate-fade-up space-y-6 rounded-xl border border-dashed p-16 text-center">
-      <div class="text-muted-foreground space-y-3">
-        <p class="text-sm">
-          还没有文章呢~
-        </p>
-        <p class="text-xs">
-          前往 <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">app.pagescms.org</a>
-          {' '}开始编辑你的第一篇内容吧！
-        </p>
+    <section class="animate-fade-up space-y-6 rounded-xl border border-dashed border-border/40 p-16 text-center">
+      <div class="space-y-3 text-muted-foreground">
+        <p class="text-sm">还没有文章</p>
+        <p class="text-xs">前往 <a href="https://app.pagescms.org" target="_blank" class="text-primary hover:underline">app.pagescms.org</a> 开始编辑</p>
       </div>
     </section>
   )}
