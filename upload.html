@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Media 上传工具 · MEMZ-SYSTEM-CORE</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: oklch(0.10 0 0);
+    color: oklch(0.90 0 0);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 640px; width: 100%; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+  p.desc { color: oklch(0.55 0 0); font-size: 0.875rem; margin-bottom: 2rem; }
+
+  /* Drop zone */
+  .dropzone {
+    border: 2px dashed oklch(0.30 0 0);
+    border-radius: 1.25rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: oklch(0.13 0 0);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .dropzone:hover, .dropzone.drag-over {
+    border-color: oklch(0.50 0 0);
+    background: oklch(0.16 0 0);
+  }
+  .dropzone .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .dropzone .text { font-size: 0.9375rem; color: oklch(0.65 0 0); }
+  .dropzone .sub { font-size: 0.8125rem; color: oklch(0.40 0 0); margin-top: 0.5rem; }
+  .dropzone input[type="file"] { display: none; }
+  .dropzone.has-file {
+    border-style: solid;
+    border-color: oklch(0.40 0 0);
+    padding: 2rem;
+  }
+
+  /* File info */
+  .file-info {
+    background: oklch(0.15 0 0);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+  .file-info.visible { display: block; }
+  .file-info .name {
+    font-size: 1rem;
+    font-weight: 600;
+    word-break: break-all;
+    margin-bottom: 0.35rem;
+  }
+  .file-info .meta {
+    font-size: 0.8125rem;
+    color: oklch(0.50 0 0);
+  }
+  .file-info .warn {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: oklch(0.20 0.06 60);
+    border-radius: 0.75rem;
+    font-size: 0.8125rem;
+    display: none;
+  }
+  .file-info .warn.show { display: block; }
+
+  /* Upload mode tabs */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid oklch(0.25 0 0);
+    background: transparent;
+    color: oklch(0.55 0 0);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab:hover { border-color: oklch(0.40 0 0); color: oklch(0.75 0 0); }
+  .tab.active {
+    background: oklch(0.22 0 0);
+    border-color: oklch(0.45 0 0);
+    color: oklch(0.95 0 0);
+  }
+
+  /* Command output */
+  .cmd-box {
+    display: none;
+    background: oklch(0.12 0 0);
+    border: 1px solid oklch(0.25 0 0);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .cmd-box.visible { display: block; }
+
+  .cmd-box .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: oklch(0.45 0 0);
+    margin-bottom: 0.5rem;
+  }
+  .cmd-box pre {
+    background: oklch(0.08 0 0);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: oklch(0.85 0 0);
+    margin-bottom: 0.75rem;
+  }
+  .cmd-box .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .cmd-box .actions button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: oklch(0.25 0 0);
+    color: oklch(0.85 0 0);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .cmd-box .actions button:hover { background: oklch(0.32 0 0); }
+  .cmd-box .actions button.primary { background: oklch(0.40 0 0); color: oklch(1 0 0); }
+  .cmd-box .actions button.primary:hover { background: oklch(0.50 0 0); }
+
+  /* Token setup */
+  .token-section {
+    display: none;
+    margin-bottom: 1rem;
+    background: oklch(0.15 0 0);
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+  .token-section.visible { display: block; }
+  .token-section label {
+    font-size: 0.8125rem;
+    color: oklch(0.55 0 0);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .token-section .input-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .token-section input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid oklch(0.30 0 0);
+    background: oklch(0.10 0 0);
+    color: oklch(0.90 0 0);
+    font-size: 0.8125rem;
+    font-family: ui-monospace, monospace;
+    outline: none;
+  }
+  .token-section input:focus { border-color: oklch(0.50 0 0); }
+  .token-section .hint {
+    font-size: 0.75rem;
+    color: oklch(0.40 0 0);
+    margin-top: 0.5rem;
+  }
+  .token-section .hint a { color: oklch(0.60 0 0); }
+
+  /* Upload progress */
+  .progress {
+    display: none;
+    margin-bottom: 1rem;
+  }
+  .progress.visible { display: block; }
+  .progress .bar {
+    height: 4px;
+    background: oklch(0.25 0 0);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .progress .bar-inner {
+    height: 100%;
+    width: 0%;
+    background: oklch(0.60 0 0);
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+  .progress .status {
+    font-size: 0.8125rem;
+    color: oklch(0.55 0 0);
+  }
+
+  /* Success */
+  .success {
+    display: none;
+    padding: 1.25rem;
+    background: oklch(0.15 0.04 140);
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+  }
+  .success.visible { display: block; }
+  .success .title { font-weight: 600; margin-bottom: 0.35rem; }
+  .success .link {
+    background: oklch(0.10 0 0);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.8125rem;
+    margin-top: 0.5rem;
+    word-break: break-all;
+  }
+
+  /* Footer */
+  .footer { margin-top: 2rem; font-size: 0.75rem; color: oklch(0.35 0 0); }
+  .footer a { color: oklch(0.45 0 0); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📎 Media 上传</h1>
+  <p class="desc">拖拽文件到下方，上传到 MEMZ-SYSTEM-CORE/PageCMS 的 public/media 目录</p>
+
+  <!-- Drop Zone -->
+  <div class="dropzone" id="dropzone">
+    <input type="file" id="fileInput" />
+    <div class="icon">📁</div>
+    <div class="text">拖拽文件到这里，或点击选择文件</div>
+    <div class="sub">支持所有类型 · GitHub 最大 100MB</div>
+  </div>
+
+  <!-- File Info -->
+  <div class="file-info" id="fileInfo">
+    <div class="name" id="fileName"></div>
+    <div class="meta" id="fileMeta"></div>
+    <div class="warn" id="fileWarn">⚠️ 文件超过 25MB，PagesCMS 可能会拒绝。<br/>推荐使用下方直传方式上传。</div>
+  </div>
+
+  <!-- Upload Mode Tabs -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="direct">🚀 直传（推荐）</button>
+    <button class="tab" data-tab="cli">💻 生成命令</button>
+  </div>
+
+  <!-- Token Setup (direct mode) -->
+  <div class="token-section visible" id="tokenSection">
+    <label for="tokenInput">GitHub Token</label>
+    <div class="input-row">
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+      <button class="tab" id="saveToken" style="flex:0;padding:0.5rem 0.75rem;white-space:nowrap">保存</button>
+    </div>
+    <div class="hint">
+      需要 <strong>repo</strong> 权限的 token。<br/>
+      创建: <a href="https://github.com/settings/tokens/new?scopes=repo&description=pagecms-upload" target="_blank">github.com/settings/tokens/new</a> (只需一次)
+    </div>
+  </div>
+
+  <!-- Direct Upload -->
+  <div class="cmd-box visible" id="directBox">
+    <div class="label">🚀 点击按钮直传（无需命令）</div>
+    <button class="tab" id="uploadBtn" style="width:100%;padding:0.75rem;font-size:1rem;background:oklch(0.45 0 0);color:oklch(1 0 0);border:none;border-radius:0.75rem;cursor:pointer;font-weight:600" disabled>⬆ 选择文件后上传</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress" id="progress">
+    <div class="status" id="progressStatus">准备上传...</div>
+    <div class="bar"><div class="bar-inner" id="progressBar"></div></div>
+  </div>
+
+  <!-- Success -->
+  <div class="success" id="success">
+    <div class="title">✅ 上传成功！</div>
+    <div style="font-size:0.8125rem;color:oklch(0.55 0 0)">在文章正文中粘贴以下链接：</div>
+    <div class="link" id="successLink"></div>
+    <button class="tab" id="copyLinkBtn" style="margin-top:0.5rem;width:100%;padding:0.5rem;background:oklch(0.25 0 0);color:oklch(0.85 0 0);border:none;border-radius:0.5rem;cursor:pointer">📋 复制链接</button>
+  </div>
+
+  <!-- CLI Command -->
+  <div class="cmd-box" id="cliBox">
+    <div class="label">💻 在终端运行此命令上传</div>
+    <pre id="cmdOutput">选择一个文件...</pre>
+    <div class="actions">
+      <button id="copyCmdBtn">📋 复制命令</button>
+      <button class="primary" id="runCmdBtn">▶ 打开终端并粘贴</button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="token-section" id="errorBox" style="display:none;border-color:oklch(0.50 0.12 30)">
+    <div id="errorMsg" style="color:oklch(0.80 0.12 30);font-size:0.875rem"></div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/MEMZ-SYSTEM-CORE/PageCMS" target="_blank">MEMZ-SYSTEM-CORE/PageCMS</a>
+    · 文件直存 GitHub Repo
+  </div>
+</div>
+
+<script>
+const REPO = 'MEMZ-SYSTEM-CORE/PageCMS';
+const BRANCH = 'master';
+const MEDIA_DIR = 'public/media';
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const fileMeta = document.getElementById('fileMeta');
+const fileWarn = document.getElementById('fileWarn');
+const tabs = document.querySelectorAll('.tab[data-tab]');
+const tokenSection = document.getElementById('tokenSection');
+const tokenInput = document.getElementById('tokenInput');
+const saveTokenBtn = document.getElementById('saveToken');
+const uploadBtn = document.getElementById('uploadBtn');
+const directBox = document.getElementById('directBox');
+const cliBox = document.getElementById('cliBox');
+const cmdEl = document.getElementById('cmdOutput');
+const copyCmdBtn = document.getElementById('copyCmdBtn');
+const runCmdBtn = document.getElementById('runCmdBtn');
+const progress = document.getElementById('progress');
+const progressStatus = document.getElementById('progressStatus');
+const progressBar = document.getElementById('progressBar');
+const success = document.getElementById('success');
+const successLink = document.getElementById('successLink');
+const copyLinkBtn = document.getElementById('copyLinkBtn');
+const errorBox = document.getElementById('errorBox');
+const errorMsg = document.getElementById('errorMsg');
+
+let currentFile = null;
+let currentMode = 'direct';
+
+// Load saved token
+const savedToken = localStorage.getItem('github_token');
+if (savedToken) tokenInput.value = savedToken;
+
+// Tab switching
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentMode = tab.dataset.tab;
+    tokenSection.classList.toggle('visible', currentMode === 'direct');
+    directBox.classList.toggle('visible', currentMode === 'direct');
+    cliBox.classList.toggle('visible', currentMode === 'cli');
+    if (currentFile) updateOutput();
+  });
+});
+
+// Drop zone
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) handleFile(fileInput.files[0]);
+});
+
+function handleFile(file) {
+  currentFile = file;
+  fileName.textContent = file.name;
+  const size = file.size;
+  const mb = (size / 1048576).toFixed(2);
+  fileMeta.textContent = `${mb}MB · ${(file.name.split('.').pop() || '?').toUpperCase()}`;
+  fileWarn.classList.toggle('show', size > 25 * 1048576);
+  dropzone.classList.add('has-file');
+  dropzone.querySelector('.icon').textContent = '📄';
+  dropzone.querySelector('.text').textContent = file.name;
+  dropzone.querySelector('.sub').textContent = `${mb}MB · 点击更换文件`;
+  fileInfo.style.display = 'block';
+  uploadBtn.disabled = false;
+  uploadBtn.textContent = `⬆ 上传 ${file.name}`;
+  hideError();
+  success.classList.remove('visible');
+  updateOutput();
+}
+
+function updateOutput() {
+  if (!currentFile) return;
+  const ext = currentFile.name.split('.').pop();
+  const targetPath = `${MEDIA_DIR}/${currentFile.name}`;
+  const absPath = currentFile.path || `选择文件的完整路径/${currentFile.name}`;
+
+  // Windows PowerShell command
+  const psCmd = `$file = "${currentFile.name}"\n# 把文件放到项目 public/media/ 目录后运行：\ncd D:/Desktop/code/pagecms\n.\\upload-media.ps1 "$file"`;
+  const bashCmd = `# 把文件放到项目 public/media/ 目录后运行：\ncd /d/Desktop/code/pagecms\nbash upload-media.sh "${currentFile.name}"`;
+
+  cmdEl.textContent = `--- PowerShell ---\n${psCmd}\n\n--- Git Bash ---\n${bashCmd}`;
+}
+
+// Save token
+saveTokenBtn.addEventListener('click', () => {
+  const token = tokenInput.value.trim();
+  if (token) {
+    localStorage.setItem('github_token', token);
+    saveTokenBtn.textContent = '✅ 已保存';
+    setTimeout(() => { saveTokenBtn.textContent = '保存'; }, 2000);
+  }
+});
+
+// Upload
+uploadBtn.addEventListener('click', async () => {
+  if (!currentFile) return;
+  const token = tokenInput.value.trim();
+  if (!token) {
+    showError('请先输入并保存 GitHub Token');
+    return;
+  }
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = '⏳ 上传中...';
+  progress.classList.add('visible');
+  progressBar.style.width = '0%';
+  progressStatus.textContent = '正在读取文件...';
+  hideError();
+  success.classList.remove('visible');
+
+  try {
+    // Read file as base64
+    const reader = new FileReader();
+    const base64 = await new Promise((resolve, reject) => {
+      reader.onload = () => {
+        const data = reader.result.split(',')[1];
+        resolve(data);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(currentFile);
+    });
+
+    progressBar.style.width = '30%';
+    progressStatus.textContent = '正在上传到 GitHub...';
+
+    const targetPath = `${MEDIA_DIR}/${currentFile.name}`;
+
+    // Check if file exists
+    let existingSha = null;
+    try {
+      const checkRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(targetPath)}?ref=${BRANCH}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'pagecms-uploader'
+        }
+      });
+      if (checkRes.ok) {
+        const data = await checkRes.json();
+        existingSha = data.sha;
+      }
+    } catch (e) { /* file doesn't exist */ }
+
+    progressBar.style.width = '60%';
+    progressStatus.textContent = existingSha ? '覆盖已有文件...' : '创建新文件...';
+
+    // Upload via GitHub API
+    const body = {
+      message: `📎 上传媒体: ${currentFile.name}`,
+      content: base64,
+      branch: BRANCH
+    };
+    if (existingSha) body.sha = existingSha;
+
+    const uploadRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(targetPath)}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'pagecms-uploader'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!uploadRes.ok) {
+      const err = await uploadRes.json();
+      throw new Error(err.message || `HTTP ${uploadRes.status}`);
+    }
+
+    progressBar.style.width = '100%';
+    progressStatus.textContent = '✅ 上传完成！';
+
+    // Show success
+    const linkText = `/media/${currentFile.name}`;
+    successLink.textContent = linkText;
+    success.classList.add('visible');
+
+    // Clear file selection
+    setTimeout(() => {
+      progress.classList.remove('visible');
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = '⬆ 上传另一个文件';
+    }, 1500);
+
+  } catch (err) {
+    progress.classList.remove('visible');
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = '⬆ 重试上传';
+    showError(`上传失败: ${err.message}`);
+  }
+});
+
+// Copy link
+copyLinkBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(successLink.textContent).then(() => {
+    copyLinkBtn.textContent = '✅ 已复制！';
+    setTimeout(() => { copyLinkBtn.innerHTML = '📋 复制链接'; }, 2000);
+  });
+});
+
+// Copy command
+copyCmdBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(cmdEl.textContent).then(() => {
+    copyCmdBtn.textContent = '✅ 已复制！';
+    setTimeout(() => { copyCmdBtn.textContent = '📋 复制命令'; }, 2000);
+  });
+});
+
+// Run in terminal
+runCmdBtn.addEventListener('click', () => {
+  // For Windows: open terminal and copy to clipboard
+  navigator.clipboard.writeText(cmdEl.textContent).then(() => {
+    runCmdBtn.textContent = '✅ 已复制！打开终端粘贴即可';
+    setTimeout(() => { runCmdBtn.textContent = '▶ 打开终端并粘贴'; }, 2500);
+  });
+});
+
+function showError(msg) {
+  errorBox.style.display = 'block';
+  errorMsg.textContent = msg;
+}
+function hideError() {
+  errorBox.style.display = 'none';
+}
+</script>
+</body>
+</html>
