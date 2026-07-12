@@ -1,6 +1,7 @@
 media:
   input: public/media
   output: /media
+  accept: '*/*'
 
 content:
   - name: posts
