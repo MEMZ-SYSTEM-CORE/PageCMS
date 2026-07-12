@@ -2,6 +2,7 @@ media:
   input: public/media
   output: /media
   accept: '*/*'
+  max_file_size: 25165824  # 25MB — 超过此大小建议用 upload-media.sh 脚本直传
 
 content:
   - name: posts
@@ -36,6 +37,7 @@ content:
           ▸ 视频(.mp4) / 音频(.mp3) → 播放器
           ▸ 图片(.png) → 显示图片
           ▸ 文件(.exe/.zip/.pdf) → 下载卡片
+          ⚠️ 大文件(>10MB) 建议用脚本上传: bash upload-media.sh 或 .\upload-media.ps1
 
   - name: pages
     label: Pages
