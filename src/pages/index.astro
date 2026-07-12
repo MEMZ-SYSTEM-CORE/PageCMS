@@ -22,70 +22,42 @@ const allTags = [
 ---
 
 <Layout title="首页" description="MEMZ-SYSTEM-CORE 的博客">
-  <Hero postCount={posts.length} pageCount={pages.length} />
+  <Hero postCount={posts.length} />
 
   {posts.length > 0 && (
-    <>
-      <!-- 文章列表 -->
-      <section id="posts" class="scroll-mt-20 space-y-6 pb-16">
-        <div class="animate-fade-up flex items-center gap-4">
-          <h2 class="text-xs font-semibold tracking-widest uppercase text-foreground">文章</h2>
-          <div class="h-px flex-1 bg-border" />
-          <span class="text-xs text-muted-foreground">{posts.length} 篇</span>
-        </div>
-
-        <div class="grid gap-5 sm:grid-cols-2">
-          {latestPosts.map((post, i) => {
-            const rawTags = post.data.tags;
-            const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
-            return (
-              <PostCard
-                index={i}
-                post={{
-                  slug: post.id.replace(/\.md$/i, ''),
-                  title: post.data.title,
-                  pubDate: post.data.pubDate.toISOString(),
-                  description: post.data.description,
-                  tags,
-                }}
-              />
-            );
-          })}
-        </div>
-      </section>
-
-      <!-- 标签云 -->
-      {allTags.length > 0 && (
-        <section class="animate-fade-up space-y-4 pb-16">
-          <div class="flex items-center gap-4">
-            <h2 class="text-xs font-semibold tracking-widest uppercase text-foreground">标签</h2>
-            <div class="h-px flex-1 bg-border" />
-          </div>
-          <TagCloud tags={allTags} />
-        </section>
-      )}
-
-      <!-- 统计 -->
-      <section class="animate-fade-up grid grid-cols-3 gap-4 border-y py-6">
-        <div class="text-center">
-          <div class="text-lg font-bold">{posts.length}</div>
-          <div class="text-xs text-muted-foreground">文章</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-bold">{allTags.length}</div>
-          <div class="text-xs text-muted-foreground">标签</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-bold">{pages.length}</div>
-          <div class="text-xs text-muted-foreground">页面</div>
-        </div>
-      </section>
-    </>
+    <section id="posts" class="space-y-6 pb-16">
+      {latestPosts.map((post, i) => {
+        const rawTags = post.data.tags;
+        const tags = rawTags?.map((t) => (typeof t === 'string' ? t : t?.tag ?? '')).filter(Boolean) ?? [];
+        return (
+          <PostCard
+            index={i}
+            post={{
+              slug: post.id.replace(/\.md$/i, ''),
+              title: post.data.title,
+              pubDate: post.data.pubDate.toISOString(),
+              description: post.data.description,
+              tags,
+            }}
+          />
+        );
+      })}
+    </section>
   )}
 
   {posts.length === 0 && (
     <section class="animate-fade-up rounded-xl border border-dashed border-border/40 p-16 text-center">
-      <p class="text-sm text-muted-foreground">还没有文章 — 去 app.pagescms.org 开始编辑</p>
+      <p class="text-sm text-muted-foreground">还没有文章</p>
+    </section>
+  )}
+
+  {allTags.length > 0 && (
+    <section class="animate-fade-up space-y-4 pb-16 mt-8 border-t pt-6">
+      <div class="flex items-center gap-4">
+        <h2 class="text-xs font-medium uppercase text-muted-foreground tracking-wider">标签</h2>
+        <div class="h-px flex-1 bg-border" />
+      </div>
+      <TagCloud tags={allTags} />
     </section>
   )}
 </Layout>

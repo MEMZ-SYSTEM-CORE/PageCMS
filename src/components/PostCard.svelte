@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { CalendarDays, ArrowRight } from '@lucide/svelte';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
+	import { CalendarDays } from '@lucide/svelte';
 	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { Separator } from '$lib/components/ui/separator/index.js';
 
 	interface Post {
 		slug: string;
@@ -24,43 +22,47 @@
 	}
 </script>
 
-<Card
-	class="group/card animate-fade-up border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+<a
+	href={`/blog/${post.slug}`}
+	class="ring-foreground/10 bg-card text-card-foreground flex flex-col md:flex-row gap-6 overflow-hidden rounded-2xl text-sm ring-1 py-6 px-6 group transition-all hover:shadow-lg no-underline animate-fade-up"
 	style="animation-delay: {index * 80}ms"
 >
-	<a href={`/blog/${post.slug}`} class="no-underline">
-		<CardHeader class="pb-3">
-			<div class="flex items-center gap-3 text-xs text-muted-foreground">
-				<CalendarDays class="!size-3.5" />
-				{dateStr}
-				<span>·</span>
-				{readingTime} 分钟
-			</div>
-			<CardTitle class="pt-1 text-base font-semibold sm:text-lg">
-				{post.title}
-			</CardTitle>
-			{#if post.description}
-				<CardDescription class="text-muted-foreground/80 leading-relaxed">
-					{post.description}
-				</CardDescription>
-			{/if}
-		</CardHeader>
+	<!-- Thumbnail placeholder -->
+	<div class="h-32 w-full md:w-48 md:flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
+		<div class="text-3xl font-bold text-muted-foreground/20">
+			{post.title.charAt(0)}
+		</div>
+	</div>
 
-		{#if post.tags && post.tags.length > 0}
-			<CardContent class="flex flex-wrap gap-1.5 pb-0">
-				{#each post.tags as tag}
-					<Badge variant="secondary" class="text-[11px]">{resolveTag(tag)}</Badge>
-				{/each}
-			</CardContent>
+	<!-- Content -->
+	<div class="flex-1 min-w-0">
+		<!-- Meta -->
+		<div class="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+			<CalendarDays class="!size-3.5 shrink-0" />
+			<span class="whitespace-nowrap">{dateStr}</span>
+			<span class="text-muted-foreground/40 shrink-0">·</span>
+			<span class="whitespace-nowrap">{readingTime} 分钟</span>
+		</div>
+
+		<!-- Title -->
+		<h2 class="mb-2 text-2xl font-semibold group-hover:text-primary transition-colors">
+			{post.title}
+		</h2>
+
+		<!-- Description -->
+		{#if post.description}
+			<p class="mt-2 text-sm text-muted-foreground line-clamp-2">
+				{post.description}
+			</p>
 		{/if}
 
-		<div class="px-5 pt-4">
-			<Separator />
-		</div>
-
-		<div class="flex items-center gap-1 px-5 py-3 text-xs text-muted-foreground transition-colors duration-200 group-hover/card:text-foreground">
-			阅读全文
-			<ArrowRight class="!size-3 transition-transform duration-300 group-hover/card:translate-x-0.5" />
-		</div>
-	</a>
-</Card>
+		<!-- Tags -->
+		{#if post.tags && post.tags.length > 0}
+			<div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0">
+				{#each post.tags as tag}
+					<Badge variant="secondary" class="text-xs">{resolveTag(tag)}</Badge>
+				{/each}
+			</div>
+		{/if}
+	</div>
+</a>
