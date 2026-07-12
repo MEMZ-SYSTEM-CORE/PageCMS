@@ -1,5 +1,0 @@
-otpauth://totp/GitHub:baoshi66666?secret=FLNBFV7BGTR6EBML&issuer=GitHub
-otpauth://totp/OpenList:admin?secret=EL2A4I3TM3NZJCFER57HY3GHCMDR62Y7&issuer=OpenList
-otpauth://totp/Microsoft:mscoreweb_outlook.com%23EXT%23%40mscoreweboutlook.onmicrosoft.com?secret=msgqlkm2j25wyxrk&issuer=Microsoft
-otpauth://totp/ngrok:1783838559%40qq.com?secret=KFDDWX5ZPA7UXG23KBAUISQVMFHGMTD4&issuer=ngrok
-otpauth://totp/MEMZ-SYSTEM-CORE%E7%9A%84%E7%BD%91%E7%9B%98%EF%BC%88%E4%BB%85%E5%89%A923%E5%A4%A9%EF%BC%89?secret=2FRTUIPKBMAWRE2V6XW6HMMT5Z7BTZPT
