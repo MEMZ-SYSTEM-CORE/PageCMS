@@ -164,16 +164,21 @@ if (resolvedTags.length > 0) {
           var name = src.split('/').pop() || ('file.' + ext);
           var icon = getFileIcon(ext);
           var typeLabel = getFileTypeLabel(ext);
+          var isLocal = src.startsWith('/');
+          var actionLabel = isLocal ? '下载' : '打开链接';
+          var actionIcon = isLocal
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="!size-3.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="!size-3.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
           var w = document.createElement('div');
           w.className = 'my-6';
           w.setAttribute('data-media', '');
-          w.innerHTML = '<a href="' + src + '" target="_blank" rel="noopener noreferrer" download class="ring-foreground/10 bg-card text-card-foreground hover:shadow-md flex items-center gap-4 rounded-2xl ring-1 p-5 transition-all no-underline group">'
+          w.innerHTML = '<a href="' + src + '" target="_blank" rel="noopener noreferrer"' + (isLocal ? ' download' : '') + ' class="ring-foreground/10 bg-card text-card-foreground hover:shadow-md flex items-center gap-4 rounded-2xl ring-1 p-5 transition-all no-underline group">'
             + '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted group-hover:bg-accent transition-colors">' + icon + '</div>'
             + '<div class="flex-1 min-w-0">'
             + '<div class="text-sm font-medium truncate group-hover:text-primary transition-colors">' + name + '</div>'
             + '<div class="text-xs text-muted-foreground mt-0.5">' + typeLabel + '</div>'
             + '</div>'
-            + '<div class="shrink-0"><span class="inline-flex items-center gap-1 rounded-full bg-foreground/10 px-3 py-1 text-xs font-medium text-foreground transition-colors group-hover:bg-foreground group-hover:text-background group-hover:shadow-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="!size-3.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载</span></div>'
+            + '<div class="shrink-0"><span class="inline-flex items-center gap-1 rounded-full bg-foreground/10 px-3 py-1 text-xs font-medium text-foreground transition-colors group-hover:bg-foreground group-hover:text-background group-hover:shadow-sm">' + actionIcon + actionLabel + '</span></div>'
             + '</a>';
           return w;
         }

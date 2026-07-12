@@ -2,7 +2,6 @@ media:
   input: public/media
   output: /media
   accept: '*/*'
-  max_file_size: 25165824  # 25MB — 超过此大小建议用 upload-media.sh 脚本直传
 
 content:
   - name: posts
@@ -33,13 +32,11 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用媒体 → 粘贴 /media/文件名.ext 即可自动渲染
+          📎 引用云盘链接 → 粘贴外部文件链接即可自动渲染
           ▸ 视频(.mp4) / 音频(.mp3) → 播放器
           ▸ 图片(.png) → 显示图片
-          ▸ 文件(.exe/.zip/.pdf) → 下载卡片
-          ⚠️ 大文件(>10MB) 用工具上传: 项目根目录双击 upload.html 或运行 .\upload-media.ps1
-
-  - name: pages
+          ▸ 文件(.exe/.zip/.pdf) → 下载卡片（右侧"打开链接"）
+          💡 大文件请上传到网盘（百度网盘/阿里云盘等），直接粘贴分享链接
     label: Pages
     type: collection
     path: src/content/pages
@@ -54,9 +51,10 @@ content:
         type: rich-text
         hint: |
 
-          📎 引用媒体 → 粘贴 /media/文件名.ext 即可自动渲染
+          📎 引用云盘链接 → 粘贴外部文件链接自动渲染
           ▸ 视频 / 音频 → 播放器
-          ▸ 文件 (.exe/.zip/.pdf) → 下载卡片
+          ▸ 文件 → 下载卡片（右侧"打开链接"）
+          💡 大文件请上传到网盘，粘贴分享链接
 
   - name: settings
     label: Site Settings
