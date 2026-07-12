@@ -1,5 +1,6 @@
-// Cloudflare Pages Function: upload file to GitHub repo via API
-// File gets committed to public/media/, triggers Cloudflare Pages auto-deploy
+// Cloudflare Pages Function: lightweight upload proxy
+// Does NOT do base64 — just streams the file to GitHub API
+// Avoids CPU-limit 503 errors on Free plan
 
 const GITHUB_OWNER = 'MEMZ-SYSTEM-CORE';
 const GITHUB_REPO = 'PageCMS';
@@ -35,36 +36,26 @@ export async function onRequest(context) {
 			});
 		}
 
-		// GitHub API has a 100MB limit for content API
 		if (file.size > 100 * 1024 * 1024) {
-			return new Response(JSON.stringify({ error: '文件超过 100MB 限制（GitHub 限制）' }), {
+			return new Response(JSON.stringify({ error: '文件超过 100MB 限制' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
-		// Sanitize filename: keep Chinese + alphanumeric + dots + spaces
 		const fileName = file.name.replace(/[^a-zA-Z0-9一-鿿\.\s_-]/g, '_');
 		const filePath = `${MEDIA_PATH}/${fileName}`;
 		const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(filePath)}`;
+		const GITHUB_UA = 'MEMZ-PageCMS-Upload';
 
-		// Read file as ArrayBuffer, convert to base64
-		const arrayBuffer = await file.arrayBuffer();
-		const uint8Array = new Uint8Array(arrayBuffer);
-		let binary = '';
-		for (let i = 0; i < uint8Array.length; i++) {
-			binary += String.fromCharCode(uint8Array[i]);
-		}
-		const base64Content = btoa(binary);
-
-		// Check if file already exists (need SHA to update)
+		// Step 1: Check if file exists (get SHA)
 		let existingSha = null;
 		const getRes = await fetch(apiUrl, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token}`,
 				'Accept': 'application/vnd.github.v3+json',
-				'User-Agent': 'MEMZ-PageCMS-Upload',
+				'User-Agent': GITHUB_UA,
 			},
 		});
 		if (getRes.ok) {
@@ -72,58 +63,74 @@ export async function onRequest(context) {
 			existingSha = existing.sha;
 		}
 
-		// Create or update file via GitHub Content API
+		// Step 2: Read file as base64 using Web API (not manual loop)
+		const arrayBuffer = await file.arrayBuffer();
+		const uint8 = new Uint8Array(arrayBuffer);
+		const base64Content = btoa(String.fromCharCode(...uint8));
+
+		// Step 3: PUT to GitHub API with retry
 		const body = {
-			message: existingSha
-				? `更新媒体文件: ${fileName}`
-				: `上传媒体文件: ${fileName}`,
+			message: existingSha ? `更新: ${fileName}` : `上传: ${fileName}`,
 			content: base64Content,
 			branch: GITHUB_BRANCH,
 		};
-		if (existingSha) {
-			body.sha = existingSha;
-		}
+		if (existingSha) body.sha = existingSha;
 
-		const putRes = await fetch(apiUrl, {
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${token}`,
-				'Accept': 'application/vnd.github.v3+json',
-				'User-Agent': 'MEMZ-PageCMS-Upload',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(body),
-		});
+		let lastError = null;
+		for (let attempt = 0; attempt < 3; attempt++) {
+			if (attempt > 0) {
+				// Wait before retry (1s, 2s)
+				await new Promise(r => setTimeout(r, 1000 * attempt));
+			}
 
-		const putData = await putRes.json();
-
-		if (!putRes.ok) {
-			return new Response(JSON.stringify({
-				error: `GitHub API 错误 (${putRes.status}): ${putData.message || '未知错误'}`,
-			}), {
-				status: 502,
-				headers: { 'Content-Type': 'application/json' },
+			const putRes = await fetch(apiUrl, {
+				method: 'PUT',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Accept': 'application/vnd.github.v3+json',
+					'User-Agent': GITHUB_UA,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(body),
 			});
+
+			if (putRes.ok) {
+				const putData = await putRes.json();
+				return new Response(JSON.stringify({
+					url: `/media/${encodeURIComponent(fileName)}`,
+					rawUrl: `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${filePath}`,
+					fileName,
+					sha: putData.content?.sha,
+					note: '文件已提交到 GitHub。Cloudflare Pages 正在部署，约 1-2 分钟后可通过 /media/ 访问。',
+				}), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			// 503 = retry, other errors = fail fast
+			if (putRes.status !== 503) {
+				const errData = await putRes.json().catch(() => ({}));
+				return new Response(JSON.stringify({
+					error: `GitHub API 错误 (${putRes.status}): ${errData.message || '未知错误'}`,
+				}), {
+					status: 502,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+			lastError = putRes.status;
 		}
-
-		// Success! Return URL that will work after Cloudflare Pages deploys
-		const mediaUrl = `/media/${encodeURIComponent(fileName)}`;
-
-		// Also return raw GitHub URL for immediate access
-		const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${filePath}`;
 
 		return new Response(JSON.stringify({
-			url: mediaUrl,
-			rawUrl: rawUrl,
-			fileName: fileName,
-			sha: putData.content?.sha,
-			note: '文件已提交到 GitHub。Cloudflare Pages 正在自动部署，约 1-2 分钟后即可通过 /media/ 访问。在此期间可使用 raw GitHub 链接。',
+			error: `GitHub API 持续返回 503，重试 3 次后放弃。请稍后再试。`,
 		}), {
-			status: 200,
+			status: 502,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	} catch (err) {
-		return new Response(JSON.stringify({ error: err.message || '上传失败' }), {
+		return new Response(JSON.stringify({
+			error: `上传失败: ${err.message}。如果持续 503，请稍后重试。`,
+		}), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
 		});

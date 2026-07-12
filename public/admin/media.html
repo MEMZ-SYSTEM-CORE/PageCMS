@@ -424,6 +424,20 @@
   const progressText = document.getElementById('progressText');
 
   let selectedFile = null;
+  let githubToken = null;
+
+  async function getToken() {
+    if (githubToken) return githubToken;
+    try {
+      const res = await fetch('/api/token');
+      const data = await res.json();
+      githubToken = data.token;
+      return githubToken;
+    } catch (err) {
+      toast('无法获取上传凭证: ' + err.message, 'error');
+      return null;
+    }
+  }
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
@@ -465,53 +479,100 @@
 
   uploadBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
+
+    const token = await getToken();
+    if (!token) { toast('无法获取上传凭证', 'error'); return; }
+
     uploadBtn.disabled = true;
-    uploadBtn.textContent = '上传中...';
+    uploadBtn.textContent = '处理中...';
     uploadProgress.classList.add('show');
     progressFill.style.width = '0%';
-    progressText.textContent = '上传中 0%';
-
-    const formData = new FormData();
-    formData.append('fileToUpload', selectedFile);
+    progressText.textContent = '读取文件中...';
 
     try {
-      const xhr = new XMLHttpRequest();
-      const data = await new Promise((resolve, reject) => {
-        xhr.upload.addEventListener('progress', (e) => {
+      // Step 1: Read file as base64 via FileReader (browser native, no server CPU)
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onprogress = (e) => {
           if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 100);
+            const pct = Math.round((e.loaded / e.total) * 50);
             progressFill.style.width = pct + '%';
-            progressText.textContent = '上传中 ' + pct + '%';
+            progressText.textContent = '读取文件中 ' + pct + '%';
           }
-        });
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try { resolve(JSON.parse(xhr.responseText)); }
-            catch { reject(new Error('解析响应失败')); }
-          } else {
-            try {
-              const d = JSON.parse(xhr.responseText);
-              reject(new Error(d.error || 'HTTP ' + xhr.status));
-            } catch { reject(new Error('HTTP ' + xhr.status)); }
-          }
-        });
-        xhr.addEventListener('error', () => reject(new Error('网络错误')));
-        xhr.addEventListener('timeout', () => reject(new Error('上传超时')));
-        xhr.open('POST', '/api/upload');
-        xhr.timeout = 300000;
-        xhr.send(formData);
+        };
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = () => reject(new Error('读取文件失败'));
+        reader.readAsDataURL(selectedFile);
       });
+
+      progressFill.style.width = '50%';
+      progressText.textContent = '上传到 GitHub...';
+
+      // Step 2: Upload directly to GitHub API (CORS enabled)
+      const safeName = selectedFile.name.replace(/[^a-zA-Z0-9一-鿿\.\s_-]/g, '_');
+      const filePath = 'public/media/' + safeName;
+      const apiUrl = 'https://api.github.com/repos/MEMZ-SYSTEM-CORE/PageCMS/contents/' + encodeURIComponent(filePath);
+      const auth = 'Bearer ' + token;
+
+      // Check if exists
+      let sha = null;
+      const getRes = await fetch(apiUrl, {
+        headers: { 'Authorization': auth, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MEMZ-PageCMS' },
+      });
+      if (getRes.ok) {
+        const existing = await getRes.json();
+        sha = existing.sha;
+      }
+
+      // Upload with 503 retry
+      const body = {
+        message: sha ? '更新: ' + safeName : '上传: ' + safeName,
+        content: base64,
+        branch: 'master',
+      };
+      if (sha) body.sha = sha;
+
+      let success = false;
+      let lastErr = null;
+      for (let i = 1; i <= 3; i++) {
+        progressText.textContent = '上传到 GitHub (' + i + '/3)';
+        progressFill.style.width = (55 + i * 10) + '%';
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': auth,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'MEMZ-PageCMS',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (putRes.ok) { success = true; break; }
+        lastErr = putRes;
+        if (putRes.status === 503 && i < 3) {
+          progressText.textContent = 'GitHub 繁忙，重试中 (' + i + '/3)...';
+          await new Promise(r => setTimeout(r, 1500 * i));
+        } else break;
+      }
+
+      if (!success) {
+        let msg = '上传失败';
+        try { const d = await lastErr.json(); msg = d.message || msg; } catch {}
+        throw new Error('GitHub API ' + (lastErr ? lastErr.status : '错误') + ': ' + msg);
+      }
 
       progressFill.style.width = '100%';
       progressText.textContent = '✅ 上传完成 ✓';
 
-      toast('上传成功: ' + data.url, 'success');
-      navigator.clipboard.writeText(data.url).catch(() => {});
+      const mediaUrl = '/media/' + encodeURIComponent(safeName);
+      toast('上传成功: ' + mediaUrl, 'success');
+      navigator.clipboard.writeText(mediaUrl).catch(() => {});
 
       uploadBtn.textContent = '再传一个';
       uploadBtn.disabled = false;
 
-      // Auto switch to library after a moment
       setTimeout(() => {
         selectedFile = null;
         fileInput.value = '';

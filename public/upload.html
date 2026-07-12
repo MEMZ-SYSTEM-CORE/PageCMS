@@ -36,26 +36,9 @@
     --error: #ef4444;
   }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--fg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    transition: background .2s, color .2s;
-  }
+  body { font-family: var(--font); background: var(--bg); color: var(--fg); min-height: 100vh; display: flex; flex-direction: column; transition: background .2s, color .2s; }
 
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 48px;
-    padding: 0 16px;
-    max-width: 1024px;
-    margin: 0 auto;
-    width: 100%;
-  }
+  header { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 16px; max-width: 1024px; margin: 0 auto; width: 100%; }
   header a { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; }
   header a:hover { opacity: .7; }
   header nav { display: flex; align-items: center; gap: 6px; }
@@ -71,7 +54,6 @@
 
   .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 48px 24px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; position: relative; }
   .dropzone:hover, .dropzone.dragover { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 3%, var(--bg)); }
-  .dropzone.dragover { border-color: var(--accent); }
   .dropzone-icon { font-size: 36px; margin-bottom: 12px; opacity: .5; }
   .dropzone-text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
   .dropzone-hint { font-size: 12px; color: var(--muted); }
@@ -110,7 +92,7 @@
   .result-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; padding: 8px 12px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
 
   .footer-info { margin-top: 24px; text-align: center; font-size: 12px; color: var(--muted); }
-  .footer-info a { color: var(--fg); text-decoration: underline; text-underline-offset: 2px; }
+  .footer-info code { font-family: var(--mono); font-size: 11px; background: var(--border); padding: 1px 5px; border-radius: 3px; }
 
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); opacity: 0; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; background: var(--card); border: 1px solid var(--border); color: var(--fg); pointer-events: none; transition: all .3s; z-index: 999; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -132,12 +114,12 @@
 <main>
   <div class="container">
     <h1>📤 上传文件到 Media</h1>
-    <p class="sub">文件自动提交到 PageCMS 仓库，Cloudflare 部署后可通过 /media/ 访问</p>
+    <p class="sub">文件直接上传到 GitHub API，绕过 PagesCMS 413 限制</p>
 
     <div class="dropzone" id="dropzone">
       <div class="dropzone-icon">📁</div>
       <div class="dropzone-text">拖拽文件到这里</div>
-      <div class="dropzone-hint">或点击选择 · 最大 100MB（GitHub 限制）</div>
+      <div class="dropzone-hint">或点击选择 · 最大 100MB</div>
       <input type="file" id="fileInput">
     </div>
 
@@ -165,8 +147,8 @@
     </div>
 
     <div class="footer-info">
-      文件提交到 GitHub <code>public/media/</code> ·
-      Cloudflare 自动部署后生效（约 1-2 分钟） ·
+      直传到 GitHub <code>public/media/</code> ·
+      Cloudflare 自动部署（约1-2分钟） ·
       文章中用 <code>/media/文件名</code> 引用
     </div>
   </div>
@@ -211,11 +193,26 @@
   const toast = document.getElementById('toast');
 
   let selectedFile = null;
+  let githubToken = null;
+
+  // Fetch GitHub token on load
+  async function getToken() {
+    if (githubToken) return githubToken;
+    try {
+      const res = await fetch('/api/token');
+      const data = await res.json();
+      githubToken = data.token;
+      return githubToken;
+    } catch (err) {
+      showToast('无法获取上传凭证: ' + err.message, 'error');
+      return null;
+    }
+  }
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
   }
 
   function showToast(msg, type) {
@@ -236,7 +233,7 @@
   function handleFile(file) {
     if (!file) return;
     if (file.size > 100 * 1024 * 1024) {
-      showToast('文件超过 100MB 限制（GitHub 限制）', 'error');
+      showToast('文件超过 100MB 限制', 'error');
       return;
     }
     selectedFile = file;
@@ -255,13 +252,8 @@
     if (fileInput.files.length) handleFile(fileInput.files[0]);
   });
 
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('dragover');
-  });
-  dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('dragover');
-  });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('dragover'); });
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropzone.classList.remove('dragover');
@@ -276,70 +268,131 @@
 
   uploadBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
+
+    const token = await getToken();
+    if (!token) {
+      showToast('无法获取上传凭证', 'error');
+      return;
+    }
+
     uploadBtn.disabled = true;
-    uploadBtn.textContent = '上传中...';
+    uploadBtn.textContent = '处理中...';
     result.classList.remove('show', 'success', 'error');
     progressWrap.classList.add('show');
     progressFill.style.width = '0%';
-    progressText.textContent = '上传中 0%';
-
-    const formData = new FormData();
-    formData.append('fileToUpload', selectedFile);
+    progressText.textContent = '读取文件中 0%';
 
     try {
-      const xhr = new XMLHttpRequest();
-      const data = await new Promise((resolve, reject) => {
-        xhr.upload.addEventListener('progress', (e) => {
+      // Step 1: Read file as base64 using FileReader
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onprogress = (e) => {
           if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 100);
+            const pct = Math.round((e.loaded / e.total) * 50);
             progressFill.style.width = pct + '%';
-            progressText.textContent = '上传中 ' + pct + '%';
+            progressText.textContent = '读取文件中 ' + Math.round(pct) + '%';
           }
-        });
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              resolve(JSON.parse(xhr.responseText));
-            } catch {
-              reject(new Error('解析响应失败: ' + xhr.responseText));
-            }
-          } else {
-            try {
-              const d = JSON.parse(xhr.responseText);
-              reject(new Error(d.error || 'HTTP ' + xhr.status));
-            } catch {
-              reject(new Error('HTTP ' + xhr.status + ': ' + xhr.responseText));
-            }
-          }
-        });
-        xhr.addEventListener('error', () => reject(new Error('网络错误，请检查连接')));
-        xhr.addEventListener('timeout', () => reject(new Error('上传超时')));
-        xhr.open('POST', '/api/upload');
-        xhr.timeout = 300000;
-        xhr.send(formData);
+        };
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          const base64 = dataUrl.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = () => reject(new Error('读取文件失败'));
+        reader.readAsDataURL(selectedFile);
       });
 
-      progressFill.style.width = '100%';
-      progressText.textContent = '上传完成 ✓';
+      progressFill.style.width = '50%';
+      progressText.textContent = '上传到 GitHub 50%';
 
-      // GitHub API flow returns { url, rawUrl, fileName, note }
+      // Step 2: Sanitize filename
+      const safeName = selectedFile.name.replace(/[^a-zA-Z0-9一-鿿\.\s_-]/g, '_');
+      const filePath = 'public/media/' + safeName;
+      const apiUrl = 'https://api.github.com/repos/MEMZ-SYSTEM-CORE/PageCMS/contents/' + encodeURIComponent(filePath);
+
+      const GITHUB_UA = 'MEMZ-PageCMS-Upload';
+
+      // Check if file exists
+      let sha = null;
+      const getRes = await fetch(apiUrl, {
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': GITHUB_UA,
+        },
+      });
+      if (getRes.ok) {
+        const existing = await getRes.json();
+        sha = existing.sha;
+      }
+
+      // Upload with retry on 503
+      const body = {
+        message: sha ? '更新: ' + safeName : '上传: ' + safeName,
+        content: base64,
+        branch: 'master',
+      };
+      if (sha) body.sha = sha;
+
+      let success = false;
+      let lastErr = null;
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        progressText.textContent = '上传到 GitHub (' + attempt + '/3) ' + (50 + attempt * 10) + '%';
+        progressFill.style.width = (50 + attempt * 10) + '%';
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': GITHUB_UA,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (putRes.ok) {
+          success = true;
+          break;
+        }
+
+        lastErr = putRes;
+
+        if (putRes.status === 503 && attempt < 3) {
+          progressText.textContent = ' GitHub 繁忙，重试中 (' + attempt + '/3)...';
+          await new Promise(r => setTimeout(r, 1500 * attempt));
+          continue;
+        }
+
+        break;
+      }
+
+      if (!success) {
+        let errMsg = '上传失败';
+        try {
+          const errData = await lastErr.json();
+          errMsg = errData.message || errMsg;
+        } catch {}
+        throw new Error('GitHub API ' + (lastErr ? lastErr.status : '错误') + ': ' + errMsg);
+      }
+
+      progressFill.style.width = '100%';
+      progressText.textContent = '✅ 上传完成 ✓';
+
+      const mediaUrl = '/media/' + encodeURIComponent(safeName);
       result.className = 'result show success';
       resultLabel.textContent = '✅ 上传成功';
-      resultUrl.value = data.url;
+      resultUrl.value = mediaUrl;
       resultError.style.display = 'none';
-
-      if (data.note) {
-        resultNote.style.display = 'block';
-        resultNote.textContent = '⏳ ' + data.note;
-      } else {
-        resultNote.style.display = 'none';
-      }
+      resultNote.style.display = 'block';
+      resultNote.textContent = '⏳ 文件已提交到 GitHub，Cloudflare 正在部署（约1-2分钟）。部署后通过 ' + mediaUrl + ' 即可访问。';
 
       uploadBtn.textContent = '再传一个';
       uploadBtn.disabled = false;
       showToast('链接已复制！', 'success');
       resultUrl.select();
-      navigator.clipboard.writeText(data.url).catch(() => {});
+      navigator.clipboard.writeText(mediaUrl).catch(() => {});
     } catch (err) {
       progressWrap.classList.remove('show');
       result.className = 'result show error';
@@ -358,10 +411,7 @@
     navigator.clipboard.writeText(resultUrl.value).then(() => {
       copyBtn.textContent = '已复制 ✓';
       copyBtn.className = 'copy-btn copied';
-      setTimeout(() => {
-        copyBtn.textContent = '复制';
-        copyBtn.className = 'copy-btn';
-      }, 2000);
+      setTimeout(() => { copyBtn.textContent = '复制'; copyBtn.className = 'copy-btn'; }, 2000);
     }).catch(() => {
       document.execCommand('copy');
       showToast('已复制到剪贴板', 'success');
