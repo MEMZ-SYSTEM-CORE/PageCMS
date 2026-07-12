@@ -27,12 +27,10 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
 
 <Layout title={title} description={description}>
   <article class="animate-fade-up">
-    <!-- Back link -->
     <a href="/" class="inline-flex items-center gap-1 hover:text-foreground transition-colors text-sm text-muted-foreground mb-8">
       ← 返回文章列表
     </a>
 
-    <!-- Header -->
     <header class="mb-8">
       <div class="flex items-center gap-2 text-sm text-muted-foreground mb-1">
         <span>{dateStr}</span>
@@ -50,11 +48,7 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
 
       {image && (
         <div class="mt-6 -mx-4 sm:-mx-0">
-          <img
-            src={image}
-            alt={title}
-            class="w-full rounded-xl object-cover max-h-96"
-          />
+          <img src={image} alt={title} class="w-full rounded-xl object-cover max-h-96" />
         </div>
       )}
 
@@ -67,57 +61,73 @@ const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
       )}
     </header>
 
-    <!-- Content -->
     <div class="prose" id="prose-content">
       <Content />
     </div>
 
-    <!-- Media embed script: converts media links in content to inline players -->
     <script>
       (function() {
         var prose = document.getElementById('prose-content');
         if (!prose) return;
-        var links = prose.querySelectorAll('a');
-        links.forEach(function(a) {
-          var href = a.href || '';
-          var text = a.textContent.trim();
-          // Only transform if link text looks like a URL or file path
-          var isPlainUrl = text.startsWith('http') || text.startsWith('/');
-          if (!isPlainUrl) return;
-          var isVideo = href.match(/\.(mp4|webm|ogg|mov|avi|mkv)(\?|$)/i);
-          var isAudio = href.match(/\.(mp3|wav|ogg|flac|aac|m4a|wma)(\?|$)/i);
-          if (!isVideo && !isAudio) return;
 
-          var wrapper = document.createElement('div');
-          wrapper.className = 'my-6';
+        var re = /\.(mp4|webm|ogg|mov|avi|mkv|mp3|wav|flac|aac|m4a|wma)(?:$|[?#])/i;
+        var videoRe = /\.(mp4|webm|ogg|mov|avi|mkv)/i;
 
-          if (isVideo) {
-            var video = document.createElement('video');
-            video.src = href;
-            video.controls = true;
-            video.playsInline = true;
-            video.preload = 'metadata';
-            video.className = 'w-full max-h-[70vh] rounded-2xl bg-black ring-1 ring-foreground/10';
-            wrapper.appendChild(video);
+        function makePlayer(src) {
+          var isVid = videoRe.test(src);
+          var w = document.createElement('div');
+          w.className = 'my-6';
+          w.setAttribute('data-media', '');
+          if (isVid) {
+            var v = document.createElement('video');
+            v.src = src; v.controls = true; v.playsInline = true; v.preload = 'metadata';
+            v.className = 'w-full max-h-[70vh] rounded-2xl bg-black ring-1 ring-foreground/10';
+            w.appendChild(v);
           } else {
-            var name = href.split('/').pop() || '音频';
-            var inner = document.createElement('div');
-            inner.className = 'ring-foreground/10 bg-card text-card-foreground flex items-center gap-4 rounded-2xl ring-1 p-5';
-            inner.innerHTML = '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-muted-foreground truncate mb-2">' + name + '</div><audio src="' + href + '" controls preload="none" class="w-full h-10"></audio></div>';
-            wrapper.appendChild(inner);
+            var name = src.split('/').pop() || 'audio';
+            var c = document.createElement('div');
+            c.className = 'ring-foreground/10 bg-card text-card-foreground flex items-center gap-4 rounded-2xl ring-1 p-5';
+            c.innerHTML = '<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="!size-6 text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-muted-foreground truncate mb-2">' + name + '</div><audio src="' + src + '" controls preload="none" class="w-full h-10"></audio></div>';
+            w.appendChild(c);
           }
+          return w;
+        }
 
-          a.parentNode.replaceChild(wrapper, a);
+        // Walk all text nodes, find bare media URLs (not wrapped in <a>)
+        var iter = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, null, false);
+        var todo = [];
+        while (iter.nextNode()) {
+          var n = iter.currentNode;
+          var txt = n.textContent;
+          if (!txt) continue;
+          var p = n.parentNode;
+          if (p.tagName === 'A') continue;
+          if (p.closest && p.closest('[data-media]')) continue;
+          var urlMatch = txt.match(/(https?:\/\/\S+?|\/\S+?)\.(?:mp4|webm|ogg|mov|avi|mkv|mp3|wav|flac|aac|m4a|wma)(?:[?#]\S*)?/i);
+          if (!urlMatch) continue;
+          var url = urlMatch[0];
+          var idx = txt.indexOf(url);
+          var before = txt.slice(0, idx);
+          var after = txt.slice(idx + url.length);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(makePlayer(url));
+          if (after) frag.appendChild(document.createTextNode(after));
+          todo.push({ node: n, frag: frag });
+        }
+        todo.forEach(function(t) { t.node.parentNode.replaceChild(t.frag, t.node); });
+
+        // Also handle <a> tags linking to media files
+        prose.querySelectorAll('a').forEach(function(a) {
+          if (a.href && re.test(a.href) && !a.hasAttribute('data-skip-media')) {
+            a.parentNode.replaceChild(makePlayer(a.href), a);
+          }
         });
       })();
     </script>
 
-    <!-- Footer -->
     <div class="mt-16 border-t pt-6">
-      <a
-        href="/"
-        class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
+      <a href="/" class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
         ← 返回所有文章
       </a>
     </div>
