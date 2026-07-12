@@ -32,6 +32,7 @@
 
 		<nav class="flex items-center gap-1">
 			<a href="/"><Button variant="ghost" size="sm">文章</Button></a>
+			<a href="/music"><Button variant="ghost" size="sm">音乐</Button></a>
 			<a href="/about"><Button variant="ghost" size="sm">关于</Button></a>
 			<a
 				href="https://space.bilibili.com/3494379408853453"
@@ -55,6 +56,7 @@
 						</SheetHeader>
 						<div class="flex flex-col gap-1">
 							<a href="/" onclick={() => { open = false; }} class="hover:bg-muted rounded-lg px-3 py-2 text-sm transition-colors">文章</a>
+							<a href="/music" onclick={() => { open = false; }} class="hover:bg-muted rounded-lg px-3 py-2 text-sm transition-colors">音乐</a>
 							<a href="/about" onclick={() => { open = false; }} class="hover:bg-muted rounded-lg px-3 py-2 text-sm transition-colors">关于</a>
 							<a href="https://space.bilibili.com/3494379408853453" target="_blank" onclick={() => { open = false; }} class="hover:bg-muted rounded-lg px-3 py-2 text-sm transition-colors">B站</a>
 						</div>

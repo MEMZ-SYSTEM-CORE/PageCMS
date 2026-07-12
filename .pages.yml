@@ -41,3 +41,35 @@ content:
         type: text
       - name: body
         type: rich-text
+
+  - name: music
+    label: Music
+    type: collection
+    path: src/content/music
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: order
+      order: asc
+    fields:
+      - name: title
+        type: string
+        label: Title
+        required: true
+      - name: artist
+        type: string
+        label: Artist
+        required: true
+      - name: file
+        type: file
+        label: Audio File
+        required: true
+      - name: cover
+        type: image
+        label: Cover Art
+      - name: order
+        type: number
+        label: Play Order
+      - name: body
+        type: rich-text
+        label: Lyrics

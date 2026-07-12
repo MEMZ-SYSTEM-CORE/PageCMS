@@ -26,4 +26,15 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { posts, pages };
+const music = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/music' }),
+  schema: z.object({
+    title: z.string(),
+    artist: z.string(),
+    file: z.string(),
+    cover: z.string().optional(),
+    order: z.number().optional(),
+  }),
+});
+
+export const collections = { posts, pages, music };
