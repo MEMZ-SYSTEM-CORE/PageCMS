@@ -515,14 +515,25 @@
         });
         xhr.addEventListener('load', () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(xhr.responseText.trim());
+            try {
+              const data = JSON.parse(xhr.responseText);
+              if (data.url) resolve(data.url);
+              else reject(new Error(data.error || '解析响应失败'));
+            } catch {
+              reject(new Error('解析响应失败: ' + xhr.responseText));
+            }
           } else {
-            reject(new Error('HTTP ' + xhr.status + ': ' + xhr.responseText));
+            try {
+              const data = JSON.parse(xhr.responseText);
+              reject(new Error(data.error || 'HTTP ' + xhr.status));
+            } catch {
+              reject(new Error('HTTP ' + xhr.status + ': ' + xhr.responseText));
+            }
           }
         });
         xhr.addEventListener('error', () => reject(new Error('网络错误，请检查连接')));
         xhr.addEventListener('timeout', () => reject(new Error('上传超时')));
-        xhr.open('POST', 'https://catbox.moe/user/api.php');
+        xhr.open('POST', '/api/upload');
         xhr.timeout = 300000; // 5min
         xhr.send(formData);
       });
