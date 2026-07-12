@@ -35,7 +35,7 @@ content:
           正文支持 Markdown 语法（**加粗**、*斜体*、[链接](url)、## 标题等）
           📎 媒体播放 → 粘贴视频或音频链接即可自动渲染播放器
           本地媒体：用 Media 库上传（单文件 < 700KB）
-          大文件：上传到外部存储，粘贴直链即可
+          大文件：去 /upload.html 上传到 Catbox（≤200MB），粘贴直链即可
   - name: pages
     label: Pages
     type: collection

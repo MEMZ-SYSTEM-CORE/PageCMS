@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fafafa">
+<title>上传文件 — MEMZ-SYSTEM-CORE</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #fafafa;
+    --fg: #18181b;
+    --muted: #71717a;
+    --border: #e4e4e7;
+    --card: #ffffff;
+    --accent: #18181b;
+    --accent-fg: #fafafa;
+    --radius: 12px;
+    --success: #16a34a;
+    --error: #dc2626;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+    --mono: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+
+  .dark {
+    --bg: #09090b;
+    --fg: #fafafa;
+    --muted: #a1a1aa;
+    --border: #27272a;
+    --card: #18181b;
+    --accent: #fafafa;
+    --accent-fg: #09090b;
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background .2s, color .2s;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 16px;
+    max-width: 1024px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  header a {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    text-decoration: none;
+  }
+  header a:hover { opacity: .7; }
+  header nav { display: flex; align-items: center; gap: 6px; }
+  header nav a {
+    font-weight: 500;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background .15s;
+  }
+  header nav a:hover {
+    background: var(--border);
+    opacity: 1;
+  }
+  .theme-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    color: var(--fg);
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+  }
+  .theme-btn:hover { background: var(--border); }
+
+  /* Main */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .dropzone:hover,
+  .dropzone.dragover {
+    border-color: var(--fg);
+    background: color-mix(in srgb, var(--fg) 3%, var(--bg));
+  }
+  .dropzone.dragover {
+    border-color: var(--accent);
+  }
+  .dropzone-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    opacity: .5;
+  }
+  .dropzone-text {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .dropzone-hint {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .dropzone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Uploaded file info */
+  .file-info {
+    display: none;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    align-items: center;
+    gap: 10px;
+  }
+  .file-info.show { display: flex; }
+  .file-info .name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-info .size {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .file-info .remove-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .file-info .remove-btn:hover { color: var(--error); }
+
+  /* Upload button */
+  .upload-btn {
+    display: none;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .upload-btn.show { display: block; }
+  .upload-btn:hover { opacity: .85; }
+  .upload-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Progress bar */
+  .progress-wrap {
+    display: none;
+    margin-top: 16px;
+  }
+  .progress-wrap.show { display: block; }
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width .3s;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* Result */
+  .result {
+    display: none;
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+  }
+  .result.show { display: block; }
+  .result.success { border-color: var(--success); }
+  .result.error { border-color: var(--error); }
+  .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  .result-url {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-url input {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    outline: none;
+  }
+  .result-url input:focus { border-color: var(--fg); }
+  .copy-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card);
+    color: var(--fg);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .copy-btn:hover { background: var(--border); }
+  .copy-btn.copied {
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .result-error-text {
+    font-size: 13px;
+    color: var(--error);
+  }
+
+  /* Footer */
+  .footer-info {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .footer-info a {
+    color: var(--fg);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    opacity: 0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    pointer-events: none;
+    transition: all .3s;
+    z-index: 999;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast.success { border-color: var(--success); color: var(--success); }
+  .toast.error { border-color: var(--error); color: var(--error); }
+</style>
+</head>
+<body>
+<header>
+  <a href="/">MEMZ-SYSTEM-CORE</a>
+  <nav>
+    <a href="/">文章</a>
+    <a href="/upload.html" style="font-weight:600">上传</a>
+    <a href="/about">关于</a>
+    <button class="theme-btn" id="themeBtn" aria-label="切换主题">🌙</button>
+  </nav>
+</header>
+
+<main>
+  <div class="container">
+    <h1>📤 上传文件</h1>
+    <p class="sub">拖拽或选择文件，自动上传到 Catbox 并返回直链</p>
+
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon">📁</div>
+      <div class="dropzone-text">拖拽文件到这里</div>
+      <div class="dropzone-hint">或点击选择 · 最大 200MB</div>
+      <input type="file" id="fileInput">
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <span class="name" id="fileName"></span>
+      <span class="size" id="fileSize"></span>
+      <button class="remove-btn" id="removeBtn" title="移除文件">✕</button>
+    </div>
+
+    <button class="upload-btn" id="uploadBtn">上传到 Catbox</button>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">上传中...</div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-label" id="resultLabel">✅ 上传成功</div>
+      <div class="result-url">
+        <input type="text" id="resultUrl" readonly spellcheck="false">
+        <button class="copy-btn" id="copyBtn">复制</button>
+      </div>
+      <div class="result-error-text" id="resultError" style="display:none"></div>
+    </div>
+
+    <div class="footer-info">
+      文件托管于 <a href="https://catbox.moe" target="_blank">Catbox.moe</a> ·
+      单文件 ≤ 200MB ·
+      粘贴直链到文章可自动渲染播放器
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  /* ---- Theme ---- */
+  const themeBtn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.classList.toggle('dark', t === 'dark');
+    themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  let theme = localStorage.getItem('theme');
+  if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(theme);
+  themeBtn.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+  });
+
+  /* ---- Upload ---- */
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileInfo = document.getElementById('fileInfo');
+  const fileName = document.getElementById('fileName');
+  const fileSize = document.getElementById('fileSize');
+  const removeBtn = document.getElementById('removeBtn');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const result = document.getElementById('result');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultUrl = document.getElementById('resultUrl');
+  const resultError = document.getElementById('resultError');
+  const copyBtn = document.getElementById('copyBtn');
+  const toast = document.getElementById('toast');
+
+  let selectedFile = null;
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function showToast(msg, type) {
+    toast.textContent = msg;
+    toast.className = 'toast ' + type + ' show';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function resetUI() {
+    fileInfo.classList.remove('show');
+    uploadBtn.classList.remove('show');
+    progressWrap.classList.remove('show');
+    result.classList.remove('show', 'success', 'error');
+    progressFill.style.width = '0%';
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    if (file.size > 200 * 1024 * 1024) {
+      showToast('文件超过 200MB 限制', 'error');
+      return;
+    }
+    selectedFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = formatSize(file.size);
+    fileInfo.classList.add('show');
+    uploadBtn.classList.add('show');
+    result.classList.remove('show', 'success', 'error');
+    progressWrap.classList.remove('show');
+    progressFill.style.width = '0%';
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = '上传到 Catbox';
+  }
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+
+  removeBtn.addEventListener('click', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    resetUI();
+  });
+
+  uploadBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = '上传中...';
+    result.classList.remove('show', 'success', 'error');
+    progressWrap.classList.add('show');
+    progressFill.style.width = '0%';
+    progressText.textContent = '上传中 0%';
+
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', selectedFile);
+
+    try {
+      const xhr = new XMLHttpRequest();
+      const url = await new Promise((resolve, reject) => {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+            progressText.textContent = '上传中 ' + pct + '%';
+          }
+        });
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr.responseText.trim());
+          } else {
+            reject(new Error('HTTP ' + xhr.status + ': ' + xhr.responseText));
+          }
+        });
+        xhr.addEventListener('error', () => reject(new Error('网络错误，请检查连接')));
+        xhr.addEventListener('timeout', () => reject(new Error('上传超时')));
+        xhr.open('POST', 'https://catbox.moe/user/api.php');
+        xhr.timeout = 300000; // 5min
+        xhr.send(formData);
+      });
+
+      progressFill.style.width = '100%';
+      progressText.textContent = '上传完成 ✓';
+
+      // Validate URL
+      if (url.startsWith('https://files.catbox.moe/')) {
+        result.className = 'result show success';
+        resultLabel.textContent = '✅ 上传成功';
+        resultUrl.value = url;
+        resultError.style.display = 'none';
+        copyBtn.textContent = '复制';
+        copyBtn.className = 'copy-btn';
+        uploadBtn.textContent = '再传一个';
+        uploadBtn.disabled = false;
+        showToast('链接已复制到剪贴板！', 'success');
+        resultUrl.select();
+        navigator.clipboard.writeText(url).catch(() => {});
+      } else {
+        throw new Error('返回了意外的响应: ' + url);
+      }
+    } catch (err) {
+      progressWrap.classList.remove('show');
+      result.className = 'result show error';
+      resultLabel.textContent = '❌ 上传失败';
+      resultError.style.display = 'block';
+      resultError.textContent = err.message;
+      uploadBtn.textContent = '重新上传';
+      uploadBtn.disabled = false;
+      showToast(err.message, 'error');
+    }
+  });
+
+  copyBtn.addEventListener('click', () => {
+    if (!resultUrl.value) return;
+    resultUrl.select();
+    navigator.clipboard.writeText(resultUrl.value).then(() => {
+      copyBtn.textContent = '已复制 ✓';
+      copyBtn.className = 'copy-btn copied';
+      setTimeout(() => {
+        copyBtn.textContent = '复制';
+        copyBtn.className = 'copy-btn';
+      }, 2000);
+    }).catch(() => {
+      document.execCommand('copy');
+      showToast('已复制到剪贴板', 'success');
+    });
+  });
+
+  // Paste support
+  document.addEventListener('paste', (e) => {
+    if (e.target.closest('input, textarea')) return;
+    const files = e.clipboardData.files;
+    if (files.length) handleFile(files[0]);
+  });
+})();
+</script>
+</body>
+</html>
