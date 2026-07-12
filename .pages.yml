@@ -41,3 +41,20 @@ content:
         type: text
       - name: body
         type: rich-text
+
+  - name: settings
+    label: Site Settings
+    type: file
+    path: src/content/settings/site.md
+    format: yaml-frontmatter
+    fields:
+      - name: siteName
+        type: string
+        label: Site Name
+        required: true
+      - name: tagline
+        type: text
+        label: Tagline
+      - name: footerText
+        type: text
+        label: Footer Description

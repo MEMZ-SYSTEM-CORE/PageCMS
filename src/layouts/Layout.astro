@@ -10,7 +10,12 @@ interface Props {
   description?: string;
 }
 const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' } = Astro.props;
----
+
+// Read site settings
+const settingsModules = import.meta.glob('../content/settings/*.md', { eager: true });
+const settingsFile = Object.values(settingsModules)[0] as any;
+const siteName = settingsFile?.frontmatter?.siteName || 'MEMZ-SYSTEM-CORE';
+const footerText = settingsFile?.frontmatter?.footerText || '基于 Astro · PagesCMS';
 ---
 
 <!doctype html>
@@ -35,7 +40,7 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
   </head>
   <body class="bg-background text-foreground flex flex-col min-h-dvh antialiased">
     <ScrollProgress />
-    <Header />
+    <Header siteName={siteName} />
     <main class="flex-1 min-h-0">
       <div class="container mx-auto max-w-4xl px-4 py-12">
         <slot />
@@ -53,7 +58,7 @@ const { title = 'MEMZ-SYSTEM-CORE', description = 'MEMZ-SYSTEM-CORE 的博客' }
             B站
           </a>
         </div>
-        <p class="text-xs text-muted-foreground/60">© {new Date().getFullYear()} MEMZ-SYSTEM-CORE</p>
+        <p class="text-xs text-muted-foreground/60">© {new Date().getFullYear()} {siteName} · {footerText}</p>
       </div>
     </footer>
     <BackToTop />

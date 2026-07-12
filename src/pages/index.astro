@@ -19,10 +19,17 @@ const allTags = [
       .filter(Boolean),
   ),
 ];
+
+// Read site settings from markdown file
+const settingsModules = import.meta.glob('../content/settings/*.md', { eager: true });
+const settingsFile = Object.values(settingsModules)[0] as any;
+const siteName = settingsFile?.frontmatter?.siteName || 'MEMZ-SYSTEM-CORE';
+const tagline = settingsFile?.frontmatter?.tagline || '分享技术、想法和经验';
+const footerText = settingsFile?.frontmatter?.footerText || '基于 Astro · PagesCMS';
 ---
 
-<Layout title="首页" description="MEMZ-SYSTEM-CORE 的博客">
-  <Hero postCount={posts.length} />
+<Layout title={siteName} description={siteName + ' 的博客'}>
+  <Hero siteName={siteName} tagline={tagline} footerText={footerText} postCount={posts.length} />
 
   <!-- Widgets -->
   <div class="animate-fade-up">

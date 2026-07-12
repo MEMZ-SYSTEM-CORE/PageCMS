@@ -2,6 +2,12 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
+	let {
+		siteName = 'MEMZ-SYSTEM-CORE',
+	}: {
+		siteName?: string;
+	} = $props();
+
 	let scrolled = $state(false);
 	let cls = $state('');
 
@@ -22,7 +28,7 @@
 <header class={cls}>
 	<div class="relative flex h-12 items-center justify-between px-4 mx-auto max-w-5xl">
 		<a href="/" class="shrink-0 hover:opacity-80 transition-opacity text-sm font-bold tracking-tight">
-			MEMZ-SYSTEM-CORE
+			{siteName}
 		</a>
 
 		<div class="flex items-center gap-1.5">
