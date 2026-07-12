@@ -1,8 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
-import { Badge } from '../../lib/components/ui/badge/index.js';
-import { Separator } from '../../lib/components/ui/separator/index.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -24,84 +22,92 @@ const readingTime = Math.max(1, Math.ceil((description?.length ?? 100) / 400));
 const dateStr = pubDate.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
+const wordCount = Math.ceil((description?.length ?? 0) * 1.5 + 100);
 ---
 
 <Layout title={title} description={description}>
-  <article class="mx-auto max-w-3xl">
-    <a href="/" class="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-1 text-xs transition-colors">← 返回</a>
+  <article class="mx-auto max-w-3xl animate-fade-in">
+    <!-- 面包屑 -->
+    <div class="mb-8 flex items-center gap-2 text-xs text-muted-foreground">
+      <a href="/" class="hover:text-foreground transition-colors">首页</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-foreground">文章</span>
+    </div>
 
+    <!-- 文章头 -->
     <header class="mb-10 space-y-4">
-      <div class="flex items-center gap-2 text-xs text-muted-foreground">
+      <div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
         <time datetime={pubDate.toISOString()}>{dateStr}</time>
         <span aria-hidden="true">·</span>
         <span>{readingTime} 分钟阅读</span>
+        <span aria-hidden="true">·</span>
+        <span>约 {wordCount} 字</span>
       </div>
 
       <h1 class="text-3xl font-bold tracking-tight leading-[1.15] sm:text-4xl">{title}</h1>
 
-      {description && <p class="text-muted-foreground text-sm leading-relaxed">{description}</p>}
+      {description && (
+        <p class="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      )}
 
       {tags && tags.length > 0 && (
         <div class="flex flex-wrap gap-1.5">
-          {tags.map((tag) => <Badge variant="secondary">{resolveTag(tag)}</Badge>)}
+          {tags.map((tag) => (
+            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium">{resolveTag(tag)}</span>
+          ))}
         </div>
       )}
     </header>
 
+    <!-- 正文 -->
     <div class="prose">
       <Content />
     </div>
 
-    <Separator class="my-16" />
-    <a href="/" class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs transition-colors">← 返回所有文章</a>
+    <!-- 底部导航 -->
+    <div class="mt-16 space-y-6 border-t pt-6">
+      <div class="flex items-center justify-between text-xs">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← 返回所有文章
+        </a>
+      </div>
+
+      <div class="rounded-lg border p-4 text-center text-xs text-muted-foreground">
+        <span>MEMZ-SYSTEM-CORE 的博客</span>
+        <span aria-hidden="true" class="mx-2">·</span>
+        <a href="https://space.bilibili.com/3494379408853453" target="_blank" class="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="!size-3"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.92.453.267.302.4.622.4.96 0 .338-.133.658-.4.96l-1.147 1.12v-.16zm-8.546 5.707a.7.7 0 0 0-.693.693v4.267c0 .373.32.693.693.693.373 0 .693-.32.693-.693v-4.267a.7.7 0 0 0-.693-.693zm5.333 0a.7.7 0 0 0-.693.693v4.267c0 .373.32.693.693.693.373 0 .693-.32.693-.693v-4.267a.7.7 0 0 0-.693-.693z"/></svg>
+          B站
+        </a>
+      </div>
+    </div>
   </article>
 </Layout>
 
 <style>
   .prose :global(h2) {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 0.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
     padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--color-border);
   }
-  .prose :global(h3) {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-top: 1.75rem;
-    margin-bottom: 0.5rem;
-  }
-  .prose :global(p) {
-    margin-bottom: 1rem;
-    line-height: 1.8;
-    font-size: 0.95rem;
-  }
-  .prose :global(ul), .prose :global(ol) { padding-left: 1.5rem; margin-bottom: 1rem; }
-  .prose :global(li) { margin-bottom: 0.25rem; line-height: 1.75; font-size: 0.95rem; }
+  .prose :global(h3) { font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; }
+  .prose :global(p) { margin-bottom: 1.25rem; line-height: 1.85; font-size: 0.95rem; }
+  .prose :global(ul), .prose :global(ol) { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+  .prose :global(li) { margin-bottom: 0.35rem; line-height: 1.85; font-size: 0.95rem; }
   .prose :global(strong) { font-weight: 600; }
-  .prose :global(code) {
-    background: var(--color-muted);
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-    font-size: 0.85em;
-  }
-  .prose :global(pre) {
-    background: oklch(0.15 0 0);
-    color: oklch(0.85 0 0);
-    padding: 1rem;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin: 1rem 0;
-    font-size: 0.875rem;
-  }
+  .prose :global(code) { background: var(--color-muted); padding: 0.15rem 0.45rem; border-radius: 3px; font-size: 0.85em; font-weight: 500; }
+  .prose :global(pre) { background: oklch(0.15 0 0); color: oklch(0.85 0 0); padding: 1.25rem; border-radius: 6px; overflow-x: auto; margin: 1.5rem 0; font-size: 0.875rem; line-height: 1.6; }
   .prose :global(pre code) { background: none; padding: 0; }
-  .prose :global(blockquote) {
-    border-left: 2px solid var(--color-foreground);
-    padding-left: 1rem;
-    color: var(--color-muted-foreground);
-    margin: 1rem 0;
-  }
-  .prose :global(img) { max-width: 100%; border-radius: 4px; margin: 1.5rem 0; }
-  .prose :global(hr) { border: none; border-top: 1px solid var(--color-border); margin: 2rem 0; }
+  .prose :global(blockquote) { border-left: 2px solid var(--color-foreground); padding-left: 1rem; color: var(--color-muted-foreground); margin: 1.5rem 0; line-height: 1.75; }
+  .prose :global(img) { max-width: 100%; border-radius: 6px; margin: 2rem 0; }
+  .prose :global(hr) { border: none; border-top: 1px solid var(--color-border); margin: 2.5rem 0; }
+  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
+  .prose :global(th) { background: var(--color-muted); font-weight: 600; text-align: left; }
+  .prose :global(th), .prose :global(td) { border: 1px solid var(--color-border); padding: 0.6rem 0.85rem; }
 </style>
