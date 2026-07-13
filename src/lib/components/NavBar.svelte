@@ -30,9 +30,9 @@
     if (path === '/') return [];
     const parts = path.split('/').filter(Boolean);
     const displayNames: Record<string, string> = {
-      posts: 'posts',
-      about: 'about',
-      cover: 'cover',
+      posts: '文章',
+      about: '关于',
+      cover: '封面',
     };
     const result: { label: string; href: string }[] = [];
     let accumulated = '';
