@@ -1,10 +1,31 @@
-import { vitePreprocess } from '@astrojs/svelte';
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-export default {
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
 	preprocess: vitePreprocess(),
-	kit: {
-		alias: {
-			$lib: './src/lib',
-		},
+	compilerOptions: {
+		runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
 	},
+	onwarn: (warning, handler) => {
+		if (warning.code.startsWith('a11y_')) return;
+		handler(warning);
+	},
+	kit: {
+		adapter: adapter({
+			fallback: '404.html',
+			strict: false
+		}),
+		prerender: {
+			entries: ['*'],
+			handleHttpError: ({ path, message }) => {
+				console.warn(`[prerender] ${path}: ${message}`);
+			}
+		},
+		alias: {
+			$lib: './src/lib'
+		}
+	}
 };
+
+export default config;

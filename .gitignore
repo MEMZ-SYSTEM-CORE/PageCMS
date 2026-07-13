@@ -1,8 +1,10 @@
 # build output
 dist/
+build/
 
 # generated types
 .astro/
+.svelte-kit/
 
 # dependencies
 node_modules/
@@ -25,3 +27,4 @@ pnpm-debug.log*
 
 # wrangler local state
 .wrangler/
+svaf/
