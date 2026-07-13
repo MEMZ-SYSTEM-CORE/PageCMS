@@ -80,7 +80,7 @@
   class:opacity-0={!navigating}
   class:opacity-100={navigating}
   style="width: {barWidth}%;"
-/>
+></div>
 
 {@render children()}
 
