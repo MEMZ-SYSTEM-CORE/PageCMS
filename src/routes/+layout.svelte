@@ -6,6 +6,7 @@
   import NavBar from '$lib/components/NavBar.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import BackToTop from '$lib/components/BackToTop.svelte';
+  import CookieConsent from '$lib/components/CookieConsent.svelte';
   import { themeMode } from '$lib/stores/theme';
 
   let { children } = $props();
@@ -85,4 +86,5 @@
 {@render children()}
 
 <Footer />
+<CookieConsent />
 <BackToTop />
