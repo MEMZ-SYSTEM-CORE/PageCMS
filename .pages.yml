@@ -83,12 +83,6 @@ content:
         label: SEO Description
         hint: 留空则使用 tagline
 
-  - name: comments
-    label: Comments
-    type: discussions
-    repository: MEMZ-SYSTEM-CORE/giscuz
-    category: Announcements
-
 actions:
   - name: deploy
     label: Deploy to Cloudflare
