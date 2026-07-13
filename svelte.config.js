@@ -20,6 +20,7 @@ const config = {
 		prerender: {
 			entries: ['*'],
 			handleMissingId: 'warn',
+			handleUnseenRoutes: 'warn',
 			handleHttpError: ({ path, message }) => {
 				console.warn(`[prerender] ${path}: ${message}`);
 			}

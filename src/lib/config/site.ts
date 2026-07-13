@@ -23,6 +23,7 @@ export const siteConfig = {
   },
   navLinks: [
     { label: '文章', icon: 'mdi:post-outline', href: '/' },
+    { label: '论坛', icon: 'mdi:forum', href: '/forum' },
     { label: '封面', icon: 'mdi:image-edit', href: '/cover' },
     { label: '关于', icon: 'mdi:information', href: '/about' }
   ]
