@@ -1,4 +1,5 @@
 ---
+slug: tech-stack
 title: Astro + PagesCMS 技术栈
 pubDate: 2026-07-12
 description: 本站使用的技术栈简介

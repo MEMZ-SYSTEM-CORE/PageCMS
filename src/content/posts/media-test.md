@@ -1,4 +1,5 @@
 ---
+slug: media-test
 title: 媒体文件测试
 pubDate: 2026-07-12
 description: 测试音频和视频播放功能

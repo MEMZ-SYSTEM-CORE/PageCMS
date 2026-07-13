@@ -1,4 +1,5 @@
 ---
+slug: hello-pagecms
 title: MEMZ-SYSTEM-CORE 博客
 pubDate: 2026-07-12
 description: 第一篇博客文章
