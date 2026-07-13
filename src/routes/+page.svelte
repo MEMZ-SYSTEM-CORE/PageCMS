@@ -1,23 +1,23 @@
 <script lang="ts">
   import { siteConfig } from '$lib/config/site';
-  import { staggerChildren } from '$lib/utils/motion';
+  import { fadeInUp, fadeIn, staggerChildren } from '$lib/utils/motion';
   import * as Card from '$lib/components/ui/card/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Separator } from '$lib/components/ui/separator/index.js';
   import * as Collapsible from '$lib/components/ui/collapsible/index.js';
   import * as Carousel from '$lib/components/ui/carousel/index.js';
-  import * as ScrollArea from '$lib/components/ui/scroll-area/index.js';
   import * as AspectRatio from '$lib/components/ui/aspect-ratio/index.js';
   import { Popover, PopoverTrigger, PopoverContent } from '$lib/components/ui/popover/index.js';
+  import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar/index.js';
 
   let { data }: { data: { posts: Array<{ slug: string; title: string; pubDate: Date; description?: string; image?: string; tags?: string[] }> } } = $props();
 
   const posts = $derived(data.posts);
   const allTags = $derived([...new Set(posts.flatMap((p) => p.tags || []).filter(Boolean))]);
 
-  let tagOpen = $state(true);
   let featuredIndex = $state(0);
+  let tagOpen = $state(true);
 
   const featured = $derived(posts.slice(0, 4));
 </script>
@@ -26,42 +26,49 @@
   <title>{siteConfig.siteName} — {siteConfig.description}</title>
 </svelte:head>
 
-<div class="mx-auto max-w-2xl" use:staggerChildren>
+<div class="mx-auto max-w-2xl">
   <!-- Hero -->
-  <Card.Root class="mb-8 border-0 bg-gradient-to-br from-card to-muted/30 shadow-sm">
-    <Card.Content class="p-6">
-      <Card.Title class="text-2xl tracking-tight">{siteConfig.siteName}</Card.Title>
-      <Card.Description class="mt-2 text-base">{siteConfig.description}</Card.Description>
-      <div class="mt-4 flex flex-wrap items-center gap-2">
-        <a href="/about"><Button variant="default" size="sm">关于</Button></a>
-        <Button variant="secondary" size="sm" onclick={() => document.getElementById('posts')?.scrollIntoView({ behavior: 'smooth' })}>文章</Button>
-        <Button variant="outline" size="sm" onclick={() => document.getElementById('tags')?.scrollIntoView({ behavior: 'smooth' })}>标签</Button>
-      </div>
-      <div class="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
-        <span>{posts.length} 篇文章</span>
-        <span>{allTags.length} 个标签</span>
-      </div>
-    </Card.Content>
-  </Card.Root>
+  <div class="mb-12" use:fadeInUp>
+    <Card.Root class="border-0 bg-gradient-to-br from-card via-card to-muted/30 shadow-sm">
+      <Card.Content class="flex flex-col items-center p-8 text-center sm:p-10">
+        <Avatar class="mb-4 size-16 ring-2 ring-foreground/10">
+          <AvatarFallback class="bg-accent/10 text-xl font-bold">{siteConfig.siteName.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <Card.Title class="text-2xl font-bold tracking-tight sm:text-3xl">{siteConfig.siteName}</Card.Title>
+        <Card.Description class="mt-2 max-w-md text-base text-muted-foreground">{siteConfig.description}</Card.Description>
+        <div class="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+          <span class="flex items-center gap-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M22 10v5M2 10v5"/><path d="M6 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4"/><rect x="2" y="10" width="20" height="10" rx="1.5"/></svg>
+            {posts.length} 篇文章
+          </span>
+          <span>{allTags.length} 个标签</span>
+        </div>
+        <div class="mt-5 flex flex-wrap items-center gap-2">
+          <a href="/about"><Button variant="default" size="sm">关于本站</Button></a>
+          <Button variant="secondary" size="sm" onclick={() => document.getElementById('posts')?.scrollIntoView({ behavior: 'smooth' })}>浏览文章</Button>
+        </div>
+      </Card.Content>
+    </Card.Root>
+  </div>
 
   <!-- Featured Carousel -->
   {#if featured.length > 0}
-    <section class="mb-10" use:staggerChildren>
-      <div class="mb-4 flex items-center gap-3">
-        <h2 class="text-sm font-medium text-muted-foreground">精选</h2>
-        <div class="h-px flex-1 bg-border/60"></div>
+    <section class="mb-12" use:fadeInUp>
+      <div class="mb-5">
+        <h2 class="text-base font-semibold tracking-tight">精选文章</h2>
+        <p class="text-sm text-muted-foreground mt-0.5">最近更新的几篇文章</p>
       </div>
       <Carousel.Root bind:index={featuredIndex} opts={{ align: 'start', loop: true }}>
-        <Carousel.Content class="-ml-4">
+        <Carousel.Content class="-ml-3">
           {#each featured as post (post.slug)}
-            <Carousel.Item class="basis-full pl-4 sm:basis-1/2">
+            <Carousel.Item class="basis-full pl-3 sm:basis-1/2">
               <a href={'/posts/' + post.slug + '/'} class="block no-underline">
-                <Card.Root class="group overflow-hidden transition-all hover:shadow-md">
-                  <AspectRatio.Root ratio={16 / 9} class="overflow-hidden bg-muted">
+                <Card.Root class="group overflow-hidden transition-all duration-300 hover:shadow-lg">
+                  <AspectRatio.Root ratio={16 / 10} class="overflow-hidden bg-muted">
                     {#if post.image}
-                      <img src={post.image} alt={post.title} class="h-full w-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
+                      <img src={post.image} alt={post.title} class="h-full w-full object-cover transition-all duration-500 group-hover:scale-110" loading="lazy" />
                     {:else}
-                      <div class="flex h-full items-center justify-center text-3xl text-muted-foreground/30">{post.title.charAt(0)}</div>
+                      <div class="flex h-full items-center justify-center bg-gradient-to-br from-accent/5 to-muted text-4xl text-muted-foreground/20">{post.title.charAt(0)}</div>
                     {/if}
                   </AspectRatio.Root>
                   <Card.Content class="p-4">
@@ -69,18 +76,22 @@
                       <time datetime={post.pubDate.toISOString()}>
                         {post.pubDate.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
                       </time>
-                      {#if post.tags?.[0]}
-                        <Badge variant="secondary" class="text-[10px] px-1 py-0">{post.tags[0]}</Badge>
-                      {/if}
+                      <span class="text-muted-foreground/30">|</span>
+                      <span>{Math.max(1, Math.ceil((post.description?.length ?? 100) / 400))} 分钟</span>
                     </div>
-                    <Card.Title class="mt-1 text-sm group-hover:text-foreground/70 transition-colors">{post.title}</Card.Title>
+                    <Card.Title class="mt-1.5 text-sm font-semibold leading-snug group-hover:text-foreground/70 transition-colors">{post.title}</Card.Title>
+                    {#if post.tags?.[0]}
+                      <div class="mt-2 flex gap-1">
+                        <Badge variant="secondary" class="text-[10px] px-1.5 py-0">{post.tags[0]}</Badge>
+                      </div>
+                    {/if}
                   </Card.Content>
                 </Card.Root>
               </a>
             </Carousel.Item>
           {/each}
         </Carousel.Content>
-        <div class="mt-3 flex items-center justify-center gap-2">
+        <div class="mt-4 flex items-center justify-center gap-2">
           <Carousel.Previous variant="outline" size="sm" />
           <Carousel.Next variant="outline" size="sm" />
         </div>
@@ -88,90 +99,91 @@
     </section>
   {/if}
 
-  <Separator class="mb-8" />
-
   <!-- Posts -->
-  <section id="posts" class="mb-10" use:staggerChildren>
-    <div class="mb-4 flex items-center gap-3">
-      <h2 class="text-sm font-medium text-muted-foreground">文章</h2>
-      <div class="h-px flex-1 bg-border/60"></div>
+  <section id="posts" class="mb-12" use:fadeInUp>
+    <div class="mb-5">
+      <h2 class="text-base font-semibold tracking-tight">全部文章</h2>
+      <p class="text-sm text-muted-foreground mt-0.5">共 {posts.length} 篇</p>
     </div>
 
     {#if posts.length > 0}
-      <ScrollArea.Root class="h-[480px] rounded-lg border">
-          <div class="space-y-2 p-3">
-            {#each posts as post (post.slug)}
-              <a href={'/posts/' + post.slug + '/'} class="block no-underline">
-                <Card.Root class="group transition-all hover:shadow-sm">
-                  <Card.Content class="flex items-start gap-3 p-3">
-                    {#if post.image}
-                      <img src={post.image} alt={post.title} class="mt-0.5 h-12 w-20 shrink-0 rounded object-cover" loading="lazy" />
-                    {/if}
-                    <div class="min-w-0 flex-1">
-                      <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                        <time datetime={post.pubDate.toISOString()}>
-                          {post.pubDate.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
-                        </time>
-                      </div>
-                      <h3 class="mt-0.5 text-sm font-medium truncate group-hover:text-foreground/70 transition-colors">{post.title}</h3>
-                      {#if post.description}
-                        <p class="truncate text-xs text-muted-foreground">{post.description}</p>
+      <div class="space-y-3">
+        {#each posts as post (post.slug)}
+          <a href={'/posts/' + post.slug + '/'} class="block no-underline">
+            <Card.Root class="group transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+              <div class="flex items-start gap-4 p-4 sm:p-5">
+                {#if post.image}
+                  <div class="shrink-0 overflow-hidden rounded-lg">
+                    <img src={post.image} alt={post.title} class="h-20 w-28 object-cover transition-all duration-300 group-hover:scale-105 sm:h-24 sm:w-36" loading="lazy" />
+                  </div>
+                {:else}
+                  <div class="flex h-20 w-28 shrink-0 items-center justify-center rounded-lg bg-muted sm:h-24 sm:w-36">
+                    <span class="text-2xl text-muted-foreground/20">{post.title.charAt(0)}</span>
+                  </div>
+                {/if}
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    <time datetime={post.pubDate.toISOString()} class="flex items-center gap-1">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M16 3v4M8 3v4"/></svg>
+                      {post.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </time>
+                    {#if post.tags?.length}
+                      {#each post.tags.filter(Boolean).slice(0, 2) as tag}
+                        <Badge variant="secondary" class="text-[10px] px-1.5 py-0 font-normal">{tag}</Badge>
+                      {/each}
+                      {#if post.tags.filter(Boolean).length > 2}
+                        <span class="text-muted-foreground/50">+{post.tags.filter(Boolean).length - 2}</span>
                       {/if}
-                    </div>
-                    <Popover>
-                      <PopoverTrigger>
-                        <Button variant="ghost" size="icon-sm" aria-label="预览">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent class="w-72 p-0" side="top" align="end">
-                        <Card.Root class="border-0 shadow-none">
-                          {#if post.image}
-                            <img src={post.image} alt={post.title} class="h-32 w-full rounded-t-lg object-cover" />
-                          {/if}
-                          <Card.Content class="p-3">
-                            <Card.Title class="text-sm">{post.title}</Card.Title>
-                            <Card.Description class="mt-1 line-clamp-3 text-xs">{post.description || '暂无描述'}</Card.Description>
-                          </Card.Content>
-                        </Card.Root>
-                      </PopoverContent>
-                    </Popover>
-                  </Card.Content>
-                </Card.Root>
-              </a>
-            {/each}
-          </div>
-        </ScrollArea.Root>
+                    {/if}
+                  </div>
+                  <h3 class="mt-1.5 text-base font-semibold leading-snug group-hover:text-foreground/70 transition-colors sm:text-lg">{post.title}</h3>
+                  {#if post.description}
+                    <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{post.description}</p>
+                  {/if}
+                  <div class="mt-2 flex items-center gap-1 text-xs font-medium text-muted-foreground/60 group-hover:text-foreground/80 transition-colors">
+                    阅读全文
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3 transition-transform group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+                  </div>
+                </div>
+              </div>
+            </Card.Root>
+          </a>
+        {/each}
+      </div>
     {:else}
-      <Card.Root>
-        <Card.Content class="py-12 text-center">
+      <Card.Root class="py-16">
+        <Card.Content class="text-center">
+          <div class="mb-3 text-4xl text-muted-foreground/20">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto size-12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
           <Card.Description>暂无文章</Card.Description>
         </Card.Content>
       </Card.Root>
     {/if}
   </section>
 
-  <Separator class="mb-8" />
-
-  <!-- Tags (Collapsible) -->
+  <!-- Tags -->
   {#if allTags.length > 0}
-    <section id="tags" class="mb-10" use:staggerChildren>
+    <section class="mb-8" use:fadeInUp>
       <Collapsible.Root bind:open={tagOpen}>
-        <div class="mb-4 flex items-center gap-3">
+        <div class="mb-4">
           <Collapsible.Trigger>
-            <button class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 transition-transform" class:rotate-90={tagOpen}><path d="m9 18 6-6-6-6"/></svg>
+            <button class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 transition-transform duration-200" class:rotate-90={tagOpen}><path d="m9 18 6-6-6-6"/></svg>
               标签 ({allTags.length})
             </button>
           </Collapsible.Trigger>
-          <div class="h-px flex-1 bg-border/60"></div>
         </div>
         <Collapsible.Content>
-          <div class="flex flex-wrap gap-2">
-            {#each allTags as tag}
-              <Badge variant="secondary" class="px-2.5 py-1 text-xs font-normal transition-all hover:bg-accent hover:text-accent-foreground cursor-default">{tag}</Badge>
-            {/each}
-          </div>
+          <Card.Root class="border-dashed">
+            <Card.Content class="p-4">
+              <div class="flex flex-wrap gap-2">
+                {#each allTags as tag}
+                  <Badge variant="secondary" class="px-3 py-1.5 text-xs font-normal transition-all hover:bg-accent hover:text-accent-foreground cursor-default">{tag}</Badge>
+                {/each}
+              </div>
+            </Card.Content>
+          </Card.Root>
         </Collapsible.Content>
       </Collapsible.Root>
     </section>
