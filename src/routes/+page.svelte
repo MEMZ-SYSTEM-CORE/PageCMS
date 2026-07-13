@@ -32,6 +32,7 @@
     <Card.Root class="border-0 bg-gradient-to-br from-card via-card to-muted/30 shadow-sm">
       <Card.Content class="flex flex-col items-center p-8 text-center sm:p-10">
         <Avatar class="mb-4 size-16 ring-2 ring-foreground/10">
+          <AvatarImage src="https://i1.hdslb.com/bfs/face/b2f8487effcf7a87f4f885d89fc35ab5c946f6a7.jpg" alt={siteConfig.siteName} />
           <AvatarFallback class="bg-accent/10 text-xl font-bold">{siteConfig.siteName.charAt(0)}</AvatarFallback>
         </Avatar>
         <Card.Title class="text-2xl font-bold tracking-tight sm:text-3xl">{siteConfig.siteName}</Card.Title>

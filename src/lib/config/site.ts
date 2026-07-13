@@ -6,6 +6,7 @@ export const siteConfig = {
   url: 'https://memz-system-core.pages.dev',
   icon: '/favicon.svg',
   ogImage: '/favicon.svg',
+  avatar: 'https://i1.hdslb.com/bfs/face/b2f8487effcf7a87f4f885d89fc35ab5c946f6a7.jpg',
   lang: 'zh_CN',
   author: {
     name: 'MEMZ-SYSTEM-CORE',
