@@ -41,6 +41,9 @@
     const giscus = document.querySelector('.giscus');
     if (!giscus || giscus.hasChildNodes()) return;
 
+    const isDark = document.documentElement.classList.contains('dark');
+    const theme = isDark ? 'dark' : 'light';
+
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.setAttribute('data-repo', 'MEMZ-SYSTEM-CORE/giscuz');
@@ -52,7 +55,7 @@
     script.setAttribute('data-reactions-enabled', '1');
     script.setAttribute('data-emit-metadata', '0');
     script.setAttribute('data-input-position', 'top');
-    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-theme', theme);
     script.setAttribute('data-lang', 'zh-CN');
     script.setAttribute('data-loading', 'lazy');
     script.crossOrigin = 'anonymous';

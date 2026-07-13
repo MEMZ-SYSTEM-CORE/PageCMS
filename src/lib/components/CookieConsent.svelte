@@ -220,11 +220,11 @@
           <div class="flex-1">
             <h3 class="font-semibold">必要 Cookie</h3>
             <p class="text-sm text-muted-foreground mt-1 mb-2">
-              这些 Cookie 对于网站的基本功能是必需的，无法禁用。
+              这些对于网站的基本功能是必需的，无法禁用。
             </p>
             <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-              <li>Umami Analytics - 网站统计</li>
-              <li>CDN 性能监控</li>
+              <li>主题偏好 - 亮色/暗色/跟随系统</li>
+              <li>Cookie 同意设置</li>
             </ul>
           </div>
         </div>
@@ -237,7 +237,7 @@
           <div class="flex-1">
             <h3 class="font-semibold">功能性 Cookie</h3>
             <p class="text-sm text-muted-foreground mt-1 mb-2">
-              这些 Cookie 用于增强网站功能和个性化体验。
+              这些用于增强网站功能和个性化体验。
             </p>
             <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
               <li>Giscus - 评论系统</li>
@@ -253,12 +253,10 @@
           <div class="flex-1">
             <h3 class="font-semibold">分析 Cookie</h3>
             <p class="text-sm text-muted-foreground mt-1 mb-2">
-              这些 Cookie 帮助我们了解访问者如何使用网站，以便改进用户体验。
+              这些帮助我们了解访问者如何使用网站。
             </p>
             <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-              <li>百度统计 - 访问分析</li>
-              <li>Google Analytics - 用户行为分析</li>
-              <li>Microsoft Clarity - 用户体验分析</li>
+              <li>Cloudflare Web Analytics - 匿名访问统计</li>
             </ul>
           </div>
         </div>
