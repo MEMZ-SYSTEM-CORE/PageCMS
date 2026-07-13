@@ -1,5 +1,8 @@
 name = "pagecms"
-compatibility_date = "2026-07-12"
-
+compatibility_date = "2026-07-13"
 pages_build_output_dir = "build"
-build_command = "pnpm build"
+main = "build/server/index.js"
+compatibility_flags = ["nodejs_compat"]
+
+[placement]
+mode = "smart"

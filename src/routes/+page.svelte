@@ -21,7 +21,7 @@
   <!-- Avatar -->
   <div class="mo-fade-in-up" use:fadeInUp>
     <a href={siteConfig.bio.links[0]?.url || '/'} target="_blank" rel="noopener noreferrer">
-      <img src={siteConfig.avatar} alt={siteConfig.bio.name} class="h-32 w-32 rounded-full cursor-pointer hover:opacity-90 transition-opacity" />
+      <img src={siteConfig.avatar} alt={siteConfig.bio.name} class="h-32 w-32 rounded-full cursor-pointer hover:opacity-90 transition-opacity" referrerpolicy="no-referrer" />
     </a>
   </div>
 

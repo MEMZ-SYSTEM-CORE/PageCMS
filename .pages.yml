@@ -9,7 +9,14 @@ content:
     type: collection
     path: src/content/posts
     format: yaml-frontmatter
+    filename:
+      slug: slug
+      suffix: .md
     fields:
+      - name: slug
+        type: string
+        label: Slug
+        hint: 文章 URL 标识，默认与文件名一致，修改后将自动重命名文件
       - name: title
         type: string
         required: true
@@ -77,3 +84,9 @@ content:
         type: text
         label: SEO Description
         hint: 留空则使用 tagline
+
+actions:
+  - label: Deploy to Cloudflare
+    hint: 手动部署到 Cloudflare Workers
+    confirm: 确定要部署到 Cloudflare Workers 吗？
+    action: deploy

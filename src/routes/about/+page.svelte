@@ -18,7 +18,7 @@
     <Card.Content class="relative z-10">
       <div class="space-y-4">
         <div class="text-center mb-6">
-          <img src={siteConfig.avatar} alt={siteConfig.bio.name} class="h-24 w-24 rounded-full mx-auto mb-4" />
+          <img src={siteConfig.avatar} alt={siteConfig.bio.name} class="h-24 w-24 rounded-full mx-auto mb-4" referrerpolicy="no-referrer" />
           <h1 class="text-2xl font-bold">{siteConfig.bio.name}</h1>
           <p class="text-muted-foreground mt-1">{siteConfig.description}</p>
         </div>
