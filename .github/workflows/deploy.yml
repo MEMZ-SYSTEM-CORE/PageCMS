@@ -3,10 +3,9 @@ name: Deploy to Cloudflare Workers
 on:
   workflow_dispatch:
     inputs:
-      confirm:
-        description: '确认部署'
-        required: true
-        default: 'yes'
+      payload:
+        description: 'Pages CMS payload'
+        required: false
 
 jobs:
   deploy:
