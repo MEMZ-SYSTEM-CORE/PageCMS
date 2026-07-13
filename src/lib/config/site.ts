@@ -4,7 +4,7 @@ export const siteConfig = {
   title: 'MEMZ-SYSTEM-CORE',
   description: '分享技术、想法和经验',
   url: 'https://memz-system-core.pages.dev',
-  icon: '/favicon.svg',
+  icon: 'https://i1.hdslb.com/bfs/face/b2f8487effcf7a87f4f885d89fc35ab5c946f6a7.jpg',
   ogImage: '/favicon.svg',
   lang: 'zh_CN',
   avatar: 'https://i1.hdslb.com/bfs/face/b2f8487effcf7a87f4f885d89fc35ab5c946f6a7.jpg',

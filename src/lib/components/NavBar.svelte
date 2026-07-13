@@ -48,7 +48,7 @@
   <div class="relative flex h-10 items-center justify-between px-2">
     <div class="flex items-center gap-1 min-w-0">
       <a href="/" class="shrink-0 hover:opacity-80 transition-opacity" onmouseenter={startSpin} onmouseleave={stopSpin}>
-        <img src={siteConfig.icon} alt="Home" class="h-6 w-6 rounded-full" style="transform: rotate({spinDeg}deg);" />
+        <img src={siteConfig.avatar} alt="Home" class="h-6 w-6 rounded-full" style="transform: rotate({spinDeg}deg);" referrerpolicy="no-referrer" />
       </a>
       {#each crumbs as crumb, i (crumb.href)}
         <div in:fly={{ x: -8, duration: 300 }} out:fly={{ x: 8, duration: 200 }} class="inline-flex items-center gap-1">
