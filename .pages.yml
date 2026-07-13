@@ -87,6 +87,7 @@ content:
         hint: 留空则使用 tagline
 
 actions:
-  - label: Deploy to Cloudflare
-    action: deploy
+  - name: deploy
+    label: Deploy to Cloudflare
+    workflow: deploy.yml
     confirm: 确定要部署到 Cloudflare Workers 吗？
