@@ -9,8 +9,6 @@ content:
     type: collection
     path: src/content/posts
     format: yaml-frontmatter
-    filename:
-      slug: slug
     fields:
       - name: slug
         type: string
