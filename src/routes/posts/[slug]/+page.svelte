@@ -35,7 +35,30 @@
     }).join('\n');
   }
 
-  onMount(() => { embedMedia(); });
+  onMount(() => { embedMedia(); loadGiscus(); });
+
+  function loadGiscus() {
+    const giscus = document.querySelector('.giscus');
+    if (!giscus || giscus.hasChildNodes()) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'MEMZ-SYSTEM-CORE/giscuz');
+    script.setAttribute('data-repo-id', 'R_kgDOTXCGPw');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTXCGP84DBGZC');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'top');
+    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('data-loading', 'lazy');
+    script.crossOrigin = 'anonymous';
+    script.async = true;
+    giscus.appendChild(script);
+  }
 
   function embedMedia() {
     const prose = document.getElementById('prose-content');
@@ -171,7 +194,8 @@
   </div>
 
   <footer class="mt-12 border-t pt-8">
-    <div class="text-center">
+    <div class="giscus mt-8"></div>
+    <div class="text-center mt-6">
       <a href="/" class="text-sm text-muted-foreground hover:text-foreground transition-colors">← 返回首页</a>
     </div>
   </footer>
