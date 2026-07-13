@@ -10,9 +10,7 @@ content:
     path: src/content/posts
     format: yaml-frontmatter
     filename:
-      slug:
-        field: slug
-        suffix: .md
+      slug: slug
     fields:
       - name: slug
         type: string
