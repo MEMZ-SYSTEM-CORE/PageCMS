@@ -39,37 +39,51 @@
         <Card.Header class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
           <Card.Title class="text-center text-5xl font-black tracking-widest text-foreground/[0.04] dark:text-foreground/[0.06] select-none">最新</Card.Title>
         </Card.Header>
-        <Card.Content class="relative z-10">
-          <div class="space-y-3">
-            {#each posts.slice(0, 5) as post, i (post.slug)}
-              <a href={'/posts/' + post.slug + '/'} class="block no-underline group">
-                <div class="flex items-center justify-between gap-3 rounded-lg p-2 -mx-2 transition-colors hover:bg-accent/30">
-                  <div class="min-w-0 flex-1">
-                    <div class="text-sm font-medium truncate group-hover:text-foreground/70 transition-colors">{post.title}</div>
-                    <div class="text-xs text-muted-foreground mt-0.5">
-                      {post.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
-                      {#if post.tags?.length}
-                        {#each post.tags.filter(Boolean).slice(0, 2) as tag}
-                          <span class="ml-1.5">#{tag}</span>
-                        {/each}
+        <Card.Content class="relative z-10 space-y-4">
+          {#each posts.slice(0, 5) as post (post.slug)}
+            <a href={'/posts/' + post.slug + '/'} class="block no-underline group">
+              <Card.Root class="transition-all hover:shadow-md">
+                <Card.Content class="p-3 sm:p-4">
+                  <div class="flex flex-col gap-3 sm:flex-row">
+                    {#if post.image}
+                      <div class="sm:w-32 sm:flex-shrink-0">
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          loading="lazy"
+                          decoding="async"
+                          class="h-32 w-full rounded-md object-cover sm:h-20"
+                        />
+                      </div>
+                    {/if}
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm text-muted-foreground">
+                        <time datetime={post.pubDate.toISOString()}>
+                          {post.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </time>
+                        <span class="text-muted-foreground/30">·</span>
+                        <span>{Math.max(1, Math.ceil((post.description?.length ?? 100) / 400))} 分钟</span>
+                        {#if post.tags?.length}
+                          {#each post.tags.filter(Boolean).slice(0, 2) as tag}
+                            <Badge variant="secondary" class="text-[10px] px-1.5 py-0">{tag}</Badge>
+                          {/each}
+                        {/if}
+                      </div>
+                      <h3 class="mt-1 text-base sm:text-lg font-semibold group-hover:text-foreground/70 transition-colors truncate">{post.title}</h3>
+                      {#if post.description}
+                        <p class="mt-0.5 text-xs sm:text-sm text-muted-foreground line-clamp-2">{post.description}</p>
                       {/if}
                     </div>
                   </div>
-                  {#if post.description}
-                    <div class="hidden sm:block text-xs text-muted-foreground/60 truncate max-w-48 text-right">{post.description}</div>
-                  {/if}
-                </div>
-              </a>
-              {#if i < posts.slice(0, 5).length - 1}
-                <div class="border-b border-border/40"></div>
-              {/if}
-            {/each}
-            {#if posts.length > 5}
-              <div class="text-center pt-1">
-                <a href="/posts" class="text-xs text-muted-foreground hover:text-foreground transition-colors">查看全部 →</a>
-              </div>
-            {/if}
-          </div>
+                </Card.Content>
+              </Card.Root>
+            </a>
+          {/each}
+          {#if posts.length > 5}
+            <div class="text-center pt-1">
+              <a href="/posts" class="text-xs text-muted-foreground hover:text-foreground transition-colors">查看全部 →</a>
+            </div>
+          {/if}
         </Card.Content>
       </Card.Root>
     </div>
