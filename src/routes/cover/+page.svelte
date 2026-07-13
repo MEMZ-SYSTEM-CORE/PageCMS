@@ -6,9 +6,10 @@
   import * as Card from '$lib/components/ui/card/index.js';
   import { Separator } from '$lib/components/ui/separator/index.js';
   import * as Tabs from '$lib/components/ui/tabs/index.js';
+  import { Switch } from '$lib/components/ui/switch/index.js';
 
-  let titleText = $state('My Blog Post');
-  let subtitleText = $state('A subtitle or description');
+  let titleText = $state('我的文章标题');
+  let subtitleText = $state('副标题或描述文字');
   let authorText = $state('MEMZ-SYSTEM-CORE');
   let fontSize = $state(48);
   let subtitleSize = $state(20);
@@ -19,10 +20,10 @@
   let previewRef = $state<HTMLDivElement>();
 
   const presets = [
-    { label: 'Dark', bg: '#1a1a2e', text: '#ffffff', accent: '#e94560' },
-    { label: 'Light', bg: '#f8f9fa', text: '#212529', accent: '#0d6efd' },
-    { label: 'Nature', bg: '#2d5016', text: '#ffffff', accent: '#a8e06c' },
-    { label: 'Warm', bg: '#2c1810', text: '#f5e6d3', accent: '#d4a574' },
+    { label: '深色', bg: '#1a1a2e', text: '#ffffff', accent: '#e94560' },
+    { label: '浅色', bg: '#f8f9fa', text: '#212529', accent: '#0d6efd' },
+    { label: '自然', bg: '#2d5016', text: '#ffffff', accent: '#a8e06c' },
+    { label: '暖色', bg: '#2c1810', text: '#f5e6d3', accent: '#d4a574' },
   ];
 
   function download() {
@@ -41,7 +42,7 @@
     ctx.font = `bold ${Math.round(fontSize * 1.8)}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    wrapText(ctx, titleText || 'Title', 600, 260, 900, fontSize * 2.2);
+    wrapText(ctx, titleText || '标题', 600, 260, 900, fontSize * 2.2);
     if (subtitleText) {
       ctx.fillStyle = textColor;
       ctx.globalAlpha = 0.7;
@@ -89,15 +90,15 @@
 </script>
 
 <svelte:head>
-  <title>Cover Generator — {siteConfig.siteName}</title>
-  <meta name="description" content="Generate beautiful blog cover images" />
+  <title>封面生成器 — {siteConfig.siteName}</title>
+  <meta name="description" content="在线生成精美的博客封面图片" />
 </svelte:head>
 
 <div class="mx-auto max-w-4xl">
   <div class="mb-6 flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold tracking-tight">Cover Generator</h1>
-      <p class="text-sm text-muted-foreground">Design blog post cover images</p>
+      <h1 class="text-2xl font-bold tracking-tight">封面生成器</h1>
+      <p class="text-sm text-muted-foreground">在线生成精美的博客封面图片</p>
     </div>
   </div>
 
@@ -110,7 +111,7 @@
             <div class="absolute left-0 top-0 h-full w-1.5" style="background: {accentColor};"></div>
           {/if}
           <h2 class="mb-2 font-bold leading-tight tracking-tight" style="color: {textColor}; font-size: {fontSize}px;">
-            {titleText || 'Title'}
+            {titleText || '标题'}
           </h2>
           {#if subtitleText}
             <p class="max-w-md opacity-80" style="color: {textColor}; font-size: {subtitleSize}px;">
@@ -128,12 +129,12 @@
 
       <div class="mt-3 flex gap-2">
         <Button onclick={download} class="flex-1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PNG
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-icon="inline-start"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载 PNG
         </Button>
         <Button variant="outline" onclick={copyStyle}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 mr-2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy CSS
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-icon="inline-start"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制样式
         </Button>
       </div>
     </div>
@@ -142,13 +143,13 @@
     <div class="lg:col-span-2">
       <Tabs.Root bind:value={activeTab}>
         <Tabs.List class="w-full">
-          <Tabs.Trigger value="design" class="flex-1">Design</Tabs.Trigger>
-          <Tabs.Trigger value="text" class="flex-1">Text</Tabs.Trigger>
+          <Tabs.Trigger value="design" class="flex-1">设计</Tabs.Trigger>
+          <Tabs.Trigger value="text" class="flex-1">文字</Tabs.Trigger>
         </Tabs.List>
 
         <Tabs.Content value="design" class="mt-4 space-y-4">
           <div class="space-y-2">
-            <Label for="bgColor">Background</Label>
+            <Label for="bgColor">背景色</Label>
             <div class="flex gap-2">
               <input id="bgColor" type="color" bind:value={bgColor} class="h-9 w-9 cursor-pointer rounded border" />
               <Input value={bgColor} oninput={(e) => bgColor = (e.target as HTMLInputElement).value} class="font-mono text-xs" />
@@ -156,7 +157,7 @@
           </div>
 
           <div class="space-y-2">
-            <Label for="textColor">Text Color</Label>
+            <Label for="textColor">文字色</Label>
             <div class="flex gap-2">
               <input id="textColor" type="color" bind:value={textColor} class="h-9 w-9 cursor-pointer rounded border" />
               <Input value={textColor} oninput={(e) => textColor = (e.target as HTMLInputElement).value} class="font-mono text-xs" />
@@ -164,19 +165,19 @@
           </div>
 
           <div class="space-y-2">
-            <Label for="accentColor">Accent</Label>
+            <Label for="accentColor">强调色</Label>
             <div class="flex gap-2">
               <input id="accentColor" type="color" bind:value={accentColor} class="h-9 w-9 cursor-pointer rounded border" />
               <Input value={accentColor} oninput={(e) => accentColor = (e.target as HTMLInputElement).value} class="font-mono text-xs" />
             </div>
-            <label class="flex items-center gap-2 text-sm">
-              <input type="checkbox" bind:checked={showAccent} class="rounded" />
-              Show accent bar
-            </label>
+            <div class="flex items-center gap-2">
+              <Switch id="showAccent" bind:checked={showAccent} />
+              <Label for="showAccent" class="text-sm font-normal">显示强调条</Label>
+            </div>
           </div>
 
           <div class="space-y-2">
-            <Label for="presets">Presets</Label>
+            <Label>配色预设</Label>
             <div class="flex flex-wrap gap-2">
               {#each presets as item}
                 <button
@@ -192,29 +193,29 @@
 
         <Tabs.Content value="text" class="mt-4 space-y-4">
           <div class="space-y-2">
-            <Label for="title">Title</Label>
-            <Input id="title" bind:value={titleText} placeholder="Post title" />
+            <Label for="title">标题</Label>
+            <Input id="title" bind:value={titleText} placeholder="文章标题" />
           </div>
 
           <div class="space-y-2">
-            <Label for="subtitle">Subtitle</Label>
-            <Input id="subtitle" bind:value={subtitleText} placeholder="Subtitle or description" />
+            <Label for="subtitle">副标题</Label>
+            <Input id="subtitle" bind:value={subtitleText} placeholder="副标题或描述" />
           </div>
 
           <div class="space-y-2">
-            <Label for="author">Author</Label>
-            <Input id="author" bind:value={authorText} placeholder="Author name" />
+            <Label for="author">作者</Label>
+            <Input id="author" bind:value={authorText} placeholder="作者名称" />
           </div>
 
           <Separator />
 
           <div class="space-y-1">
-            <Label>Title Size: {fontSize}px</Label>
+            <Label>标题大小：{fontSize}px</Label>
             <input type="range" bind:value={fontSize} min={24} max={80} class="w-full accent-foreground" />
           </div>
 
           <div class="space-y-1">
-            <Label>Subtitle Size: {subtitleSize}px</Label>
+            <Label>副标题大小：{subtitleSize}px</Label>
             <input type="range" bind:value={subtitleSize} min={12} max={40} class="w-full accent-foreground" />
           </div>
         </Tabs.Content>

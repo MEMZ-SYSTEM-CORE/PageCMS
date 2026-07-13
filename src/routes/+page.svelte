@@ -33,13 +33,13 @@
       <Card.Title class="text-2xl tracking-tight">{siteConfig.siteName}</Card.Title>
       <Card.Description class="mt-2 text-base">{siteConfig.description}</Card.Description>
       <div class="mt-4 flex flex-wrap items-center gap-2">
-        <a href="/about"><Button variant="default" size="sm">About</Button></a>
-        <Button variant="secondary" size="sm" onclick={() => document.getElementById('posts')?.scrollIntoView({ behavior: 'smooth' })}>Posts</Button>
-        <Button variant="outline" size="sm" onclick={() => document.getElementById('tags')?.scrollIntoView({ behavior: 'smooth' })}>Tags</Button>
+        <a href="/about"><Button variant="default" size="sm">关于</Button></a>
+        <Button variant="secondary" size="sm" onclick={() => document.getElementById('posts')?.scrollIntoView({ behavior: 'smooth' })}>文章</Button>
+        <Button variant="outline" size="sm" onclick={() => document.getElementById('tags')?.scrollIntoView({ behavior: 'smooth' })}>标签</Button>
       </div>
       <div class="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
-        <span>{posts.length} posts</span>
-        <span>{allTags.length} tags</span>
+        <span>{posts.length} 篇文章</span>
+        <span>{allTags.length} 个标签</span>
       </div>
     </Card.Content>
   </Card.Root>
@@ -48,7 +48,7 @@
   {#if featured.length > 0}
     <section class="mb-10" use:staggerChildren>
       <div class="mb-4 flex items-center gap-3">
-        <h2 class="text-sm font-medium text-muted-foreground">Featured</h2>
+        <h2 class="text-sm font-medium text-muted-foreground">精选</h2>
         <div class="h-px flex-1 bg-border/60"></div>
       </div>
       <Carousel.Root bind:index={featuredIndex} opts={{ align: 'start', loop: true }}>
@@ -93,7 +93,7 @@
   <!-- Posts -->
   <section id="posts" class="mb-10" use:staggerChildren>
     <div class="mb-4 flex items-center gap-3">
-      <h2 class="text-sm font-medium text-muted-foreground">Posts</h2>
+      <h2 class="text-sm font-medium text-muted-foreground">文章</h2>
       <div class="h-px flex-1 bg-border/60"></div>
     </div>
 
@@ -120,7 +120,7 @@
                     </div>
                     <Popover>
                       <PopoverTrigger>
-                        <Button variant="ghost" size="icon-sm" aria-label="Preview">
+                        <Button variant="ghost" size="icon-sm" aria-label="预览">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                         </Button>
                       </PopoverTrigger>
@@ -131,7 +131,7 @@
                           {/if}
                           <Card.Content class="p-3">
                             <Card.Title class="text-sm">{post.title}</Card.Title>
-                            <Card.Description class="mt-1 line-clamp-3 text-xs">{post.description || 'No description'}</Card.Description>
+                            <Card.Description class="mt-1 line-clamp-3 text-xs">{post.description || '暂无描述'}</Card.Description>
                           </Card.Content>
                         </Card.Root>
                       </PopoverContent>
@@ -145,7 +145,7 @@
     {:else}
       <Card.Root>
         <Card.Content class="py-12 text-center">
-          <Card.Description>No posts yet</Card.Description>
+          <Card.Description>暂无文章</Card.Description>
         </Card.Content>
       </Card.Root>
     {/if}
@@ -161,7 +161,7 @@
           <Collapsible.Trigger>
             <button class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 transition-transform" class:rotate-90={tagOpen}><path d="m9 18 6-6-6-6"/></svg>
-              Tags ({allTags.length})
+              标签 ({allTags.length})
             </button>
           </Collapsible.Trigger>
           <div class="h-px flex-1 bg-border/60"></div>

@@ -11,6 +11,7 @@
     const displayNames: Record<string, string> = {
       posts: '文章',
       about: '关于',
+      cover: '封面',
     };
     const result: { label: string; href: string }[] = [];
     let accumulated = '';
@@ -24,14 +25,16 @@
 
 <nav class="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
   <div class="relative flex h-10 items-center justify-between px-4 mx-auto max-w-5xl">
-    <div class="flex items-center gap-1 min-w-0">
+    <div class="flex items-center min-w-0">
       <a href="/" class="shrink-0 hover:opacity-80 transition-opacity text-sm font-bold tracking-tight mr-1">
         {siteConfig.siteName}
       </a>
       {#if crumbs.length > 0}
-        <Breadcrumb.Separator class="text-muted-foreground/40" />
         <Breadcrumb.Root>
           <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Separator />
+            </Breadcrumb.Item>
             {#each crumbs as crumb, i}
               <Breadcrumb.Item>
                 {#if i < crumbs.length - 1}

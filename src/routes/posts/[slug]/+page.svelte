@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { siteConfig } from '$lib/config/site';
+  import { Badge } from '$lib/components/ui/badge/index.js';
 
   let { data }: { data: { post: { slug: string; title: string; pubDate: Date; description?: string; image?: string; tags?: string[]; body: string } } } = $props();
   let { title, pubDate, description, image, tags, body } = $derived(data.post);
@@ -134,7 +135,7 @@
 <article class="mo-fade-in-up">
   <nav aria-label="面包屑导航">
     <a href="/" class="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>Back to posts
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>返回文章列表
     </a>
   </nav>
 
@@ -142,7 +143,7 @@
     <div class="mb-1 flex items-center gap-2 text-sm text-muted-foreground">
       <time datetime={isoDate}>{dateStr}</time>
       <span class="text-muted-foreground/40">·</span>
-      <span>{readingTime} min read</span>
+      <span>{readingTime} 分钟阅读</span>
     </div>
     <h1 class="mb-4 text-4xl font-bold">{title}</h1>
     {#if description}<p class="text-sm text-muted-foreground">{description}</p>{/if}
@@ -154,7 +155,7 @@
     {#if tags?.length}
       <div class="mt-3 flex flex-wrap gap-2">
         {#each tags.filter(Boolean) as tag}
-          <span class="inline-flex items-center rounded-4xl border border-transparent bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground">{tag}</span>
+          <Badge variant="secondary">{tag}</Badge>
         {/each}
       </div>
     {/if}
@@ -166,7 +167,7 @@
 
   <nav class="mt-16 border-t pt-6">
     <a href="/" class="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>All posts
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>返回首页
     </a>
   </nav>
 </article>
