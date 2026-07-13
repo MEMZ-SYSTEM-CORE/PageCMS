@@ -119,8 +119,8 @@
                       {/if}
                     </div>
                     <Popover>
-                      <PopoverTrigger asChild let:props>
-                        <Button {...props} variant="ghost" size="icon-sm" aria-label="Preview">
+                      <PopoverTrigger>
+                        <Button variant="ghost" size="icon-sm" aria-label="Preview">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                         </Button>
                       </PopoverTrigger>
@@ -158,8 +158,8 @@
     <section id="tags" class="mb-10" use:staggerChildren>
       <Collapsible.Root bind:open={tagOpen}>
         <div class="mb-4 flex items-center gap-3">
-          <Collapsible.Trigger asChild let:props>
-            <button {...props} class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <Collapsible.Trigger>
+            <button class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 transition-transform" class:rotate-90={tagOpen}><path d="m9 18 6-6-6-6"/></svg>
               Tags ({allTags.length})
             </button>

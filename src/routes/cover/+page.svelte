@@ -5,7 +5,6 @@
   import { Label } from '$lib/components/ui/label/index.js';
   import * as Card from '$lib/components/ui/card/index.js';
   import { Separator } from '$lib/components/ui/separator/index.js';
-  import { Slider } from '$lib/components/ui/slider/index.js';
   import * as Tabs from '$lib/components/ui/tabs/index.js';
 
   let titleText = $state('My Blog Post');
@@ -19,40 +18,37 @@
   let showAccent = $state(true);
   let previewRef = $state<HTMLDivElement>();
 
+  const presets = [
+    { label: 'Dark', bg: '#1a1a2e', text: '#ffffff', accent: '#e94560' },
+    { label: 'Light', bg: '#f8f9fa', text: '#212529', accent: '#0d6efd' },
+    { label: 'Nature', bg: '#2d5016', text: '#ffffff', accent: '#a8e06c' },
+    { label: 'Warm', bg: '#2c1810', text: '#f5e6d3', accent: '#d4a574' },
+  ];
+
   function download() {
     if (!previewRef) return;
     const canvas = document.createElement('canvas');
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext('2d')!;
-
-    // Background
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, 1200, 630);
-
-    // Accent bar
     if (showAccent) {
       ctx.fillStyle = accentColor;
       ctx.fillRect(0, 0, 8, 630);
     }
-
-    // Title
     ctx.fillStyle = textColor;
-    ctx.font = `bold ${fontSize * 1.8}px system-ui, sans-serif`;
+    ctx.font = `bold ${Math.round(fontSize * 1.8)}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     wrapText(ctx, titleText || 'Title', 600, 260, 900, fontSize * 2.2);
-
-    // Subtitle
     if (subtitleText) {
       ctx.fillStyle = textColor;
       ctx.globalAlpha = 0.7;
-      ctx.font = `${subtitleSize * 1.8}px system-ui, sans-serif`;
+      ctx.font = `${Math.round(subtitleSize * 1.8)}px system-ui, sans-serif`;
       ctx.fillText(subtitleText, 600, 340);
       ctx.globalAlpha = 1;
     }
-
-    // Author
     if (authorText) {
       ctx.fillStyle = textColor;
       ctx.globalAlpha = 0.5;
@@ -60,7 +56,6 @@
       ctx.fillText(authorText, 600, 420);
       ctx.globalAlpha = 1;
     }
-
     const link = document.createElement('a');
     link.download = 'cover-' + Date.now() + '.png';
     link.href = canvas.toDataURL('image/png');
@@ -70,7 +65,7 @@
   function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
     const chars = text.split('');
     let line = '';
-    let lines: string[] = [];
+    const lines: string[] = [];
     for (const ch of chars) {
       const test = line + ch;
       if (ctx.measureText(test).width > maxWidth && line) {
@@ -91,12 +86,6 @@
   }
 
   let activeTab = $state('design');
-  const presets = [
-    { label: 'Dark', bg: '#1a1a2e', text: '#ffffff', accent: '#e94560' },
-    { label: 'Light', bg: '#f8f9fa', text: '#212529', accent: '#0d6efd' },
-    { label: 'Nature', bg: '#2d5016', text: '#ffffff', accent: '#a8e06c' },
-    { label: 'Warm', bg: '#2c1810', text: '#f5e6d3', accent: '#d4a574' },
-  ];
 </script>
 
 <svelte:head>
@@ -219,14 +208,14 @@
 
           <Separator />
 
-          <div class="space-y-2">
+          <div class="space-y-1">
             <Label>Title Size: {fontSize}px</Label>
-            <Slider bind:value={fontSize} min={24} max={80} step={2} />
+            <input type="range" bind:value={fontSize} min={24} max={80} class="w-full accent-foreground" />
           </div>
 
-          <div class="space-y-2">
+          <div class="space-y-1">
             <Label>Subtitle Size: {subtitleSize}px</Label>
-            <Slider bind:value={subtitleSize} min={12} max={40} step={2} />
+            <input type="range" bind:value={subtitleSize} min={12} max={40} class="w-full accent-foreground" />
           </div>
         </Tabs.Content>
       </Tabs.Root>
