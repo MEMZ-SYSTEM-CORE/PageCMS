@@ -33,7 +33,6 @@
 
 		<div class="flex items-center gap-1.5">
 			<a href="/"><Button variant="ghost" size="sm">文章</Button></a>
-			<a href="/admin/media"><Button variant="ghost" size="sm">媒体</Button></a>
 			<a href="/about"><Button variant="ghost" size="sm">关于</Button></a>
 			<a
 				href="https://space.bilibili.com/3494379408853453"

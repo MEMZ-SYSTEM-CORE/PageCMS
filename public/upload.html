@@ -3,184 +3,224 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#fafafa">
-<title>上传文件 — MEMZ-SYSTEM-CORE</title>
+<title>上传 — MEMZ</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fafafa;--fg:#18181b;--muted:#71717a;--border:#e4e4e7;--card:#fff;--accent:#18181b;--accent-fg:#fafafa;--radius:12px;--success:#16a34a;--error:#dc2626;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;--mono:"SF Mono","JetBrains Mono",Menlo,monospace}
+.dark{--bg:#09090b;--fg:#fafafa;--muted:#a1a1aa;--border:#27272a;--card:#18181b;--accent:#fafafa;--accent-fg:#09090b;--success:#22c55e;--error:#ef4444}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;padding:24px}
 
-  :root {
-    --bg: #fafafa;
-    --fg: #18181b;
-    --muted: #71717a;
-    --border: #e4e4e7;
-    --card: #ffffff;
-    --accent: #18181b;
-    --accent-fg: #fafafa;
-    --radius: 12px;
-    --success: #16a34a;
-    --error: #dc2626;
-    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
-    --mono: "SF Mono", "JetBrains Mono", Menlo, monospace;
-  }
+/* Password overlay */
+.auth-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;transition:opacity .3s}
+.auth-overlay.hidden{opacity:0;pointer-events:none}
+.auth-card{width:320px;padding:32px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.auth-card h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.auth-card p{font-size:12px;color:var(--muted);margin-bottom:20px}
+.auth-card input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--fg);font-size:14px;outline:none;transition:border-color .2s;margin-bottom:12px}
+.auth-card input:focus{border-color:var(--fg)}
+.auth-card .err{font-size:12px;color:var(--error);display:none;margin-bottom:12px}
+.auth-card .err.show{display:block}
+.auth-card button{width:100%;padding:10px;border:none;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.auth-card button:hover{opacity:.85}
+.auth-card button:disabled{opacity:.4;cursor:not-allowed}
 
-  .dark {
-    --bg: #09090b;
-    --fg: #fafafa;
-    --muted: #a1a1aa;
-    --border: #27272a;
-    --card: #18181b;
-    --accent: #fafafa;
-    --accent-fg: #09090b;
-    --success: #22c55e;
-    --error: #ef4444;
-  }
+/* Upload UI */
+.container{width:100%;max-width:480px;display:none}
+.container.show{display:block}
+.container h1{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.container .sub{font-size:13px;color:var(--muted);margin-bottom:20px}
 
-  body { font-family: var(--font); background: var(--bg); color: var(--fg); min-height: 100vh; display: flex; flex-direction: column; transition: background .2s, color .2s; }
+.url-input-wrap{display:flex;gap:8px;margin-bottom:16px}
+.url-input-wrap input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--fg);font-size:13px;font-family:var(--mono);outline:none;transition:border-color .2s}
+.url-input-wrap input:focus{border-color:var(--fg)}
+.url-input-wrap input::placeholder{color:var(--muted);opacity:.6}
+.url-input-wrap button{padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.url-input-wrap button:hover{opacity:.85}
+.url-input-wrap button:disabled{opacity:.4;cursor:not-allowed}
 
-  header { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 16px; max-width: 1024px; margin: 0 auto; width: 100%; }
-  header a { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; }
-  header a:hover { opacity: .7; }
-  header nav { display: flex; align-items: center; gap: 6px; }
-  header nav a { font-weight: 500; font-size: 13px; padding: 4px 10px; border-radius: 6px; transition: background .15s; }
-  header nav a:hover { background: var(--border); opacity: 1; }
-  .theme-btn { background: none; border: 1px solid var(--border); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; color: var(--fg); font-size: 15px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-  .theme-btn:hover { background: var(--border); }
+.dropzone{border:2px dashed var(--border);border-radius:var(--radius);padding:36px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.dropzone:hover,.dropzone.dragover{border-color:var(--fg);background:color-mix(in srgb,var(--fg) 3%,var(--bg))}
+.dropzone-icon{font-size:28px;margin-bottom:8px;opacity:.4}
+.dropzone-text{font-size:13px;font-weight:500;margin-bottom:2px}
+.dropzone-hint{font-size:12px;color:var(--muted)}
+.dropzone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
 
-  main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; }
-  .container { width: 100%; max-width: 520px; }
-  h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
-  .sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.sep{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:12px;color:var(--muted)}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 48px 24px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; position: relative; }
-  .dropzone:hover, .dropzone.dragover { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 3%, var(--bg)); }
-  .dropzone-icon { font-size: 36px; margin-bottom: 12px; opacity: .5; }
-  .dropzone-text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .dropzone-hint { font-size: 12px; color: var(--muted); }
-  .dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-info{display:none;margin-top:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;align-items:center;gap:10px}
+.file-info.show{display:flex}
+.file-info .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-info .size{color:var(--muted);white-space:nowrap}
+.file-info .remove-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;line-height:1}
+.file-info .remove-btn:hover{color:var(--error)}
 
-  .file-info { display: none; margin-top: 16px; padding: 12px 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; align-items: center; gap: 10px; }
-  .file-info.show { display: flex; }
-  .file-info .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .file-info .size { color: var(--muted); white-space: nowrap; }
-  .file-info .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 4px; border-radius: 4px; line-height: 1; }
-  .file-info .remove-btn:hover { color: var(--error); }
+.actions{display:none;gap:8px;margin-top:10px}
+.actions.show{display:flex}
+.btn{padding:10px 24px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
 
-  .upload-btn { display: none; width: 100%; margin-top: 12px; padding: 10px 24px; border: none; border-radius: var(--radius); background: var(--accent); color: var(--accent-fg); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
-  .upload-btn.show { display: block; }
-  .upload-btn:hover { opacity: .85; }
-  .upload-btn:disabled { opacity: .4; cursor: not-allowed; }
+.progress-wrap{display:none;margin-top:12px}
+.progress-wrap.show{display:block}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.progress-fill{height:100%;width:0%;background:var(--accent);border-radius:2px;transition:width .3s}
+.progress-text{font-size:12px;color:var(--muted);text-align:center}
 
-  .progress-wrap { display: none; margin-top: 16px; }
-  .progress-wrap.show { display: block; }
-  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width .3s; }
-  .progress-text { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
+.result{display:none;margin-top:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.result.show{display:block}
+.result.success{border-color:var(--success)}
+.result.error{border-color:var(--error)}
+.result-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;color:var(--muted)}
+.result-url{display:flex;align-items:center;gap:6px}
+.result-url input{flex:1;font-family:var(--mono);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--fg);outline:none}
+.result-url input:focus{border-color:var(--fg)}
+.copy-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--fg);font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s}
+.copy-btn:hover{background:var(--border)}
+.copy-btn.copied{border-color:var(--success);color:var(--success)}
+.result-error-text{font-size:13px;color:var(--error);margin-top:4px}
+.result-note{font-size:12px;color:var(--muted);margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:6px}
 
-  .result { display: none; margin-top: 16px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
-  .result.show { display: block; }
-  .result.success { border-color: var(--success); }
-  .result.error { border-color: var(--error); }
-  .result-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; color: var(--muted); }
-  .result-url { display: flex; align-items: center; gap: 8px; }
-  .result-url input { flex: 1; font-family: var(--mono); font-size: 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); outline: none; }
-  .result-url input:focus { border-color: var(--fg); }
-  .copy-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); font-size: 12px; cursor: pointer; white-space: nowrap; transition: background .15s; }
-  .copy-btn:hover { background: var(--border); }
-  .copy-btn.copied { border-color: var(--success); color: var(--success); }
-  .result-error-text { font-size: 13px; color: var(--error); }
-  .result-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; padding: 8px 12px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
-
-  .footer-info { margin-top: 24px; text-align: center; font-size: 12px; color: var(--muted); }
-  .footer-info code { font-family: var(--mono); font-size: 11px; background: var(--border); padding: 1px 5px; border-radius: 3px; }
-
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); opacity: 0; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; background: var(--card); border: 1px solid var(--border); color: var(--fg); pointer-events: none; transition: all .3s; z-index: 999; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--success); color: var(--success); }
-  .toast.error { border-color: var(--error); color: var(--error); }
+.footer{text-align:center;font-size:11px;color:var(--muted);margin-top:24px;opacity:.6}
 </style>
 </head>
 <body>
-<header>
-  <a href="/">MEMZ-SYSTEM-CORE</a>
-  <nav>
-    <a href="/">文章</a>
-    <a href="/admin/media">媒体</a>
-    <a href="/about">关于</a>
-    <button class="theme-btn" id="themeBtn" aria-label="切换主题">🌙</button>
-  </nav>
-</header>
 
-<main>
-  <div class="container">
-    <h1>📤 上传文件到 Media</h1>
-    <p class="sub">文件直接上传到 GitHub API，绕过 PagesCMS 413 限制</p>
-
-    <div class="dropzone" id="dropzone">
-      <div class="dropzone-icon">📁</div>
-      <div class="dropzone-text">拖拽文件到这里</div>
-      <div class="dropzone-hint">或点击选择 · 最大 100MB</div>
-      <input type="file" id="fileInput">
-    </div>
-
-    <div class="file-info" id="fileInfo">
-      <span class="name" id="fileName"></span>
-      <span class="size" id="fileSize"></span>
-      <button class="remove-btn" id="removeBtn" title="移除文件">✕</button>
-    </div>
-
-    <button class="upload-btn" id="uploadBtn">上传文件</button>
-
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
-      <div class="progress-text" id="progressText">上传中...</div>
-    </div>
-
-    <div class="result" id="result">
-      <div class="result-label" id="resultLabel">✅ 上传成功</div>
-      <div class="result-url">
-        <input type="text" id="resultUrl" readonly spellcheck="false">
-        <button class="copy-btn" id="copyBtn">复制</button>
-      </div>
-      <div class="result-note" id="resultNote" style="display:none"></div>
-      <div class="result-error-text" id="resultError" style="display:none"></div>
-    </div>
-
-    <div class="footer-info">
-      直传到 GitHub <code>public/media/</code> ·
-      Cloudflare 自动部署（约1-2分钟） ·
-      文章中用 <code>/media/文件名</code> 引用
-    </div>
+<!-- Password Gate -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <h2>🔐 上传文件</h2>
+    <p>请输入管理密码</p>
+    <div class="err" id="authErr">密码错误</div>
+    <input type="password" id="pwdInput" placeholder="密码" autofocus>
+    <button id="pwdBtn">验证</button>
   </div>
-</main>
+</div>
 
-<div class="toast" id="toast"></div>
+<!-- Upload UI -->
+<div class="container" id="container">
+  <h1>📤 上传文件</h1>
+  <p class="sub">粘贴下载链接或从本地上传 · 最大 100MB</p>
+
+  <!-- URL input -->
+  <div class="url-input-wrap">
+    <input type="text" id="urlInput" placeholder="粘贴文件直链..." spellcheck="false">
+    <button id="urlBtn">抓取</button>
+  </div>
+
+  <div class="sep">或</div>
+
+  <!-- Dropzone -->
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">📁</div>
+    <div class="dropzone-text">点击选择文件</div>
+    <div class="dropzone-hint">拖拽到这里也可以</div>
+    <input type="file" id="fileInput">
+  </div>
+
+  <div class="file-info" id="fileInfo">
+    <span class="name" id="fileName"></span>
+    <span class="size" id="fileSize"></span>
+    <button class="remove-btn" id="removeBtn">✕</button>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn btn-primary" id="uploadBtn">上传文件</button>
+    <button class="btn btn-ghost" id="clearBtn">清除</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-label" id="resultLabel">✅ 上传成功</div>
+    <div class="result-url">
+      <input type="text" id="resultUrl" readonly spellcheck="false">
+      <button class="copy-btn" id="copyBtn">复制</button>
+    </div>
+    <div class="result-note" id="resultNote" style="display:none"></div>
+    <div class="result-error-text" id="resultError" style="display:none"></div>
+  </div>
+
+  <div class="footer">文件提交到 GitHub · Cloudflare 自动部署后可通过 /media/ 访问</div>
+</div>
 
 <script>
-(function() {
+(function(){
   /* ---- Theme ---- */
-  const themeBtn = document.getElementById('themeBtn');
-  function applyTheme(t) {
-    document.documentElement.classList.toggle('dark', t === 'dark');
-    themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
-  }
-  let theme = localStorage.getItem('theme');
+  const theme = localStorage.getItem('theme');
   if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  applyTheme(theme);
-  themeBtn.addEventListener('click', () => {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('theme', theme);
-    applyTheme(theme);
+  if (theme === 'dark') document.documentElement.classList.add('dark');
+
+  /* ---- Password ---- */
+  const authOverlay = document.getElementById('authOverlay');
+  const pwdInput = document.getElementById('pwdInput');
+  const pwdBtn = document.getElementById('pwdBtn');
+  const authErr = document.getElementById('authErr');
+  const container = document.getElementById('container');
+
+  const PASSWORD_HASH = '2f13c0d9d441fee682c4370ea6066930788505adf6588bc7f7ae4c41d3bd7621';
+
+  async function hashPass(pwd) {
+    const enc = new TextEncoder();
+    const buf = await crypto.subtle.digest('SHA-256', enc.encode(pwd));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // Check sessionStorage first
+  (async function() {
+    const cached = sessionStorage.getItem('upload_pwd');
+    if (cached) {
+      const h = await hashPass(cached);
+      if (h === PASSWORD_HASH) {
+        authOverlay.classList.add('hidden');
+        container.classList.add('show');
+        return;
+      }
+    }
+  })();
+
+  pwdBtn.addEventListener('click', async () => {
+    const pwd = pwdInput.value.trim();
+    if (!pwd) return;
+    pwdBtn.disabled = true;
+    pwdBtn.textContent = '验证中...';
+    const h = await hashPass(pwd);
+    if (h === PASSWORD_HASH) {
+      sessionStorage.setItem('upload_pwd', pwd);
+      authErr.classList.remove('show');
+      authOverlay.classList.add('hidden');
+      container.classList.add('show');
+    } else {
+      authErr.textContent = '密码错误';
+      authErr.classList.add('show');
+      pwdInput.value = '';
+      pwdInput.focus();
+      pwdBtn.disabled = false;
+      pwdBtn.textContent = '验证';
+    }
   });
 
+  pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') pwdBtn.click(); });
+  pwdInput.focus();
+
   /* ---- Upload ---- */
+  const urlInput = document.getElementById('urlInput');
+  const urlBtn = document.getElementById('urlBtn');
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
   const fileInfo = document.getElementById('fileInfo');
-  const fileName = document.getElementById('fileName');
-  const fileSize = document.getElementById('fileSize');
+  const fileNameEl = document.getElementById('fileName');
+  const fileSizeEl = document.getElementById('fileSize');
   const removeBtn = document.getElementById('removeBtn');
   const uploadBtn = document.getElementById('uploadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const actions = document.getElementById('actions');
   const progressWrap = document.getElementById('progressWrap');
   const progressFill = document.getElementById('progressFill');
   const progressText = document.getElementById('progressText');
@@ -190,168 +230,169 @@
   const resultError = document.getElementById('resultError');
   const resultNote = document.getElementById('resultNote');
   const copyBtn = document.getElementById('copyBtn');
-  const toast = document.getElementById('toast');
 
   let selectedFile = null;
   let githubToken = null;
 
-  // Fetch GitHub token on load
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1048576).toFixed(1) + ' MB';
+  }
+
+  function showError(msg) {
+    result.className = 'result show error';
+    resultLabel.textContent = '❌ 失败';
+    resultError.style.display = 'block';
+    resultError.textContent = msg;
+    resultNote.style.display = 'none';
+  }
+
   async function getToken() {
     if (githubToken) return githubToken;
-
-    // Check for stored auth token
-    let authToken = sessionStorage.getItem('admin_token');
-    if (!authToken) {
-      const pwd = prompt('请输入管理密码');
-      if (!pwd) return null;
-      sessionStorage.setItem('admin_token', pwd);
-      authToken = pwd;
-    }
-
+    const pwd = sessionStorage.getItem('upload_pwd');
+    if (!pwd) return null;
     try {
-      const res = await fetch('/api/token', {
-        headers: { 'X-Auth-Token': authToken },
-      });
-      if (res.status === 401) {
-        sessionStorage.removeItem('admin_token');
-        showToast('密码错误，请重试', 'error');
-        return null;
-      }
+      const res = await fetch('/api/token', { headers: { 'X-Auth-Token': pwd } });
+      if (res.status === 401) { authOverlay.classList.remove('hidden'); container.classList.remove('show'); return null; }
       const data = await res.json();
       githubToken = data.token;
       return githubToken;
-    } catch (err) {
-      showToast('无法获取上传凭证: ' + err.message, 'error');
-      return null;
-    }
+    } catch { return null; }
   }
 
-  function formatSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / 1048576).toFixed(1) + ' MB';
-  }
-
-  function showToast(msg, type) {
-    toast.textContent = msg;
-    toast.className = 'toast ' + type + ' show';
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
-  }
-
-  function resetUI() {
+  function resetUpload() {
+    selectedFile = null;
+    fileInput.value = '';
+    urlInput.value = '';
     fileInfo.classList.remove('show');
-    uploadBtn.classList.remove('show');
+    actions.classList.remove('show');
     progressWrap.classList.remove('show');
-    result.classList.remove('show', 'success', 'error');
+    result.classList.remove('show','success','error');
     progressFill.style.width = '0%';
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = '上传文件';
+    urlBtn.disabled = false;
+    urlBtn.textContent = '抓取';
   }
 
   function handleFile(file) {
     if (!file) return;
-    if (file.size > 100 * 1024 * 1024) {
-      showToast('文件超过 100MB 限制', 'error');
-      return;
-    }
+    if (file.size > 100*1024*1024) { alert('文件超过 100MB 限制'); return; }
     selectedFile = file;
-    fileName.textContent = file.name;
-    fileSize.textContent = formatSize(file.size);
+    fileNameEl.textContent = file.name;
+    fileSizeEl.textContent = formatSize(file.size);
     fileInfo.classList.add('show');
-    uploadBtn.classList.add('show');
-    result.classList.remove('show', 'success', 'error');
+    actions.classList.add('show');
     progressWrap.classList.remove('show');
+    result.classList.remove('show','success','error');
     progressFill.style.width = '0%';
     uploadBtn.disabled = false;
     uploadBtn.textContent = '上传文件';
   }
 
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files.length) handleFile(fileInput.files[0]);
-  });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+  removeBtn.addEventListener('click', resetUpload);
+  clearBtn.addEventListener('click', resetUpload);
 
-  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-  dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('dragover'); });
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-  });
+  // URL download
+  urlBtn.addEventListener('click', async () => {
+    const url = urlInput.value.trim();
+    if (!url) return;
+    urlBtn.disabled = true;
+    urlBtn.textContent = '下载中...';
+    result.classList.remove('show','success','error');
 
-  removeBtn.addEventListener('click', () => {
-    selectedFile = null;
-    fileInput.value = '';
-    resetUI();
+    try {
+      const token = await getToken();
+      if (!token) { urlBtn.disabled = false; urlBtn.textContent = '抓取'; return; }
+      const pwd = sessionStorage.getItem('upload_pwd');
+
+      // Use Cloudflare Function to proxy download
+      const dlRes = await fetch('/api/fetch-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Token': pwd },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!dlRes.ok) {
+        const err = await dlRes.json().catch(()=>({}));
+        showError(err.error || '下载失败 (' + dlRes.status + ')');
+        urlBtn.disabled = false; urlBtn.textContent = '抓取'; return;
+      }
+
+      // Read the fetched file from response
+      const blob = await dlRes.blob();
+      const cd = dlRes.headers.get('Content-Disposition') || '';
+      const nameMatch = cd.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      const fileName = nameMatch ? nameMatch[1].replace(/['"]/g,'') : (new URL(url).pathname.split('/').pop() || 'download');
+      const file = new File([blob], fileName, { type: blob.type });
+
+      // Now it's selected
+      selectedFile = file;
+      fileNameEl.textContent = file.name;
+      fileSizeEl.textContent = formatSize(file.size);
+      fileInfo.classList.add('show');
+      actions.classList.add('show');
+      result.classList.remove('show','success','error');
+      progressFill.style.width = '0%';
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = '上传文件';
+      urlBtn.disabled = false;
+      urlBtn.textContent = '抓取';
+    } catch (err) {
+      showError(err.message);
+      urlBtn.disabled = false; urlBtn.textContent = '抓取';
+    }
   });
+  urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') urlBtn.click(); });
 
   uploadBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
 
     const token = await getToken();
-    if (!token) {
-      showToast('无法获取上传凭证', 'error');
-      return;
-    }
+    if (!token) { showError('请先登录'); return; }
 
     uploadBtn.disabled = true;
     uploadBtn.textContent = '处理中...';
-    result.classList.remove('show', 'success', 'error');
     progressWrap.classList.add('show');
     progressFill.style.width = '0%';
-    progressText.textContent = '读取文件中 0%';
+    progressText.textContent = '读取文件中...';
 
     try {
-      // Step 1: Read file as base64 using FileReader
       const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onprogress = (e) => {
-          if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 50);
-            progressFill.style.width = pct + '%';
-            progressText.textContent = '读取文件中 ' + Math.round(pct) + '%';
-          }
-        };
-        reader.onload = () => {
-          const dataUrl = reader.result;
-          const base64 = dataUrl.split(',')[1];
-          resolve(base64);
-        };
+        reader.onprogress = e => { if (e.lengthComputable) { const pct = Math.round((e.loaded/e.total)*50); progressFill.style.width = pct+'%'; progressText.textContent = '读取文件中 '+pct+'%'; } };
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = () => reject(new Error('读取文件失败'));
         reader.readAsDataURL(selectedFile);
       });
 
       progressFill.style.width = '50%';
-      progressText.textContent = '上传到 GitHub 50%';
+      progressText.textContent = '上传到 GitHub...';
 
-      // Step 2: Sanitize filename
       const safeName = selectedFile.name.replace(/[^a-zA-Z0-9一-鿿\.\s_-]/g, '_');
       const filePath = 'public/media/' + safeName;
       const apiUrl = 'https://api.github.com/repos/MEMZ-SYSTEM-CORE/PageCMS/contents/' + encodeURIComponent(filePath);
+      const auth = 'Bearer ' + token;
 
-      const GITHUB_UA = 'MEMZ-PageCMS-Upload';
-      // Try PUT first. If 422 (file exists, no SHA), fetch SHA and retry.
       let sha = null;
       let uploadRes = null;
       let lastErr = null;
 
       for (let attempt = 1; attempt <= 3; attempt++) {
-        progressText.textContent = '上传到 GitHub (' + attempt + '/3)';
-        progressFill.style.width = (55 + attempt * 10) + '%';
+        progressText.textContent = '上传到 GitHub ('+attempt+'/3)';
+        progressFill.style.width = (55+attempt*10)+'%';
 
-        const body = {
-          message: sha ? '更新: ' + safeName : '上传: ' + safeName,
-          content: base64,
-          branch: 'master',
-        };
+        const body = { message: sha ? '更新: '+safeName : '上传: '+safeName, content: base64, branch: 'master' };
         if (sha) body.sha = sha;
 
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': GITHUB_UA,
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Authorization': auth, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MEMZ-Upload', 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
         });
 
@@ -359,35 +400,24 @@
         lastErr = putRes;
 
         if (putRes.status === 422 && !sha) {
-          // File exists but no SHA - fetch it and retry
           progressText.textContent = '获取文件信息...';
-          const getRes = await fetch(apiUrl, {
-            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': GITHUB_UA },
-          });
-          if (getRes.ok) {
-            const existing = await getRes.json();
-            sha = existing.sha;
-            continue;
-          }
+          const getRes = await fetch(apiUrl, { headers: { 'Authorization': auth, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'MEMZ-Upload' } });
+          if (getRes.ok) { sha = (await getRes.json()).sha; continue; }
         }
-
         if (putRes.status === 503 && attempt < 3) {
-          progressText.textContent = 'GitHub 繁忙，重试中 (' + attempt + '/3)...';
-          await new Promise(r => setTimeout(r, 1500 * attempt));
+          progressText.textContent = 'GitHub 繁忙 ('+attempt+'/3)...';
+          await new Promise(r => setTimeout(r, 1500*attempt));
         } else break;
       }
 
       if (!uploadRes) {
-        let errMsg = '上传失败';
-        try {
-          const errData = await lastErr.json();
-          errMsg = errData.message || errMsg;
-        } catch {}
-        throw new Error('GitHub API ' + (lastErr ? lastErr.status : '错误') + ': ' + errMsg);
+        let msg = '上传失败';
+        try { const d = await lastErr.json(); msg = d.message || msg; } catch {}
+        throw new Error(msg);
       }
 
       progressFill.style.width = '100%';
-      progressText.textContent = '✅ 上传完成 ✓';
+      progressText.textContent = '✅ 完成 ✓';
 
       const mediaUrl = '/media/' + encodeURIComponent(safeName);
       result.className = 'result show success';
@@ -395,40 +425,27 @@
       resultUrl.value = mediaUrl;
       resultError.style.display = 'none';
       resultNote.style.display = 'block';
-      resultNote.textContent = '⏳ 文件已提交到 GitHub，Cloudflare 正在部署（约1-2分钟）。部署后通过 ' + mediaUrl + ' 即可访问。';
+      resultNote.textContent = '⏳ 已提交到 GitHub，等待 Cloudflare 部署（约1-2分钟）后通过 '+mediaUrl+' 访问';
 
+      navigator.clipboard.writeText(mediaUrl).catch(()=>{});
       uploadBtn.textContent = '再传一个';
       uploadBtn.disabled = false;
-      showToast('链接已复制！', 'success');
-      resultUrl.select();
-      navigator.clipboard.writeText(mediaUrl).catch(() => {});
     } catch (err) {
       progressWrap.classList.remove('show');
-      result.className = 'result show error';
-      resultLabel.textContent = '❌ 上传失败';
-      resultError.style.display = 'block';
-      resultError.textContent = err.message;
+      showError(err.message);
       uploadBtn.textContent = '重新上传';
       uploadBtn.disabled = false;
-      showToast(err.message, 'error');
     }
   });
 
   copyBtn.addEventListener('click', () => {
     if (!resultUrl.value) return;
     resultUrl.select();
-    navigator.clipboard.writeText(resultUrl.value).then(() => {
-      copyBtn.textContent = '已复制 ✓';
-      copyBtn.className = 'copy-btn copied';
-      setTimeout(() => { copyBtn.textContent = '复制'; copyBtn.className = 'copy-btn'; }, 2000);
-    }).catch(() => {
-      document.execCommand('copy');
-      showToast('已复制到剪贴板', 'success');
-    });
+    navigator.clipboard.writeText(resultUrl.value).then(() => { copyBtn.textContent='已复制 ✓'; copyBtn.className='copy-btn copied'; setTimeout(()=>{ copyBtn.textContent='复制'; copyBtn.className='copy-btn'; },2000); }).catch(()=>{});
   });
 
-  document.addEventListener('paste', (e) => {
-    if (e.target.closest('input, textarea')) return;
+  document.addEventListener('paste', e => {
+    if (e.target.closest('input,textarea,button')) return;
     const files = e.clipboardData.files;
     if (files.length) handleFile(files[0]);
   });
