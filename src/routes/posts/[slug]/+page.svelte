@@ -2,9 +2,7 @@
   import { onMount } from 'svelte';
   import { siteConfig } from '$lib/config/site';
   import { Badge } from '$lib/components/ui/badge/index.js';
-  import { Button } from '$lib/components/ui/button/index.js';
-  import * as Card from '$lib/components/ui/card/index.js';
-  import { Separator } from '$lib/components/ui/separator/index.js';
+  import { fadeInUp, fadeIn } from '$lib/utils/motion';
 
   let { data }: { data: { post: { slug: string; title: string; pubDate: Date; description?: string; image?: string; tags?: string[]; body: string } } } = $props();
   let { title, pubDate, description, image, tags, body } = $derived(data.post);
@@ -60,32 +58,26 @@
       const w = document.createElement('div');
       w.className = 'my-6';
       w.setAttribute('data-media', '');
-
       if (videoRe.test(src)) {
         const v = document.createElement('video');
         v.src = src; v.controls = true; v.playsInline = true; v.preload = 'metadata';
         v.className = 'w-full max-h-[70vh] rounded-2xl bg-black';
-        w.appendChild(v);
-        return w;
+        w.appendChild(v); return w;
       }
-
       if (avRe.test(src) && !fileRe.test(src)) {
         const name = src.split('/').pop() || 'audio';
         const c = document.createElement('div');
         c.className = 'bg-card text-card-foreground flex items-center gap-4 rounded-xl ring-1 ring-foreground/10 p-4';
         c.innerHTML = '<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 text-muted-foreground"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-muted-foreground truncate mb-1.5">' + name + '</div><audio src="' + src + '" controls preload="none" class="w-full h-9"></audio></div>';
-        w.appendChild(c);
-        return w;
+        w.appendChild(c); return w;
       }
-
       const fileName = src.split('/').pop() || 'file';
       const icon = getFileIcon(ext);
       const displayName = fileName.length > 40 ? fileName.slice(0, 37) + '...' : fileName;
       const card = document.createElement('div');
       card.className = 'group relative overflow-hidden rounded-xl ring-1 ring-foreground/10 bg-card transition-all duration-200 hover:shadow-md';
       card.innerHTML = '<div class="flex items-center gap-4 p-4"><div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-accent/5 text-xl">' + icon + '</div><div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">' + displayName + '</div><div class="mt-0.5 text-xs text-muted-foreground">' + ext.toUpperCase() + ' 文件</div></div><a href="' + src + '" target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-accent-foreground transition-all hover:opacity-90 no-underline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5 inline mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载</a></div>';
-      w.appendChild(card);
-      return w;
+      w.appendChild(card); return w;
     }
 
     const iter = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, null, false);
@@ -108,7 +100,6 @@
       todo.push({ node: n, frag });
     }
     todo.forEach((t) => t.node.parentNode!.replaceChild(t.frag, t.node));
-
     prose.querySelectorAll('a').forEach((a: HTMLAnchorElement) => {
       if (a.href && allRe.test(a.href) && !a.hasAttribute('data-skip-media')) {
         a.parentNode!.replaceChild(makePlayer(a.href), a);
@@ -131,64 +122,64 @@
   {#if image}<meta name="twitter:image" content={image} />{/if}
 </svelte:head>
 
-<div class="mx-auto max-w-3xl">
-  <a href="/" class="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>
-    返回文章列表
-  </a>
+<article class="container mx-auto max-w-3xl px-4 py-12">
+  <header class="mb-8 mo-fade-in-up" use:fadeInUp>
+    <div class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+      <time datetime={isoDate}>{dateStr}</time>
+      <span class="text-muted-foreground/30">·</span>
+      <span>{readingTime} 分钟阅读</span>
+    </div>
 
-  <article class="mo-fade-in-up">
-    <Card.Root class="overflow-hidden border-0 shadow-sm">
-      {#if image}
-        <div class="overflow-hidden">
-          <img src={image} alt={title} class="h-64 w-full object-cover sm:h-80" loading="lazy" decoding="async" />
-        </div>
-      {/if}
-      <Card.Header class="pb-0 pt-6 sm:pt-8">
-        <div class="flex flex-wrap items-center gap-2.5 text-sm text-muted-foreground">
-          <time datetime={isoDate} class="flex items-center gap-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/><path d="M16 3v4M8 3v4"/></svg>
-            {dateStr}
-          </time>
-          <span class="text-muted-foreground/30">·</span>
-          <span class="flex items-center gap-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            {readingTime} 分钟阅读
-          </span>
-        </div>
-        <Card.Title class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{title}</Card.Title>
-        {#if description}
-          <Card.Description class="mt-2 text-base">{description}</Card.Description>
-        {/if}
-        {#if tags?.length}
-          <div class="mt-4 flex flex-wrap gap-2">
-            {#each tags.filter(Boolean) as tag}
-              <Badge variant="secondary">{tag}</Badge>
-            {/each}
-          </div>
-        {/if}
-      </Card.Header>
+    <h1 class="mb-4 text-4xl font-bold">{title}</h1>
 
-      <Card.Content class="pt-6 sm:pt-8">
-        <div class="prose max-w-none" id="prose-content">
-          {@html htmlBody}
-        </div>
-      </Card.Content>
+    {#if description}
+      <p class="text-lg text-muted-foreground">{description}</p>
+    {/if}
 
-      <Card.Footer class="flex-col items-start gap-3 border-t px-6 py-5 sm:px-8">
-        <div class="flex w-full items-center justify-between">
-          <span class="text-xs text-muted-foreground/60">{siteConfig.siteName}</span>
-          <a href="/" class="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>
-            返回首页
-          </a>
-        </div>
-      </Card.Footer>
-    </Card.Root>
-  </article>
-</div>
+    {#if image}
+      <div class="mt-6">
+        <img src={image} alt={title} class="w-full rounded-lg object-cover" loading="lazy" decoding="async" />
+      </div>
+    {/if}
+
+    {#if tags?.length}
+      <div class="mt-4 flex gap-2">
+        {#each tags.filter(Boolean) as tag}
+          <Badge variant="secondary">{tag}</Badge>
+        {/each}
+      </div>
+    {/if}
+  </header>
+
+  <div
+    id="prose-content"
+    class="prose prose-neutral dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] mo-fade-in
+      prose-headings:text-foreground prose-headings:scroll-mt-14
+      prose-p:text-foreground
+      prose-strong:text-foreground
+      prose-a:text-primary prose-a:underline prose-a:underline-offset-4 prose-a:break-all prose-a:transition-opacity prose-a:hover:opacity-80
+      prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground
+      prose-code:bg-muted prose-code:text-foreground prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none
+      prose-pre:bg-muted prose-pre:px-4 prose-pre:py-2 prose-pre:text-foreground prose-pre:overflow-x-auto
+      prose-hr:border-border
+      prose-th:border prose-th:border-border prose-th:bg-muted
+      prose-td:border prose-td:border-border
+      prose-img:rounded-lg"
+    use:fadeIn={{ delay: 0.15 }}
+  >
+    {@html htmlBody}
+  </div>
+
+  <footer class="mt-12 border-t pt-8">
+    <div class="text-center">
+      <a href="/" class="text-sm text-muted-foreground hover:text-foreground transition-colors">← 返回首页</a>
+    </div>
+  </footer>
+</article>
 
 <style>
   .mo-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+  .mo-fade-in { animation: fadeIn 0.6s ease-out forwards; }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>

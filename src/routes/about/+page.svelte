@@ -10,17 +10,26 @@
   <meta property="og:description" content="关于 {siteConfig.siteName}" />
 </svelte:head>
 
-<div class="mx-auto max-w-2xl mo-fade-in-up">
-  <Card.Root class="border-0 shadow-none">
-    <Card.Content class="p-0">
-      <h1 class="mb-6 text-3xl font-bold tracking-tight">关于</h1>
-      <div class="prose">
-        <p><strong>{siteConfig.siteName}</strong> 是一个个人博客，分享技术、想法和经验。</p>
-        <p>
-          <a href={siteConfig.url} target="_blank" rel="noopener noreferrer">博客主页</a>
-          &middot;
-          <a href="https://space.bilibili.com/3494379408853453" target="_blank" rel="noopener noreferrer">Bilibili</a>
-        </p>
+<div class="container mx-auto max-w-2xl px-4 py-12 mo-fade-in-up">
+  <Card.Root class="relative overflow-hidden">
+    <Card.Header class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+      <Card.Title class="text-center text-5xl font-black tracking-widest text-foreground/[0.04] dark:text-foreground/[0.06] select-none">关于</Card.Title>
+    </Card.Header>
+    <Card.Content class="relative z-10">
+      <div class="space-y-4">
+        <div class="text-center mb-6">
+          <img src={siteConfig.avatar} alt={siteConfig.bio.name} class="h-24 w-24 rounded-full mx-auto mb-4" />
+          <h1 class="text-2xl font-bold">{siteConfig.bio.name}</h1>
+          <p class="text-muted-foreground mt-1">{siteConfig.description}</p>
+        </div>
+        <div class="prose prose-neutral dark:prose-invert max-w-none mx-auto">
+          <p>一个个人博客，分享技术、想法和经验。</p>
+          <p>
+            <a href={siteConfig.url} target="_blank" rel="noopener noreferrer">博客主页</a>
+            &middot;
+            <a href="https://space.bilibili.com/3494379408853453" target="_blank" rel="noopener noreferrer">Bilibili</a>
+          </p>
+        </div>
       </div>
     </Card.Content>
   </Card.Root>
