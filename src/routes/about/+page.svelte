@@ -3,20 +3,19 @@
 </script>
 
 <svelte:head>
-  <title>关于 — {siteConfig.siteName}</title>
-  <meta name="description" content="关于 {siteConfig.siteName}" property="og:title" />
-  <meta property="og:title" content="关于 {siteConfig.siteName}" />
-  <meta property="og:description" content="关于 {siteConfig.siteName}" />
+  <title>About — {siteConfig.siteName}</title>
+  <meta name="description" content="About {siteConfig.siteName}" />
+  <meta property="og:title" content="About {siteConfig.siteName}" />
+  <meta property="og:description" content="About {siteConfig.siteName}" />
 </svelte:head>
 
 <div class="mx-auto max-w-2xl mo-fade-in-up">
-  <h1 class="mb-6 text-3xl font-bold tracking-tight">关于</h1>
+  <h1 class="mb-6 text-3xl font-bold tracking-tight">About</h1>
   <div class="prose">
-    <p>这里是 <strong>{siteConfig.siteName}</strong> 的个人博客。</p>
-    <p>分享技术、想法和经验。</p>
+    <p><strong>{siteConfig.siteName}</strong> is a personal blog sharing technology, ideas, and experiences.</p>
     <p>
-      <a href={siteConfig.url} target="_blank" rel="noopener noreferrer">博客主页</a>
-      ·
+      <a href={siteConfig.url} target="_blank" rel="noopener noreferrer">Home</a>
+      &middot;
       <a href="https://space.bilibili.com/3494379408853453" target="_blank" rel="noopener noreferrer">Bilibili</a>
     </p>
   </div>

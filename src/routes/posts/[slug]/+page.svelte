@@ -134,7 +134,7 @@
 <article class="mo-fade-in-up">
   <nav aria-label="面包屑导航">
     <a href="/" class="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-      ← 返回文章列表
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>Back to posts
     </a>
   </nav>
 
@@ -142,7 +142,7 @@
     <div class="mb-1 flex items-center gap-2 text-sm text-muted-foreground">
       <time datetime={isoDate}>{dateStr}</time>
       <span class="text-muted-foreground/40">·</span>
-      <span>{readingTime} 分钟阅读</span>
+      <span>{readingTime} min read</span>
     </div>
     <h1 class="mb-4 text-4xl font-bold">{title}</h1>
     {#if description}<p class="text-sm text-muted-foreground">{description}</p>{/if}
@@ -166,7 +166,7 @@
 
   <nav class="mt-16 border-t pt-6">
     <a href="/" class="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-      ← 返回所有文章
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="m15 18-6-6 6-6"/></svg>All posts
     </a>
   </nav>
 </article>
