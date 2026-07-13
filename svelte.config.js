@@ -18,6 +18,7 @@ const config = {
 		}),
 		prerender: {
 			entries: ['*'],
+			handleMissingId: 'warn',
 			handleHttpError: ({ path, message }) => {
 				console.warn(`[prerender] ${path}: ${message}`);
 			}

@@ -20,8 +20,9 @@ export const siteConfig = {
     ]
   },
   navLinks: [
-    { label: '文章', icon: 'mdi:post-outline', href: '/' },
-    { label: '关于', icon: 'mdi:information', href: '/about' }
+    { label: 'Posts', icon: 'mdi:post-outline', href: '/' },
+    { label: 'Cover', icon: 'mdi:image-edit', href: '/cover' },
+    { label: 'About', icon: 'mdi:information', href: '/about' }
   ]
 };
 

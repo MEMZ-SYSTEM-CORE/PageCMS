@@ -1,6 +1,18 @@
-import type { ServerLoad } from './$types';
+import type { EntryGenerator, ServerLoad } from './$types';
 
 const postModules = import.meta.glob('/src/content/posts/**/*.md', { eager: true, query: '?raw', import: 'default' });
+
+export const entries: EntryGenerator = () => {
+  const slugs: string[] = [];
+  for (const [path, content] of Object.entries(postModules)) {
+    if (typeof content !== 'string') continue;
+    const data = parseFrontmatter(content).data;
+    if (data.draft) continue;
+    const slug = path.split('/').pop()?.replace(/\.md$/i, '') || '';
+    if (slug) slugs.push(slug);
+  }
+  return slugs.map((slug) => ({ slug }));
+};
 
 export const load: ServerLoad = async ({ params }) => {
   const slug = params.slug;
