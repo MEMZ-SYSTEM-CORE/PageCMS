@@ -85,10 +85,10 @@ content:
         type: text
         label: SEO Description
         hint: 留空则使用 tagline
+    actions:
+      - label: Deploy to Cloudflare
+        type: action
+        action: deploy
+        hint: 手动部署到 Cloudflare Workers
+        confirm: 确定要部署到 Cloudflare Workers 吗？
 
-actions:
-  - label: Deploy to Cloudflare
-    type: action
-    hint: 手动部署到 Cloudflare Workers
-    confirm: 确定要部署到 Cloudflare Workers 吗？
-    action: deploy
