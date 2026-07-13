@@ -88,4 +88,8 @@ actions:
   - name: deploy
     label: Deploy to Cloudflare
     workflow: deploy.yml
-    confirm: 确定要部署到 Cloudflare Workers 吗？
+    ref: current
+    confirm:
+      title: 确认部署
+      message: 确定要部署到 Cloudflare Workers 吗？
+      button: 部署
