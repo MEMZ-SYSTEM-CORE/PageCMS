@@ -146,7 +146,7 @@ export function PostsList({ posts, siteConfig }: PostsListProps) {
                 : "";
 
               return (
-                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block no-underline border-b border-border/40 pb-5 last:border-b-0">
+                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block no-underline">
                   <article className="flex gap-5 items-start">
                     {post.image && (
                       <div className="shrink-0 self-center overflow-hidden rounded-lg">
