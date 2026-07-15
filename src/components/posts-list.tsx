@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Clock, Tag, Search, BookOpen, FileText } from "lucide-react";
-import { formatDate, readingTime, cn } from "@/lib/utils";
+import { Calendar, Clock, Search, BookOpen } from "lucide-react";
+import { formatDate, readingTime } from "@/lib/utils";
 import type { Post, SiteConfig } from "@/lib/config/site";
 
 /** 高亮匹配文本 */
@@ -146,7 +146,7 @@ export function PostsList({ posts, siteConfig }: PostsListProps) {
                 : "";
 
               return (
-                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block rounded-xl border bg-card/50 hover:bg-card transition-all duration-200 p-5 post-card no-underline">
+                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block no-underline border-b border-border/40 pb-5 last:border-b-0">
                   <article className="flex gap-5 items-start">
                     {post.image && (
                       <div className="shrink-0 self-center overflow-hidden rounded-lg">

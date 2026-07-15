@@ -57,9 +57,9 @@ export default function HomePage() {
               <h2 className="text-lg font-semibold relative z-10">最近更新</h2>
               <span className="section-label">Posts</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {posts.slice(0, 5).map((post) => (
-                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block rounded-xl border bg-card/50 hover:bg-card transition-all duration-200 p-4 sm:p-5 post-card no-underline">
+                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block no-underline border-b border-border/40 pb-4 last:border-b-0">
                   <article className="flex gap-4 items-start">
                     {post.image && (
                       <div className="shrink-0 self-center overflow-hidden rounded-lg">

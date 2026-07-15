@@ -28,7 +28,7 @@ export default function AboutPage() {
         </div>
 
         <div className="animate-fade-in animate-fade-in-delay-1">
-          <Card className="rounded-xl border bg-card/50 post-card">
+          <Card className="rounded-xl border bg-card/50">
             <CardContent className="p-6 sm:p-8">
               <div className="prose prose-neutral dark:prose-invert max-w-none mx-auto prose-p:leading-relaxed">
                 <p>一个个人博客，分享技术、想法和经验。</p>
