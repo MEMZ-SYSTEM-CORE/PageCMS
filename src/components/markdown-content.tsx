@@ -5,7 +5,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { Link2, Check, Copy } from "lucide-react";
-import { ImageLightbox } from "@/components/image-lightbox";
 
 interface MarkdownContentProps {
   content: string;
@@ -82,7 +81,14 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         ),
         img: ({ src, alt, ...props }) => {
           if (!src || typeof src !== "string") return null;
-          return <ImageLightbox src={src} alt={alt || ""} />;
+          return (
+            <img
+              src={src}
+              alt={alt || ""}
+              loading="lazy"
+              className="w-full rounded-lg object-cover border border-border/50"
+            />
+          );
         },
       }}
     >
