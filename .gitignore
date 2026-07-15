@@ -40,4 +40,3 @@ _backup/
 src/lib/content-data.json
 public/rss.xml
 public/sitemap.xml
-worker-static.mjs
