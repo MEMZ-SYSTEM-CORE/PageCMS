@@ -59,7 +59,7 @@ export default function HomePage() {
             </div>
             <div className="space-y-4">
               {posts.slice(0, 5).map((post) => (
-                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block no-underline">
+                <Link key={post.slug} href={`/posts/${post.slug}`} className="group block rounded-xl border bg-card/50 hover:bg-card transition-all duration-200 p-4 sm:p-5 post-card no-underline">
                   <article className="flex gap-4 items-start">
                     {post.image && (
                       <div className="shrink-0 self-center overflow-hidden rounded-lg">

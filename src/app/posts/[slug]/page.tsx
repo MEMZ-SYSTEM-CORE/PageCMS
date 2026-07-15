@@ -100,10 +100,8 @@ export default async function PostPage({ params }: Props) {
             </BlurFade>
 
             <BlurFade delay={0.1} inView>
-              <div className="rounded-xl border bg-card/30 p-6 sm:p-8">
-                <div id="prose-content" className="prose prose-neutral dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] prose-headings:text-foreground prose-headings:scroll-mt-14 prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-foreground prose-a:text-primary prose-a:underline prose-a:underline-offset-4 prose-a:break-all prose-a:transition-opacity prose-a:hover:opacity-80 prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-code:bg-muted prose-code:text-foreground prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-muted prose-pre:px-4 prose-pre:py-2 prose-pre:text-foreground prose-pre:overflow-x-auto prose-hr:border-border prose-th:border prose-th:border-border prose-th:bg-muted prose-td:border prose-td:border-border prose-img:rounded-lg">
-                  <MarkdownContent content={post.body} />
-                </div>
+              <div id="prose-content" className="prose prose-neutral dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] prose-headings:text-foreground prose-headings:scroll-mt-14 prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-foreground prose-a:text-primary prose-a:underline prose-a:underline-offset-4 prose-a:break-all prose-a:transition-opacity prose-a:hover:opacity-80 prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-code:bg-muted prose-code:text-foreground prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-muted prose-pre:px-4 prose-pre:py-2 prose-pre:text-foreground prose-pre:overflow-x-auto prose-hr:border-border prose-th:border prose-th:border-border prose-th:bg-muted prose-td:border prose-td:border-border prose-img:rounded-lg">
+                <MarkdownContent content={post.body} />
               </div>
             </BlurFade>
 
