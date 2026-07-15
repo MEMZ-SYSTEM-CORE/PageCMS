@@ -6,8 +6,30 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, Clock, Tag, Search, BookOpen } from "lucide-react";
-import { formatDate, readingTime } from "@/lib/utils";
+import { formatDate, readingTime, cn } from "@/lib/utils";
 import type { Post, SiteConfig } from "@/lib/config/site";
+
+/** 高亮匹配文本 */
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (terms.length === 0) return <>{text}</>;
+
+  const regex = new RegExp(`(${terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+  const parts = text.split(regex);
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        terms.some(t => part.toLowerCase() === t) ? (
+          <mark key={i} className="bg-yellow-200/60 dark:bg-yellow-500/30 text-inherit rounded-sm px-0.5">{part}</mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
 
 interface PostsListProps {
   posts: Post[];
@@ -111,9 +133,13 @@ export function PostsList({ posts, siteConfig }: PostsListProps) {
                         <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0 rounded-full">{tag}</Badge>
                       ))}
                     </div>
-                    <h2 className="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors leading-snug">{post.title}</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors leading-snug">
+                      <HighlightText text={post.title} query={searchQuery} />
+                    </h2>
                     {post.description && (
-                      <p className="mt-1.5 text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">{post.description}</p>
+                      <p className="mt-1.5 text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
+                        <HighlightText text={post.description} query={searchQuery} />
+                      </p>
                     )}
                   </div>
                 </article>
