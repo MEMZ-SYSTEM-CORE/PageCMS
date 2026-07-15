@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, Clock, Search, BookOpen } from "lucide-react";
 import { formatDate, readingTime } from "@/lib/utils";
 import type { Post, SiteConfig } from "@/lib/config/site";
@@ -58,29 +57,22 @@ interface PostsListProps {
 
 export function PostsList({ posts, siteConfig }: PostsListProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFilters, setSearchFilters] = useState({
-    title: true,
-    description: true,
-    tags: true,
-    body: false,
-  });
-
-  const hasAnyFilter = searchFilters.title || searchFilters.description || searchFilters.tags || searchFilters.body;
 
   const filteredPosts = useMemo(() => {
     if (!searchQuery.trim()) return posts.map((p) => ({ post: p, matched: true }));
     const q = searchQuery.toLowerCase();
     const terms = q.split(/\s+/).filter(Boolean);
     return posts.map((p) => {
-      const fields: string[] = [];
-      if (searchFilters.title) fields.push(p.title.toLowerCase());
-      if (searchFilters.description) fields.push((p.description || "").toLowerCase());
-      if (searchFilters.tags) fields.push((p.tags || []).join(" ").toLowerCase());
-      if (searchFilters.body) fields.push((p.body || "").toLowerCase());
+      const fields: string[] = [
+        p.title.toLowerCase(),
+        (p.description || "").toLowerCase(),
+        (p.tags || []).join(" ").toLowerCase(),
+        (p.body || "").toLowerCase(),
+      ];
       const match = terms.every((t) => fields.some((f) => f.includes(t)));
       return { post: p, matched: match };
     }).filter(({ matched }) => matched);
-  }, [posts, searchQuery, searchFilters]);
+  }, [posts, searchQuery]);
 
   return (
     <div className="relative">
@@ -107,29 +99,9 @@ export function PostsList({ posts, siteConfig }: PostsListProps) {
               className="w-full pl-9 bg-background/50"
             />
           </div>
-          <div className="mt-3 flex flex-wrap gap-4 justify-center">
-            <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Checkbox checked={searchFilters.title} onCheckedChange={(checked) => setSearchFilters({ ...searchFilters, title: checked })} />
-              <span>标题</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Checkbox checked={searchFilters.description} onCheckedChange={(checked) => setSearchFilters({ ...searchFilters, description: checked })} />
-              <span>简介</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Checkbox checked={searchFilters.tags} onCheckedChange={(checked) => setSearchFilters({ ...searchFilters, tags: checked })} />
-              <span>标签</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Checkbox checked={searchFilters.body} onCheckedChange={(checked) => setSearchFilters({ ...searchFilters, body: checked })} />
-              <span>正文</span>
-            </label>
-          </div>
           {searchQuery && (
             <div className="mt-2 text-center text-sm">
-              {!hasAnyFilter ? (
-                <p className="text-red-500/80">请至少选择一个搜索范围</p>
-              ) : filteredPosts.length === 0 ? (
+              {filteredPosts.length === 0 ? (
                 <p className="text-muted-foreground">未找到匹配的文章</p>
               ) : (
                 <p className="text-muted-foreground">找到 {filteredPosts.length} 篇文章</p>
@@ -141,7 +113,7 @@ export function PostsList({ posts, siteConfig }: PostsListProps) {
         <div className="space-y-4">
           {filteredPosts.length > 0 ? (
             filteredPosts.map(({ post }) => {
-              const snippet = searchQuery.trim() && searchFilters.body
+              const snippet = searchQuery.trim()
                 ? extractSnippet(post.body || "", searchQuery)
                 : "";
 
