@@ -34,23 +34,14 @@ export function slugFromFile(filePath: string): string {
   return filePath.split('/').pop()?.replace(/\.md$/i, '') || '';
 }
 
-export function renderMarkdown(md: string): string {
-  let html = md
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/^---$/gm, '<hr />')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-  return html.split('\n\n').map(block => {
-    const t = block.trim();
-    if (!t) return '';
-    if (/^<(h|ul|ol|li|pre|blockquote|hr|img|p)/.test(t)) return t;
-    return '<p>' + t.replace(/\n/g, '<br />') + '</p>';
-  }).join('\n');
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+export function formatDateFull(date: Date): string {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+export function readingTime(description?: string): number {
+  return Math.max(1, Math.ceil((description?.length ?? 100) / 400));
 }

@@ -1,10 +1,8 @@
 # build output
+.next/
+out/
 dist/
 build/
-
-# generated types
-.astro/
-.svelte-kit/
 
 # dependencies
 node_modules/
@@ -17,7 +15,13 @@ pnpm-debug.log*
 
 # environment variables
 .env
-.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# vercel
+.vercel
 
 # macOS-specific files
 .DS_Store
@@ -27,4 +31,13 @@ pnpm-debug.log*
 
 # wrangler local state
 .wrangler/
-svaf/
+.open-next/
+
+# backup
+_backup/
+
+# generated
+src/lib/content-data.json
+public/rss.xml
+public/sitemap.xml
+worker-static.mjs

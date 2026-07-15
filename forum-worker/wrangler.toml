@@ -1,8 +1,0 @@
-name = "pagecms-forum"
-compatibility_date = "2026-07-13"
-compatibility_flags = ["nodejs_compat"]
-
-[[d1_databases]]
-binding = "pagecms_forum"
-database_name = "pagecms-forum"
-database_id = "af2dc5d9-1c2b-4b65-b718-a38b5c4a28f3"

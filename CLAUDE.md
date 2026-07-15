@@ -1,21 +1,38 @@
-至关重要！！！如果不懂.pages.yml如何配置，千万不要动，先读完以下参考文档！！！
-https://pagescms.org/docs/configuration/fields/block/ ， https://pagescms.org/docs/configuration/fields/boolean/ ，
+# PageCMS 项目指南
 
-&#x20; https://pagescms.org/docs/configuration/fields/code/ ， https://pagescms.org/docs/configuration/fields/date/ ，
+## 项目概述
 
-&#x20; https://pagescms.org/docs/configuration/fields/file/ ， https://pagescms.org/docs/configuration/fields/image/ ，
+基于 Next.js 15 (App Router) 和 Magic UI 的个人博客，使用 Cloudflare Workers 部署。
 
-&#x20; https://pagescms.org/docs/configuration/fields/number/ ， https://pagescms.org/docs/configuration/fields/object/ ，
+## 技术栈
 
-&#x20; https://pagescms.org/docs/configuration/fields/reference/ ，
+- **框架**: Next.js 15 (App Router)
+- **UI 组件**: Magic UI (基于 shadcn/ui)
+- **样式**: Tailwind CSS v4 + oklch 色彩系统
+- **部署**: Cloudflare Workers
+- **内容管理**: PagesCMS (基于 Git)
 
-&#x20; https://pagescms.org/docs/configuration/fields/rich-text/ ，
+## 开发命令
 
-&#x20; https://pagescms.org/docs/configuration/fields/rich-text/ ，https://pagescms.org/docs/configuration/fields/string/
+```bash
+pnpm dev          # 启动开发服务器
+pnpm build        # 构建生产版本
+pnpm deploy       # 部署到 Cloudflare Workers
+```
 
-&#x20; ， https://pagescms.org/docs/configuration/fields/text/ ， https://pagescms.org/docs/configuration/fields/uuid/  ，
+## 项目结构
 
-&#x20; https://pagescms.org/docs/configuration/actions/ ， https://pagescms.org/docs/configuration/collaborators/ ，
+- `src/app/` - Next.js App Router 页面
+- `src/components/` - React 组件
+- `src/lib/` - 工具函数和配置
+- `src/content/` - Markdown 内容文件
 
-&#x20; https://pagescms.org/docs/configuration/settings/，
+## 内容管理
 
+使用 PagesCMS 管理内容，配置文件为 `.pages.yml`。
+
+## 部署
+
+1. 推送代码到 GitHub
+2. GitHub Actions 自动构建
+3. 部署到 Cloudflare Workers

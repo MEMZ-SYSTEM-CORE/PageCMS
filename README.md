@@ -1,71 +1,94 @@
-# PageCMS
+# PageCMS - Next.js + Magic UI
 
-基于 [Astro](https://astro.build) 构建、[Pages CMS](https://pagescms.org) 管理内容的静态站点模板。
+一个基于 Next.js 和 Magic UI 的个人博客，使用 Cloudflare Workers 部署。
 
-## 快速开始
+## 技术栈
 
-### 1. 安装依赖
+- **框架**: Next.js 15 (App Router)
+- **UI 组件**: Magic UI (基于 shadcn/ui)
+- **样式**: Tailwind CSS v4 + oklch 色彩系统
+- **部署**: Cloudflare Workers
+- **内容管理**: PagesCMS (基于 Git)
 
-```bash
-npm install
-```
+## 功能特性
 
-### 2. 本地开发
-
-```bash
-npm run dev
-```
-
-### 3. 构建
-
-```bash
-npm run build
-```
-
-### 4. 连接 PagesCMS
-
-1. 前往 [app.pagescms.org](https://app.pagescms.org)
-2. 使用 GitHub 登录
-3. 安装 GitHub App 到你的账户或组织
-4. 选择 `memz-system-core/pagecms` 仓库
-5. 自动读取 `.pages.yml` 配置，开始编辑内容
+- 📝 博客文章（Markdown + YAML frontmatter）
+- 🔍 文章搜索（支持标题/描述/标签过滤）
+- 🎨 封面生成器（Canvas API）
+- 🌙 深色/浅色模式切换
+- 💬 Giscus 评论系统
+- 📱 响应式设计
+- 🚀 静态生成 + ISR
 
 ## 项目结构
 
 ```
-├── .pages.yml              # PagesCMS 配置
-├── src/
-│   ├── content.config.ts   # Astro 内容集合定义
-│   ├── content/
-│   │   ├── posts/          # 文章 (Markdown, 由 PagesCMS 管理)
-│   │   └── pages/          # 页面 (Markdown, 由 PagesCMS 管理)
-│   ├── layouts/
-│   │   └── Layout.astro    # 全局布局
-│   └── pages/
-│       ├── index.astro     # 首页 (文章列表)
-│       ├── about.astro     # 关于页面
-│       └── blog/
-│           └── [slug].astro # 文章详情页
-├── media/                   # 媒体文件 (由 PagesCMS 管理)
-└── package.json
+src/
+├── app/                    # Next.js App Router
+│   ├── page.tsx           # 首页
+│   ├── layout.tsx         # 全局布局
+│   ├── globals.css        # 全局样式
+│   ├── posts/             # 文章页面
+│   │   ├── page.tsx       # 文章列表
+│   │   └── [slug]/        # 文章详情
+│   ├── cover/             # 封面生成器
+│   ├── about/             # 关于页面
+│   ├── rss.xml/           # RSS 订阅
+│   ├── sitemap.xml/       # Sitemap
+│   └── api/               # API 路由
+│       ├── media/         # 媒体管理
+│       ├── upload/        # 文件上传
+│       ├── delete/        # 文件删除
+│       ├── token/         # Token 验证
+│       └── fetch-url/     # URL 下载
+├── components/            # React 组件
+│   ├── ui/                # Magic UI 组件
+│   ├── nav-bar.tsx        # 导航栏
+│   ├── footer.tsx         # 页脚
+│   ├── theme-provider.tsx # 主题上下文
+│   ├── theme-toggle.tsx   # 主题切换
+│   ├── back-to-top.tsx    # 回到顶部
+│   └── cookie-consent.tsx # Cookie 同意
+├── lib/                   # 工具函数
+│   ├── utils.ts           # 通用工具
+│   ├── content-server.ts  # 内容读取（服务端）
+│   └── config/
+│       └── site.ts        # 站点配置
+└── content/               # 内容文件
+    ├── posts/             # 博客文章
+    ├── pages/             # 静态页面
+    └── settings/          # 站点设置
 ```
 
-## 内容管理
+## 开发
 
-本项目使用 [Pages CMS](https://pagescms.org) 进行内容管理。配置文件 `.pages.yml` 定义了以下内容类型：
+```bash
+# 安装依赖
+pnpm install
 
-### 文章 (posts)
-- 存放在 `src/content/posts/` 目录
-- 包含标题、发布日期、描述、封面图、标签、草稿状态等字段
-- 支持 Markdown 正文
+# 启动开发服务器
+pnpm dev
 
-### 页面 (pages)
-- 存放在 `src/content/pages/` 目录
-- 包含标题、描述等字段
-- 支持 Markdown 正文
+# 构建生产版本
+pnpm build
 
-## 技术栈
+# 部署到 Cloudflare Workers
+pnpm deploy
+```
 
-- [Astro](https://astro.build) — 现代化静态站点生成器
-- [Pages CMS](https://pagescms.org) — 基于 Git 的内容管理系统
-- Markdown / YAML Frontmatter — 内容格式
+## 环境变量
+
+在 Cloudflare Workers 控制台配置：
+
+- `GITHUB_TOKEN`: GitHub API Token（用于 PagesCMS 媒体管理）
+
+## 部署
+
+1. 推送代码到 GitHub
+2. 在 Cloudflare Workers 控制台创建 Worker
+3. 配置 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` secrets
+4. 运行 GitHub Actions 工作流或手动部署
+
+## License
+
+MIT
