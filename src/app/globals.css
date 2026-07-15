@@ -178,6 +178,37 @@
   box-shadow: 0 2px 12px oklch(1 1 1 / 0.03);
 }
 
+/* ===== Markdown 链接效果 ===== */
+.prose a {
+  position: relative;
+  text-decoration: none !important;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  transition: background-size 0.3s ease, color 0.2s ease;
+}
+.prose a:hover {
+  background-size: 100% 1px;
+  opacity: 1 !important;
+}
+.prose a::after {
+  content: '↗';
+  display: inline-block;
+  font-size: 0.75em;
+  margin-left: 0.15em;
+  opacity: 0.5;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.prose a:hover::after {
+  transform: translate(1px, -1px);
+  opacity: 0.8;
+}
+/* 内部链接不显示 ↗ */
+.prose a[href^="/"]::after {
+  content: none;
+}
+
 /* ===== 代码 & 滚动条 ===== */
 .section-label {
   position: absolute;
