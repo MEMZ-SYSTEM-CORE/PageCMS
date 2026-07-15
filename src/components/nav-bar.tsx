@@ -31,27 +31,20 @@ export function NavBar() {
   })();
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-      <div className="flex h-12 items-center justify-between px-3">
+    <nav className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+      <div className="flex h-12 items-center justify-between px-4 max-w-5xl mx-auto">
         <div className="flex items-center gap-1 min-w-0 overflow-hidden">
-          {/* Logo */}
-          <Link href="/" className="shrink-0 hover:opacity-80 transition-opacity mr-1">
-            <img
-              src={siteConfig.avatar}
-              alt="Home"
-              className="h-6 w-6 rounded-full"
-              referrerPolicy="no-referrer"
-            />
+          <Link href="/" className="shrink-0 hover:opacity-80 transition-opacity mr-1.5">
+            <img src={siteConfig.avatar} alt="Home" className="h-5 w-5 rounded-full ring-1 ring-border" referrerPolicy="no-referrer" />
           </Link>
 
-          {/* Nav Links */}
           {siteConfig.navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-xs font-medium px-2 py-1 rounded-md transition-colors whitespace-nowrap shrink-0 ${
+              className={`text-xs font-medium px-2.5 py-1 rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 isActive(link.href)
-                  ? 'text-foreground bg-muted'
+                  ? 'text-foreground bg-muted/80'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
@@ -59,10 +52,9 @@ export function NavBar() {
             </Link>
           ))}
 
-          {/* Breadcrumbs - hidden on mobile when too long */}
           {crumbs.length > 0 && (
             <>
-              <span className="text-muted-foreground/30 mx-0.5 shrink-0 hidden sm:inline">|</span>
+              <span className="text-border mx-0.5 shrink-0 hidden sm:inline">/</span>
               <div className="hidden sm:flex items-center gap-0.5 min-w-0 overflow-hidden">
                 {crumbs.map((crumb, i) => (
                   <div key={crumb.href} className="inline-flex items-center gap-0.5 min-w-0">
