@@ -22,8 +22,8 @@ export const siteConfig = {
     ]
   },
   navLinks: [
-    { label: 'Posts', href: '/' },
-    { label: 'About', href: '/about' }
+    { label: '文章', href: '/' },
+    { label: '关于', href: '/about' }
   ]
 };
 

@@ -75,7 +75,7 @@ export default async function PostPage({ params }: Props) {
                   <img src={post.image} alt={post.title} className="w-full rounded-lg object-cover" loading="lazy" />
                 </div>
               )}
-              {post.tags?.length && (
+              {post.tags && post.tags.length > 0 && (
                 <div className="mt-4 flex gap-2">
                   {post.tags.filter(Boolean).map((tag) => (
                     <Badge key={tag} variant="secondary">{tag}</Badge>
