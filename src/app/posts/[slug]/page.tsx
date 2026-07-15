@@ -9,6 +9,8 @@ import { MarkdownContent } from "@/components/markdown-content";
 import { PostComments } from "@/components/post-comments";
 import { PostMediaEmbed } from "@/components/post-media-embed";
 import { TableOfContents } from "@/components/table-of-contents";
+import { ReadingProgressBar } from "@/components/reading-progress-bar";
+import { PrevNextNav } from "@/components/prev-next-nav";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -60,6 +62,7 @@ export default async function PostPage({ params }: Props) {
   return (
     <div className="relative">
       <div className="hero-glow" />
+      <ReadingProgressBar />
       <article className="container mx-auto max-w-5xl px-4 py-10 relative z-10">
         <div className="flex gap-8 justify-center">
           <div className="min-w-0 max-w-3xl flex-1">
@@ -106,6 +109,8 @@ export default async function PostPage({ params }: Props) {
             </BlurFade>
 
             <PostMediaEmbed />
+
+            <PrevNextNav currentSlug={slug} />
 
             <BlurFade delay={0.15} inView>
               <footer className="mt-14">

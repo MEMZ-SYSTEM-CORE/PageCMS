@@ -209,6 +209,11 @@
   content: none;
 }
 
+/* 代码块复制按钮间距 */
+.prose pre {
+  padding-right: 2.75rem !important;
+}
+
 /* ===== 代码 & 滚动条 ===== */
 .section-label {
   position: absolute;
