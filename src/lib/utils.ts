@@ -45,3 +45,27 @@ export function formatDateFull(date: Date): string {
 export function readingTime(description?: string): number {
   return Math.max(1, Math.ceil((description?.length ?? 100) / 400));
 }
+
+/** Parse markdown headings (## and ###) into a TOC structure */
+export interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+export function parseHeadings(body: string): TocItem[] {
+  const headings: TocItem[] = [];
+  const lines = body.split('\n');
+  for (const line of lines) {
+    const match = line.match(/^(#{2,3})\s+(.+)$/);
+    if (match) {
+      const text = match[2].trim();
+      const id = text
+        .toLowerCase()
+        .replace(/[^\w一-鿿\s-]/g, '')
+        .replace(/\s+/g, '-');
+      headings.push({ id, text, level: match[1].length });
+    }
+  }
+  return headings;
+}

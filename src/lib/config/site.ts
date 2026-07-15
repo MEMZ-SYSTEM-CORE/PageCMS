@@ -22,9 +22,8 @@ export const siteConfig = {
     ]
   },
   navLinks: [
-    { label: '文章', href: '/' },
-    { label: '封面', href: '/cover' },
-    { label: '关于', href: '/about' }
+    { label: 'Posts', href: '/' },
+    { label: 'About', href: '/about' }
   ]
 };
 
@@ -39,4 +38,5 @@ export interface Post {
   tags?: string[];
   draft?: boolean;
   body: string;
+  headings?: { id: string; text: string; level: number }[];
 }

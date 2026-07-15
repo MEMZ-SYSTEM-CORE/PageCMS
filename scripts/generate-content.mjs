@@ -45,6 +45,23 @@ function slugFromFile(filePath) {
   return filePath.split(/[/\\]/).pop().replace(/\.md$/i, '');
 }
 
+function parseHeadings(body) {
+  const headings = [];
+  const lines = body.split('\n');
+  for (const line of lines) {
+    const match = line.match(/^(#{2,3})\s+(.+)$/);
+    if (match) {
+      const text = match[2].trim();
+      const id = text
+        .toLowerCase()
+        .replace(/[^\w一-鿿\s-]/g, '')
+        .replace(/\s+/g, '-');
+      headings.push({ id, text, level: match[1].length });
+    }
+  }
+  return headings;
+}
+
 // Read all posts
 const postsDir = path.join(CONTENT_DIR, 'posts');
 const posts = [];

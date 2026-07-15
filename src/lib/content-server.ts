@@ -14,6 +14,7 @@ interface ContentEntry {
   tags?: string[];
   draft?: boolean;
   body: string;
+  headings?: { id: string; text: string; level: number }[];
 }
 
 interface ContentData {
